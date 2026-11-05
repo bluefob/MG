@@ -1,56 +1,76 @@
-<!-- Version 69.4 - Merged with Crisp Native MG11 PDF & Flow Fixes -->
+<!-- Version 69.3 - UI Overhaul -->
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCTV Download Form</title>
+    <title>CCTV Download Form & MG11</title>
     
     <!-- PWA Manifest & App Icons -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0056b3">
+    <meta name="theme-color" content="#0b3c68">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- PURE jsPDF LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2pdf.js for Strict MG11 Court Layout Rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
+        /* --- MODERN SLICK UI VARIABLES --- */
         :root {
-            --primary-color: #0056b3;
-            --primary-light: #e6f0fa;
-            --bg-color: #f4f7f6;
-            --border-color: #ccc;
-            --calc-bg: #e8f4f8;
-            --text-color: #333;
-            --container-bg: #fff;
-            --fieldset-bg: #fafafa;
-            --input-bg: #fff;
-            --input-text: #333;
-            --table-even: #f2f2f2;
+            --primary-color: #0b3c68; /* Deep Police Blue */
+            --primary-light: #e6f0f9;
+            --accent-color: #005bb5;
+            --bg-color: #f1f5f9; /* Slate 50 */
+            --container-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --calc-bg: #f8fafc;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --fieldset-bg: #ffffff;
+            --input-bg: #f8fafc;
+            --input-text: #0f172a;
+            --table-even: #f8fafc;
+            
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #ca8a04;
+            --action: #0284c7;
+            
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
 
         body.dark-mode {
-            --primary-color: #4da3ff;
-            --primary-light: #1a2b3c;
-            --bg-color: #121212;
-            --border-color: #444;
-            --calc-bg: #1e2a30;
-            --text-color: #e0e0e0;
-            --container-bg: #1e1e1e;
-            --fieldset-bg: #2d2d2d;
-            --input-bg: #333;
-            --input-text: #f4f4f4;
-            --table-even: #2d2d2d;
+            --primary-color: #38bdf8;
+            --primary-light: #0f172a;
+            --accent-color: #0ea5e9;
+            --bg-color: #0f172a; /* Slate 900 */
+            --container-bg: #1e293b; /* Slate 800 */
+            --border-color: #334155;
+            --calc-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            --fieldset-bg: #1e293b;
+            --input-bg: #0f172a;
+            --input-text: #f8fafc;
+            --table-even: #0f172a;
         }
         
+        /* --- GLOBAL TYPOGRAPHY & LAYOUT --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
-            padding: 15px;
+            padding: 20px 15px;
             margin: 0;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -59,74 +79,85 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 900px;
-            margin: 0 auto 15px auto;
+            max-width: 950px;
+            margin: 0 auto 20px auto;
         }
 
         .dark-mode-toggle {
-            background: none;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 6px 16px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 18px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.9em;
-            transition: all 0.2s ease-in-out;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
         }
 
         .dark-mode-toggle:hover {
-            background: var(--primary-color);
-            color: #fff;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
 
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
             background: var(--container-bg);
-            padding: 25px 35px;
-            border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
-            transition: background-color 0.3s;
+            padding: 30px 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         h2 {
             text-align: center;
             color: var(--primary-color);
             margin-top: 0;
-            margin-bottom: 25px;
-            font-weight: 700;
+            margin-bottom: 30px;
+            font-weight: 800;
+            font-size: 1.8em;
+            letter-spacing: -0.5px;
         }
 
+        /* --- APP-LIKE TABS --- */
         .tabs {
             display: flex;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 25px;
+            background: var(--input-bg);
+            padding: 6px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            gap: 4px;
             flex-wrap: wrap;
         }
 
         .tab-btn {
-            background: none;
+            background: transparent;
             border: none;
             padding: 12px 15px;
-            font-size: 1.05em;
+            font-size: 0.95em;
             cursor: pointer;
-            color: #888;
+            color: var(--text-muted);
             font-weight: 600;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
+            border-radius: var(--radius-sm);
             flex: 1;
             text-align: center;
-            transition: color 0.2s ease, border-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .tab-btn:hover {
-            color: var(--primary-color);
+            color: var(--text-color);
+            background: rgba(0,0,0,0.03);
         }
+        body.dark-mode .tab-btn:hover { background: rgba(255,255,255,0.05); }
 
         .tab-btn.active {
+            background: var(--container-bg);
             color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
         }
 
         .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
@@ -135,38 +166,40 @@
         .step-container { display: none; animation: fadeIn 0.3s ease-in-out; }
         .step-container.active-step { display: block; }
         
-        .step-indicator { text-align: center; color: var(--primary-color); font-weight: 700; margin-bottom: 20px; font-size: 1.1em; background: var(--primary-light); padding: 10px; border-radius: 6px; border: 1px solid rgba(0, 86, 179, 0.2); }
-        body.dark-mode .step-indicator { background: var(--calc-bg); border-color: var(--primary-color); }
-        
-        .form-nav-buttons { display: flex; gap: 10px; margin-top: 25px; margin-bottom: 10px; }
-        .btn-prev { flex: 1; padding: 14px; background-color: transparent; color: var(--text-color); border: 2px solid var(--border-color); font-family: inherit; font-weight: 600; font-size: 1.05em; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .btn-prev:hover { background-color: var(--fieldset-bg); border-color: var(--primary-color); color: var(--primary-color); }
-        .btn-next { flex: 2; padding: 14px; background-color: var(--primary-color); color: white; border: none; font-family: inherit; font-weight: 600; font-size: 1.05em; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2); transition: all 0.2s; }
-        .btn-next:hover { background-color: #004494; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(0, 86, 179, 0.3); }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* --- PROGRESS INDICATOR --- */
+        .step-indicator { 
+            text-align: center; 
+            color: #fff; 
+            font-weight: 700; 
+            margin: 0 auto 25px auto; 
+            font-size: 0.95em; 
+            background: var(--primary-color); 
+            padding: 8px 20px; 
+            border-radius: 20px; 
+            display: table;
+            box-shadow: var(--shadow-md);
         }
-
+        
+        /* --- FORM STRUCTURE (CARDS) --- */
         fieldset {
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 18px;
-            margin-bottom: 22px;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
             background-color: var(--fieldset-bg);
+            box-shadow: var(--shadow-sm);
             transition: background-color 0.3s, border-color 0.3s;
             position: relative;
         }
 
         legend {
             font-weight: 700;
-            color: var(--primary-color);
-            background: var(--container-bg);
-            padding: 0 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            color: #fff;
+            background: var(--primary-color);
+            padding: 6px 16px;
+            border-radius: 20px;
             font-size: 0.95em;
+            box-shadow: var(--shadow-sm);
         }
 
         .form-row {
@@ -174,209 +207,234 @@
             flex-wrap: wrap;
             justify-content: space-between;
             margin-bottom: 0;
+            gap: 16px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            width: 48%; 
-            margin-bottom: 16px;
+            width: calc(50% - 8px); 
+            margin-bottom: 8px;
             box-sizing: border-box;
         }
 
         .form-group.full-width { width: 100%; }
 
         label {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 600;
             font-size: 0.9em;
             color: var(--text-color);
             display: block; 
         }
 
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        input[type="datetime-local"],
-        input[type="tel"],
-        input[type="number"],
-        input[type="email"],
-        textarea,
-        select {
-            padding: 11px;
+        /* --- MODERN INPUTS --- */
+        input[type="text"], input[type="date"], input[type="time"], input[type="datetime-local"],
+        input[type="tel"], input[type="number"], input[type="email"], textarea, select {
+            padding: 12px 14px;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
+            border-radius: var(--radius-md);
             font-size: 1em;
             width: 100%;
             box-sizing: border-box;
             background-color: var(--input-bg);
             color: var(--input-text);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
             font-family: inherit;
+            box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.02);
         }
         
         input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            border-color: var(--accent-color);
+            background-color: var(--container-bg);
+            box-shadow: 0 0 0 3px rgba(0, 91, 181, 0.15);
+        }
+        body.dark-mode input:focus, body.dark-mode textarea:focus, body.dark-mode select:focus {
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
         }
 
-        input[readonly] { background-color: var(--border-color); cursor: not-allowed; font-weight: bold; opacity: 0.7; border-color: transparent; }
+        input[readonly] { 
+            background-color: var(--calc-bg); 
+            cursor: not-allowed; 
+            font-weight: bold; 
+            color: var(--text-muted);
+            border-style: dashed;
+        }
 
-        body:not(.dark-mode) .ref-highlight { background-color: #fff3cd !important; color: #856404 !important; border: 1px solid #ffeeba !important; text-align: center; }
-        body.dark-mode .ref-highlight { background-color: #4a401c !important; color: #ffd966 !important; border: 1px solid #856404 !important; text-align: center; }
+        body:not(.dark-mode) .ref-highlight { background-color: #fffbeb !important; color: #b45309 !important; border: 1px solid #fde68a !important; text-align: center; border-style: solid; }
+        body.dark-mode .ref-highlight { background-color: #422006 !important; color: #fcd34d !important; border: 1px solid #b45309 !important; text-align: center; border-style: solid; }
 
         textarea { resize: vertical; min-height: 85px; }
         
-        .address-option { padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 0.9em; color: var(--text-color); transition: background-color 0.2s; }
+        .address-option { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 0.95em; color: var(--text-color); transition: background-color 0.2s; }
         .address-option:last-child { border-bottom: none; }
-        .address-option:hover { background-color: var(--calc-bg); color: var(--primary-color); font-weight: bold; }
+        .address-option:hover { background-color: var(--calc-bg); color: var(--accent-color); font-weight: bold; }
 
-        .auto-calc-section { background-color: var(--calc-bg); border: 1px dashed var(--primary-color); padding: 15px; border-radius: 6px; margin-top: 15px; }
+        .auto-calc-section { background-color: var(--calc-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: var(--radius-md); margin-top: 15px; box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.02); }
+        .auto-calc-section h4 { margin-top:0; color: var(--primary-color); font-size: 1.1em; margin-bottom: 15px; }
 
-        .radio-group { display: flex; gap: 12px; align-items: center; padding: 6px 0; flex-wrap: wrap; }
-        .radio-group label { font-weight: normal; margin: 0; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+        /* --- RADIO & CHECKBOX ALIGNMENT --- */
+        .radio-group { display: flex; gap: 16px; align-items: center; padding: 6px 0; flex-wrap: wrap; }
+        .radio-group label { font-weight: 500; margin: 0; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.95em; }
+        input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-color); cursor: pointer; }
 
         .status-row-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            background: var(--container-bg);
+            gap: 16px;
+            background: var(--calc-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            padding: 16px;
             width: 100%;
             box-sizing: border-box;
             margin-bottom: 16px;
         }
+        .status-col { flex: 1 1 180px; display: flex; flex-direction: column; }
+        .status-col label.col-title { font-size: 0.85em; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .status-col {
-            flex: 1 1 200px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .status-col label.col-title {
-            font-size: 0.85em;
-            margin-bottom: 2px;
-        }
-
-        button { cursor: pointer; border-radius: 5px; font-size: 1em; font-family: inherit; font-weight: 600; transition: all 0.2s ease; }
+        /* --- ACTION BUTTONS --- */
+        button { cursor: pointer; border-radius: var(--radius-sm); font-size: 1em; font-family: inherit; font-weight: 600; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         
-        button.submit-btn { flex: 2; padding: 16px; background-color: var(--primary-color); color: #fff; border: none; font-size: 1.1em; box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2); }
-        button.submit-btn:hover { background-color: #004494; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(0, 86, 179, 0.3); }
+        .form-nav-buttons { display: flex; gap: 12px; margin-top: 30px; margin-bottom: 10px; }
+        .btn-prev { flex: 1; padding: 14px; background-color: transparent; color: var(--text-color); border: 2px solid var(--border-color); }
+        .btn-prev:hover { background-color: var(--calc-bg); border-color: var(--text-muted); }
         
-        button.clear-btn { padding: 8px; background-color: transparent; color: #dc3545; border: 1px solid #dc3545; font-size: 0.9em; margin-bottom: 20px; width: 100%; display: block; border-radius: 4px; }
-        button.clear-btn:hover { background-color: #dc3545; color: white; }
+        .btn-next, .submit-btn { flex: 2; padding: 14px; background-color: var(--primary-color); color: white; border: none; box-shadow: var(--shadow-md); }
+        .btn-next:hover, .submit-btn:hover { background-color: var(--accent-color); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+        
+        button.clear-btn { padding: 10px; background-color: transparent; color: var(--danger); border: 1px solid var(--danger); font-size: 0.9em; margin-bottom: 20px; width: 100%; display: block; }
+        button.clear-btn:hover { background-color: var(--danger); color: white; }
 
-        button.add-dl-btn { background-color: #28a745; color: white; border: none; padding: 12px 20px; font-size: 1em; width: 100%; box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2); margin-top: 5px; margin-bottom: 15px; }
-        button.add-dl-btn:hover { background-color: #218838; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3); }
+        button.add-dl-btn { background-color: var(--calc-bg); color: var(--primary-color); border: 2px dashed var(--primary-color); padding: 14px; font-size: 1em; width: 100%; margin-top: 10px; margin-bottom: 15px; }
+        button.add-dl-btn:hover { background-color: var(--primary-color); color: white; }
 
-        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
-        button.view-btn { background-color: #28a745; color: white; border: none; padding: 8px 12px; }
-        button.mg11-btn { background-color: #6f42c1; color: white; border: none; padding: 8px 12px; }
-        button.mg11-pdf-btn { background-color: #117a8b; color: white; border: none; padding: 8px 12px; }
-        button.print-btn { background-color: #ffc107; color: #212529; border: none; padding: 8px 12px; }
-        button.amend-btn { background-color: #fd7e14; color: white; border: none; padding: 8px 12px; }
-        button.delete-btn { background-color: #dc3545; color: white; border: none; padding: 8px 12px; }
-        button.export-btn { background-color: #17a2b8; color: white; border: none; padding: 10px 20px; font-size: 1em; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        button.view-btn { background-color: var(--success); color: white; border: none; padding: 8px 14px; }
+        button.mg11-btn { background-color: #6366f1; color: white; border: none; padding: 8px 14px; }
+        button.print-btn { background-color: var(--warning); color: #fff; border: none; padding: 8px 14px; }
+        button.amend-btn { background-color: #f97316; color: white; border: none; padding: 8px 14px; }
+        button.delete-btn { background-color: var(--danger); color: white; border: none; padding: 8px 14px; }
+        button.export-btn { background-color: var(--action); color: white; border: none; padding: 10px 20px; font-size: 1em; box-shadow: var(--shadow-sm); }
+        
+        button:hover { opacity: 0.9; }
 
-        .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        table, th, td { border: 1px solid var(--border-color); }
-        th, td { padding: 14px 12px; text-align: left; }
-        th { background-color: var(--primary-color); color: white; }
+        /* --- LOG TABLE --- */
+        .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; border-radius: var(--radius-md); overflow: hidden; }
+        table, th, td { border: none; }
+        th { background-color: var(--primary-color); color: white; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
+        th, td { padding: 16px 14px; text-align: left; border-bottom: 1px solid var(--border-color); }
         tr:nth-child(even) { background-color: var(--table-even); }
-        .empty-log { text-align: center; padding: 30px; color: #777; font-style: italic; background: var(--fieldset-bg); border-radius: 5px; border: 1px dashed var(--border-color); }
+        tr:hover { background-color: var(--calc-bg); }
+        .empty-log { text-align: center; padding: 40px; color: var(--text-muted); font-style: italic; background: var(--calc-bg); border-radius: var(--radius-md); border: 2px dashed var(--border-color); }
 
-        .search-bar { width: 100%; padding: 14px; font-size: 1.05em; border: 2px solid var(--primary-color); border-radius: 6px; box-sizing: border-box; margin-bottom: 20px; background-color: var(--input-bg); color: var(--input-text); }
-        .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
-        .guide-card { border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; background: var(--fieldset-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease;}
-        .guide-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
-        .guide-card h4 { margin: 0 0 12px 0; color: var(--primary-color); font-size: 1.2em; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-        .guide-card p { margin: 6px 0; font-size: 0.9em; }
+        /* --- UTILITY / SEARCH --- */
+        .search-bar { width: 100%; padding: 16px; font-size: 1.05em; border: 2px solid var(--border-color); border-radius: var(--radius-md); box-sizing: border-box; margin-bottom: 25px; background-color: var(--input-bg); color: var(--input-text); transition: border-color 0.2s; }
+        .search-bar:focus { border-color: var(--primary-color); }
         
-        .tree-item { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 12px; background: var(--fieldset-bg); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-        .tree-header { padding: 16px; font-weight: 700; background: var(--input-bg); color: var(--primary-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .guide-card { border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; background: var(--fieldset-bg); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;}
+        .guide-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-color); }
+        .guide-card h4 { margin: 0 0 15px 0; color: var(--primary-color); font-size: 1.25em; border-bottom: 2px solid var(--calc-bg); padding-bottom: 10px; }
+        .guide-card p { margin: 8px 0; font-size: 0.95em; color: var(--text-color); }
+        
+        /* --- ACCORDIONS (LEGAL) --- */
+        .tree-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 12px; background: var(--fieldset-bg); overflow: hidden; box-shadow: var(--shadow-sm); transition: border-color 0.2s; }
+        .tree-header { padding: 18px 20px; font-weight: 700; background: var(--input-bg); color: var(--primary-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; font-size: 1.05em; }
         .tree-header:hover { background: var(--calc-bg); }
-        .tree-body { padding: 18px; display: none; border-top: 1px solid var(--border-color); font-size: 0.95em; }
+        .tree-body { padding: 20px; display: none; border-top: 1px solid var(--border-color); font-size: 0.95em; line-height: 1.7; }
         .tree-body.open { display: block; animation: fadeIn 0.2s ease-in-out; }
-        .tree-icon { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #888; font-size: 0.8em; }
-        .tree-item.open .tree-icon { transform: rotate(180deg); color: var(--primary-color); }
-        .law-quote { border-left: 4px solid var(--primary-color); padding: 12px 15px; margin: 12px 0; font-style: italic; color: #555; background: var(--input-bg); border-radius: 0 4px 4px 0; }
-        body.dark-mode .law-quote { color: #ccc; }
+        .tree-icon { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text-muted); font-size: 0.8em; }
+        .tree-item.open { border-color: var(--primary-color); }
+        .tree-item.open .tree-header { background: var(--primary-color); color: #fff; }
+        .tree-item.open .tree-icon { transform: rotate(180deg); color: #fff; }
+        .law-quote { border-left: 4px solid var(--primary-color); padding: 15px 20px; margin: 15px 0; font-style: italic; color: var(--text-muted); background: var(--calc-bg); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 
-        .btn-group { display: flex; gap: 8px; margin-top: 15px; }
-        .manual-btn { flex: 1; padding: 10px; text-align: center; background: var(--calc-bg); border: 1px solid var(--primary-color); border-radius: 4px; font-weight: 600; text-decoration: none; color: var(--primary-color); transition: 0.2s; font-size: 0.85em; }
+        /* --- MINI UTILITY BUTTONS --- */
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .manual-btn, .yt-btn, .map-btn { flex: 1; padding: 10px; text-align: center; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; transition: 0.2s; font-size: 0.9em; cursor: pointer; }
+        
+        .manual-btn { background: var(--primary-light); color: var(--primary-color); border: 1px solid transparent; }
         .manual-btn:hover { background: var(--primary-color); color: #fff; }
+        body.dark-mode .manual-btn { background: var(--calc-bg); border: 1px solid var(--primary-color); }
         
-        .yt-btn { flex: 1; padding: 10px; text-align: center; background: #fff; border: 1px solid #ff0000; border-radius: 4px; font-weight: 600; text-decoration: none; color: #ff0000; transition: 0.2s; font-size: 0.85em; cursor: pointer; }
-        .yt-btn:hover { background: #ff0000; color: #fff; }
-        body.dark-mode .yt-btn { background: #2d2d2d; }
-        body.dark-mode .yt-btn:hover { background: #ff0000; }
-
-        .map-btn { flex: 1; padding: 8px; text-align: center; background: #fff; border: 1px solid #28a745; border-radius: 4px; font-weight: 600; text-decoration: none; color: #28a745; transition: 0.2s; font-size: 0.85em; cursor: pointer; }
-        .map-btn:hover { background: #28a745; color: #fff; }
-        body.dark-mode .map-btn { background: #2d2d2d; }
-        body.dark-mode .map-btn:hover { background: #28a745; color: #fff; }
+        .yt-btn { background: #fee2e2; color: var(--danger); border: 1px solid transparent; }
+        .yt-btn:hover { background: var(--danger); color: #fff; }
+        body.dark-mode .yt-btn { background: rgba(220,38,38,0.1); border: 1px solid var(--danger); }
         
-        .gps-btn { border-color: var(--primary-color); color: var(--primary-color); }
-        .gps-btn:hover { background: var(--primary-color); color: #fff; }
-        body.dark-mode .gps-btn { background: #2d2d2d; border-color: var(--primary-color); color: var(--primary-color); }
-        body.dark-mode .gps-btn:hover { background: var(--primary-color); color: #fff; }
+        .map-btn { background: #dcfce7; color: var(--success); border: 1px solid transparent; }
+        .map-btn:hover { background: var(--success); color: #fff; }
+        body.dark-mode .map-btn { background: rgba(22,163,74,0.1); border: 1px solid var(--success); }
 
-        .input-group-btn { display: flex; gap: 8px; }
+        .input-group-btn { display: flex; gap: 10px; }
 
-        .draft-status { text-align: center; font-size: 0.85em; color: #28a745; margin-top: 15px; font-style: italic; height: 20px; font-weight: 600; }
+        .draft-status { text-align: center; font-size: 0.85em; color: var(--text-muted); margin-top: 15px; height: 20px; font-weight: 600; }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(3px); }
-        .modal-content { background-color: var(--container-bg); margin: 4% auto; padding: 35px; border: 1px solid #888; width: 95%; max-width: 900px; border-radius: 10px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: fadeIn 0.3s ease-out; }
-        .close-btn { color: #aaa; position: absolute; top: 15px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10; transition: color 0.2s; }
-        .close-btn:hover { color: #dc3545; }
+        /* --- MODAL (OVERLAYS) --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(15,23,42,0.8); backdrop-filter: blur(4px); }
+        .modal-content { background-color: var(--container-bg); margin: 4% auto; padding: 40px; border: 1px solid var(--border-color); width: 95%; max-width: 950px; border-radius: var(--radius-lg); position: relative; box-shadow: var(--shadow-lg); animation: fadeIn 0.3s ease-out; }
+        .close-btn { color: var(--text-muted); position: absolute; top: 20px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10; transition: color 0.2s; line-height: 1; }
+        .close-btn:hover { color: var(--danger); }
 
-        #photo_gallery { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
-        .photo-card { display: flex; flex-direction: column; width: 150px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .photo-filename { font-size: 0.7em; color: var(--primary-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; font-weight: 700; text-align: center; }
-        .photo-datetime { font-size: 0.65em; color: #666; text-align: center; margin-bottom: 6px; }
-        .photo-wrapper { position: relative; width: 100%; height: 110px; margin-bottom: 8px; }
-        .photo-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
-        .photo-wrapper button { position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.2s; }
-        .photo-wrapper button:hover { transform: scale(1.1); background: #c82333; }
-        .photo-note { padding: 6px !important; font-size: 0.8em !important; border: 1px solid var(--border-color); border-radius: 4px; background: var(--fieldset-bg); color: var(--input-text); width: 100%; box-sizing: border-box; text-align: center; }
+        /* --- PHOTOS --- */
+        #photo_gallery { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+        .photo-card { display: flex; flex-direction: column; width: 160px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; box-shadow: var(--shadow-sm); transition: transform 0.2s; }
+        .photo-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .photo-filename { font-size: 0.75em; color: var(--primary-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; font-weight: 700; text-align: center; }
+        .photo-datetime { font-size: 0.7em; color: var(--text-muted); text-align: center; margin-bottom: 8px; }
+        .photo-wrapper { position: relative; width: 100%; height: 120px; margin-bottom: 10px; }
+        .photo-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(0,0,0,0.1); }
+        .photo-wrapper button { position: absolute; top: -10px; right: -10px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: var(--shadow-sm); transition: transform 0.2s; }
+        .photo-wrapper button:hover { transform: scale(1.1); background: #b91c1c; }
+        .photo-note { padding: 8px !important; font-size: 0.85em !important; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--fieldset-bg); color: var(--input-text); width: 100%; box-sizing: border-box; text-align: center; }
 
-        @media (max-width: 600px) {
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- RESPONSIVE MOBILE TWEAKS --- */
+        @media (max-width: 650px) {
             body { padding: 10px; }
             .container, .modal-content { padding: 20px 15px; }
             .form-group { width: 100%; } 
+            fieldset { padding: 15px; }
             .log-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .form-nav-buttons { flex-direction: column; gap: 8px; }
+            .form-nav-buttons { flex-direction: column; gap: 10px; }
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { display: none; }
-            tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--container-bg); overflow: hidden; }
-            tr:nth-child(even) { background-color: var(--container-bg); }
-            td { border: none; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 38%; text-align: right; min-height: 24px; }
-            td::before { position: absolute; top: 14px; left: 12px; width: 32%; padding-right: 10px; white-space: nowrap; text-align: left; font-weight: bold; color: var(--primary-color); font-size: 0.9em; }
+            tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background-color: var(--fieldset-bg); overflow: hidden; box-shadow: var(--shadow-sm); }
+            td { border: none; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 40%; text-align: right; min-height: 28px; }
+            td::before { position: absolute; top: 16px; left: 14px; width: 35%; padding-right: 10px; white-space: nowrap; text-align: left; font-weight: bold; color: var(--primary-color); font-size: 0.9em; }
             td:nth-of-type(1)::before { content: "Ref / Date"; }
             td:nth-of-type(2)::before { content: "Operation"; }
             td:nth-of-type(3)::before { content: "Venue"; }
             td:nth-of-type(4)::before { content: "Action"; }
-            td:last-child { border-bottom: none; background: var(--fieldset-bg); }
+            td:last-child { border-bottom: none; background: var(--calc-bg); }
             .action-buttons { justify-content: flex-end; }
-            .tabs { flex-direction: row; flex-wrap: wrap; border-bottom: none; gap: 5px; }
-            .tab-btn { flex: 0 0 calc(50% - 5px); box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; padding: 10px 5px; font-size: 0.9em; background: var(--fieldset-bg); margin-bottom: 5px; }
-            .tab-btn.active { border-color: var(--primary-color); background: var(--primary-light); color: var(--primary-color); }
+            .tabs { flex-direction: row; flex-wrap: wrap; background: transparent; border: none; padding: 0; }
+            .tab-btn { flex: 0 0 calc(50% - 5px); box-sizing: border-box; border: 1px solid var(--border-color); background: var(--fieldset-bg); margin-bottom: 5px; }
             .tab-btn:nth-child(5) { flex: 1 1 100%; }
             .photo-card { width: calc(50% - 8px); }
         }
+
+        /* ==============================================================
+           MG11 MODAL CSS (STRICT COURT LAYOUT - UNTOUCHED FOR COMPLIANCE)
+           ============================================================== */
+        .mg11-narrative.editing { background-color: #fff3cd !important; padding: 15px; border: 2px dashed #ca8a04; outline: none; border-radius: 4px; }
+        .avoid-break { page-break-inside: avoid; }
+        /* Prevent dark mode bleed into formal document */
+        body.dark-mode #mg11DocumentContainer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+        body.dark-mode #mg11DocumentContainer * { color: #000 !important; border-color: #000 !important; }
+        .mg11-container * { box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div class="top-bar no-print">
-    <div style="font-weight: bold; color: var(--primary-color);"></div>
+    <div style="font-weight: 800; color: var(--primary-color); font-size: 1.2em;">Digital Forensics Unit</div>
     <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-weight: 700; color: var(--primary-color); font-size: 1.1em; letter-spacing: 0.5px;">v69.4</span>
-        <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌓 Dark Mode</button>
+        <span style="font-weight: 700; color: var(--text-muted); font-size: 1em; letter-spacing: 0.5px; background: var(--input-bg); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color);">v69.3</span>
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌓 Mode</button>
     </div>
 </div>
 
@@ -408,11 +466,11 @@
                             <input type="text" id="ref_number" name="Reference Number" value="Generated upon submission" class="ref-highlight" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="operation">Operation / Incident Ref <span style="color:red">*</span></label>
+                            <label for="operation">Operation / Incident Ref <span style="color:var(--danger)">*</span></label>
                             <input type="text" id="operation" name="Operation" required>
                         </div>
                         <div class="form-group">
-                            <label for="date">Date <span style="color:red">*</span></label>
+                            <label for="date">Date <span style="color:var(--danger)">*</span></label>
                             <input type="date" id="date" name="Date" required>
                         </div>
                         <div class="form-group">
@@ -437,17 +495,17 @@
                     <legend>Venue & Contact Details</legend>
                     <div class="form-row">
                         <div class="form-group full-width">
-                            <label for="venue_address">Venue Name / Address & Postcode <span style="color:red">*</span></label>
-                            <div style="display: flex; gap: 8px;">
+                            <label for="venue_address">Venue Name / Address & Postcode <span style="color:var(--danger)">*</span></label>
+                            <div style="display: flex; gap: 10px;">
                                 <textarea id="venue_address" name="Venue Address" rows="2" required placeholder="Enter building name, street, etc." style="flex: 1; margin-bottom: 5px;"></textarea>
-                                <button type="button" class="view-btn no-print" onclick="searchAddress()" id="searchAddrBtn" style="padding: 10px; margin-bottom: 5px; border-radius: 4px; font-weight: bold; background: var(--primary-color);">🔍 Find</button>
+                                <button type="button" class="view-btn no-print" onclick="searchAddress()" id="searchAddrBtn" style="padding: 12px; margin-bottom: 5px; border-radius: var(--radius-md); font-weight: bold; background: var(--primary-color);">🔍 Find</button>
                             </div>
-                            <div id="address_results" class="no-print" style="display: none; border: 1px solid var(--border-color); background: var(--input-bg); max-height: 160px; overflow-y: auto; margin-bottom: 10px; border-radius: 4px;"></div>
+                            <div id="address_results" class="no-print" style="display: none; border: 1px solid var(--border-color); background: var(--input-bg); max-height: 180px; overflow-y: auto; margin-bottom: 15px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);"></div>
                             
                             <div class="input-group-btn" style="margin-top: 5px;">
-                                <button type="button" class="map-btn gps-btn no-print" id="gpsBtn" onclick="autoLocate()" title="Auto-Locate via GPS" style="flex: 1; max-width: 110px;">📍 Locate</button>
+                                <button type="button" class="map-btn no-print" id="gpsBtn" onclick="autoLocate()" title="Auto-Locate via GPS" style="flex: 1; max-width: 120px;">📍 Locate</button>
                                 <input type="text" id="postcode" name="Postcode" style="flex: 2; text-transform: uppercase;" placeholder="Postcode (e.g. B1 1AA)">
-                                <button type="button" class="map-btn no-print" onclick="openMaps()" title="Open Specific Address in Maps" style="flex: 1; max-width: 90px;">🗺️ Map</button>
+                                <button type="button" class="map-btn no-print" onclick="openMaps()" title="Open Specific Address in Maps" style="flex: 1; max-width: 100px; background: var(--primary-light); color: var(--primary-color); border-color: transparent;">🗺️ Map</button>
                             </div>
                         </div>
                         <div class="form-group">
@@ -455,7 +513,7 @@
                             <input type="text" id="venue_contact_name" name="Venue Contact Name">
                         </div>
                         <div class="form-group">
-                            <label for="dob">Contact Date of Birth <span id="age_display" style="color:var(--primary-color); font-weight:normal;"></span></label>
+                            <label for="dob">Contact Date of Birth <span id="age_display" style="color:var(--action); font-weight:bold; margin-left: 5px;"></span></label>
                             <input type="date" id="dob" name="Contact DOB" onchange="calculateAge()">
                         </div>
                         <div class="form-group full-width">
@@ -468,14 +526,15 @@
                             <textarea id="venue_notes" name="Venue Notes" rows="2" placeholder="e.g., Directions to DVR, owner's working hours, system condition..."></textarea>
                         </div>
                         
-                        <div class="form-group full-width no-print">
+                        <div class="form-group full-width no-print" style="margin-top: 10px;">
                             <label style="color: var(--primary-color); font-size: 1.05em;">Is CCTV Available at this location?</label>
-                            <div class="radio-group" style="background-color: var(--container-bg); padding: 12px; border: 1px solid var(--border-color); border-radius: 5px;">
-                                <input type="radio" id="cctv_avail_yes" name="CCTV Available" value="Yes" checked onchange="toggleCctvDetails()">
-                                <label for="cctv_avail_yes" style="font-weight: 600; margin-right: 25px;">Yes</label>
-                                
-                                <input type="radio" id="cctv_avail_no" name="CCTV Available" value="No" onchange="toggleCctvDetails()">
-                                <label for="cctv_avail_no" style="font-weight: 600; color: #dc3545;">No (Negative Enquiry)</label>
+                            <div class="radio-group" style="background-color: var(--calc-bg); padding: 15px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                <label for="cctv_avail_yes" style="font-weight: 600; margin-right: 30px;">
+                                    <input type="radio" id="cctv_avail_yes" name="CCTV Available" value="Yes" checked onchange="toggleCctvDetails()"> Yes
+                                </label>
+                                <label for="cctv_avail_no" style="font-weight: 600; color: var(--danger);">
+                                    <input type="radio" id="cctv_avail_no" name="CCTV Available" value="No" onchange="toggleCctvDetails()"> No (Negative Enquiry)
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -483,7 +542,7 @@
                 
                 <div class="form-nav-buttons no-print">
                     <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
-                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: Time Sync ➔</button>
+                    <button type="button" class="btn-next" onclick="nextStep()">Next: Time Sync ➔</button>
                 </div>
             </div>
 
@@ -500,8 +559,8 @@
                             <label for="real_time">Real Date & Time</label>
                             <input type="datetime-local" id="real_time" name="Real Time Sync" class="time-calc" step="1">
                         </div>
-                        <div class="form-group full-width no-print" style="margin-top: 5px; margin-bottom: 10px;">
-                            <button type="button" class="view-btn" onclick="setTimeAccurate()" style="width: 100%; padding: 12px; font-weight: bold; background: var(--primary-color); border: none; border-radius: 4px; color: white;">⏱️ Time Accurate (Set DVR & Real Time to Current Device Time)</button>
+                        <div class="form-group full-width no-print" style="margin-top: 5px; margin-bottom: 15px;">
+                            <button type="button" class="view-btn" onclick="setTimeAccurate()" style="width: 100%; padding: 14px; font-weight: bold; background: var(--primary-color); border: none; border-radius: var(--radius-md); color: white; box-shadow: var(--shadow-sm);">⏱️ Time Accurate (Set DVR & Real Time to Current Device Time)</button>
                         </div>
                         <div class="form-group full-width">
                             <label for="time_difference">Time Difference</label>
@@ -521,7 +580,7 @@
                     </div>
 
                     <div class="auto-calc-section">
-                        <h4 style="margin-top:0; color:var(--primary-color);">Adjusted DVR Download Times</h4>
+                        <h4>Adjusted DVR Download Times</h4>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="dl_start">DVR Search Start Time</label>
@@ -532,13 +591,13 @@
                                 <input type="datetime-local" id="dl_end" name="DVR Download End Time" readonly step="1">
                             </div>
                         </div>
-                        <div id="incident_duration" style="text-align:center; font-weight:bold; color:var(--primary-color); margin-top:5px;"></div>
+                        <div id="incident_duration" style="text-align:center; font-weight:bold; color:var(--primary-color); margin-top:10px; font-size: 1.1em;"></div>
                     </div>
                 </fieldset>
                 
                 <div class="form-nav-buttons no-print">
                     <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
-                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: System Details ➔</button>
+                    <button type="button" class="btn-next" onclick="nextStep()">Next: System Details ➔</button>
                 </div>
             </div>
 
@@ -551,7 +610,7 @@
                             <label for="make_model">CCTV System Make/Model</label>
                             <div class="input-group-btn">
                                 <input type="text" id="make_model" name="System Make and Model" list="cctv_brands" autocomplete="off" style="flex: 1;">
-                                <button type="button" class="yt-btn no-print" onclick="searchInlineYT()" style="width: auto; padding: 0 15px; margin: 0;" title="Search YouTube for instructions">▶️ Search YT</button>
+                                <button type="button" class="yt-btn no-print" onclick="searchInlineYT()" style="width: auto; padding: 0 16px; margin: 0; border-radius: var(--radius-md);" title="Search YouTube for instructions">▶️ YT</button>
                             </div>
                             <datalist id="cctv_brands">
                                 <option value="Abus"></option><option value="ACTi"></option><option value="Adata"></option><option value="ADT"></option><option value="Aimetis"></option><option value="Alibi"></option><option value="Altronix"></option><option value="Amcrest"></option><option value="American Dynamics"></option><option value="Annke"></option><option value="Arecont Vision"></option><option value="Arlo"></option><option value="Aventura"></option><option value="AvertX"></option><option value="Avigilon"></option><option value="Axis"></option><option value="Baxall"></option><option value="Blink"></option><option value="Bolide"></option><option value="Bosch"></option><option value="Brickcom"></option><option value="Cathexis"></option><option value="CCTV Security Pros"></option><option value="Cisco"></option><option value="Clinton Electronics"></option><option value="Concept Pro"></option><option value="Costar"></option><option value="Costco"></option><option value="CP Plus"></option><option value="Dahua"></option><option value="Dedicated Micros"></option><option value="Defender"></option><option value="Digital Watchdog"></option><option value="Eufy"></option><option value="Exacq"></option><option value="Exvision"></option><option value="FLIR"></option><option value="Foscam"></option><option value="Genetec"></option><option value="GeoVision"></option><option value="Geutebruck"></option><option value="Google Nest"></option><option value="Grandstream"></option><option value="GW Security"></option><option value="Hanwha Vision"></option><option value="Hikvision"></option><option value="Honeywell"></option><option value="IC Realtime"></option><option value="Ikegami"></option><option value="IndigoVision"></option><option value="Infinova"></option><option value="InVid"></option><option value="Kasa"></option><option value="Lorex"></option><option value="LTS"></option><option value="Luma Surveillance"></option><option value="Luxriot"></option><option value="Mace"></option><option value="March Networks"></option><option value="Merit Lilin"></option><option value="Milestone Systems"></option><option value="Mobotix"></option><option value="Montavue"></option><option value="Night Owl"></option><option value="Northern"></option><option value="OnSSI"></option><option value="OpenEye"></option><option value="Optiview"></option><option value="Panasonic"></option><option value="Pelco"></option><option value="Q-See"></option><option value="QNAP"></option><option value="Qognify"></option><option value="Reolink"></option><option value="Ring"></option><option value="Salient"></option><option value="Sannce"></option><option value="SimpliSafe"></option><option value="Sony"></option><option value="Speco Technologies"></option><option value="Swann"></option><option value="Synology"></option><option value="Tapo"></option><option value="Tiandy"></option><option value="TP-Link"></option><option value="TVT"></option><option value="Ubiquiti"></option><option value="Uniview"></option><option value="Verint"></option><option value="Vicon"></option><option value="Vista"></option><option value="Vitek"></option><option value="Vivotek"></option><option value="Wansview"></option><option value="Wavestore"></option><option value="W Box"></option><option value="Wyze"></option><option value="Yi"></option><option value="Zmodo"></option><option value="Zosi"></option>
@@ -578,7 +637,7 @@
                 
                 <div class="form-nav-buttons no-print">
                     <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
-                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: Download Specifics ➔</button>
+                    <button type="button" class="btn-next" onclick="nextStep()">Next: Download Specifics ➔</button>
                 </div>
             </div>
 
@@ -588,8 +647,8 @@
                     <legend>Download Specifics</legend>
                     
                     <div id="downloads_container">
-                        <div class="download-block" data-index="1" style="position:relative; border-bottom: 2px dashed var(--border-color); padding-bottom: 20px; margin-bottom: 20px;">
-                            <h4 style="margin-top:0; color:var(--primary-color);">Download 1</h4>
+                        <div class="download-block" data-index="1" style="position:relative; border-bottom: 2px dashed var(--border-color); padding-bottom: 25px; margin-bottom: 25px;">
+                            <h4 style="margin-top:0; margin-bottom:15px; color:var(--primary-color); font-size:1.15em;">Download 1</h4>
                             <div class="form-row">
                                 <div class="form-group full-width">
                                     <label for="exhibit_number_1">Exhibit Number</label>
@@ -635,21 +694,21 @@
 
                                 <div class="status-row-container">
                                     <div class="status-col">
-                                        <label class="col-title"><strong>Player Downloaded?</strong></label>
+                                        <label class="col-title">Player Downloaded?</label>
                                         <div class="radio-group">
                                             <label><input type="radio" id="player_yes_1" name="Player Downloaded_1" value="Yes"> Yes</label>
                                             <label><input type="radio" id="player_no_1" name="Player Downloaded_1" value="No" checked> No</label>
                                         </div>
                                     </div>
                                     <div class="status-col">
-                                        <label class="col-title"><strong>Log Downloaded?</strong></label>
+                                        <label class="col-title">Log Downloaded?</label>
                                         <div class="radio-group">
                                             <label><input type="radio" id="log_yes_1" name="Log Downloaded_1" value="Yes"> Yes</label>
                                             <label><input type="radio" id="log_no_1" name="Log Downloaded_1" value="No" checked> No</label>
                                         </div>
                                     </div>
                                     <div class="status-col">
-                                        <label class="col-title"><strong>Audio Recorded?</strong></label>
+                                        <label class="col-title">Audio Recorded?</label>
                                         <div class="radio-group">
                                             <label><input type="radio" id="audio_yes_1" name="Audio Recorded_1" value="Yes"> Yes</label>
                                             <label><input type="radio" id="audio_no_1" name="Audio Recorded_1" value="No"> No</label>
@@ -666,7 +725,7 @@
                 
                 <div class="form-nav-buttons no-print">
                     <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
-                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: Exhibits & Notes ➔</button>
+                    <button type="button" class="btn-next" onclick="nextStep()">Next: Exhibits & Notes ➔</button>
                 </div>
             </div>
 
@@ -681,9 +740,9 @@
                         </div>
                         <div class="form-group full-width" id="photo_section">
                             <label>DVR System Photos</label>
-                            <div class="no-print" style="margin-bottom: 10px;">
-                                <input type="file" id="dvr_photo" accept="image/*" multiple onchange="handlePhotoUpload(event)">
-                                <p style="font-size: 0.8em; color: #666; margin-top: 8px;">Select photos to attach as an Appendix. Add descriptive notes to them below once uploaded.</p>
+                            <div class="no-print" style="margin-bottom: 10px; background: var(--calc-bg); padding: 15px; border-radius: var(--radius-md); border: 1px dashed var(--border-color);">
+                                <input type="file" id="dvr_photo" accept="image/*" multiple onchange="handlePhotoUpload(event)" style="border: none; background: transparent; padding: 0; box-shadow: none;">
+                                <p style="font-size: 0.85em; color: var(--text-muted); margin-top: 10px; margin-bottom: 0;">Select photos to attach as an Appendix. Add descriptive notes to them below once uploaded.</p>
                             </div>
                             <input type="hidden" id="dvr_photos_base64" name="DVR Photos">
                             <div id="photo_gallery"></div> 
@@ -695,7 +754,7 @@
 
                 <div class="form-nav-buttons no-print">
                     <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
-                    <button type="button" class="btn-next submit-btn" id="pdfSubmitBtn" onclick="submitAndDownloadPDF()" style="flex: 2;">Generate Full Report & Submit</button>
+                    <button type="button" class="btn-next submit-btn" id="pdfSubmitBtn" onclick="submitAndDownloadPDF()">Generate Full Report & Submit</button>
                 </div>
             </div>
             
@@ -705,17 +764,17 @@
     <!-- TAB 2: LOG -->
     <div id="log-tab" class="tab-content no-print">
         <div class="log-header">
-            <h3 style="color: var(--primary-color); margin: 0;">Historical Submissions</h3>
+            <h3 style="color: var(--primary-color); margin: 0; font-size: 1.4em;">Historical Submissions</h3>
             <button class="export-btn" onclick="exportLogToCSV()">Export to CSV</button>
         </div>
-        <div style="overflow-x: auto; border-radius: 6px; border: 1px solid var(--border-color);">
-            <table style="margin-top: 0; border: none;">
+        <div style="overflow-x: auto;">
+            <table>
                 <thead>
                     <tr>
-                        <th style="border-top: none; border-left: none;">Ref Number (Date)</th>
-                        <th style="border-top: none;">Operation</th>
-                        <th style="border-top: none;">Venue</th>
-                        <th style="border-top: none; border-right: none;">Action</th>
+                        <th style="border-top-left-radius: 8px;">Ref Number (Date)</th>
+                        <th>Operation</th>
+                        <th>Venue</th>
+                        <th style="border-top-right-radius: 8px;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="logTableBody">
@@ -728,8 +787,8 @@
 
     <!-- TAB 3: SYSTEM GUIDES -->
     <div id="guides-tab" class="tab-content no-print">
-        <h3 style="color: var(--primary-color); margin-top: 0;">Default System Logins & Guides</h3>
-        <p style="font-size: 0.9em; margin-bottom: 15px;">Search common CCTV manufacturers for default engineer passwords, or look up export instructions for cloud-based apps.</p>
+        <h3 style="color: var(--primary-color); margin-top: 0; font-size: 1.4em;">Default System Logins & Guides</h3>
+        <p style="font-size: 1em; margin-bottom: 20px; color: var(--text-muted);">Search common CCTV manufacturers for default engineer passwords, or look up export instructions for cloud-based apps.</p>
         
         <input type="text" id="guideSearch" class="search-bar" placeholder="Search for brand or model (e.g., Hikvision, Ring)..." onkeyup="filterGuides()">
         
@@ -740,8 +799,8 @@
 
     <!-- TAB 4: LEGAL POWERS -->
     <div id="powers-tab" class="tab-content no-print">
-        <h3 style="color: var(--primary-color); margin-top: 0;">Seizure & Recovery Powers (PACE 1984)</h3>
-        <p style="font-size: 0.9em; margin-bottom: 20px;">Use this reference to determine your lawful authority to recover CCTV evidence when faced with resistance in the field.</p>
+        <h3 style="color: var(--primary-color); margin-top: 0; font-size: 1.4em;">Seizure & Recovery Powers (PACE 1984)</h3>
+        <p style="font-size: 1em; margin-bottom: 25px; color: var(--text-muted);">Use this reference to determine your lawful authority to recover CCTV evidence when faced with resistance in the field.</p>
         
         <div class="tree-item">
             <div class="tree-header" onclick="toggleTree(this)">
@@ -764,7 +823,7 @@
                 <p><strong>Scenario:</strong> You are standing outside a premises (e.g. a locked shop or private home) and the owner refuses to let you inside to view or secure the CCTV.</p>
                 <p><strong>Power:</strong> You generally <strong>cannot</strong> force entry solely to secure CCTV unless you have a warrant or are executing an arrest.</p>
                 <p><strong>Action:</strong></p>
-                <ul style="margin-top: 8px;">
+                <ul style="margin-top: 8px; padding-left: 20px;">
                     <li>Do not force entry.</li>
                     <li>Serve a formal preservation request (often verbal initially, followed by written) reminding them of the offence of Perverting the Course of Justice.</li>
                     <li>Consider applying for a <strong>Section 8 PACE 1984</strong> Search Warrant via a magistrate.</li>
@@ -781,11 +840,11 @@
                 <p><strong>Scenario:</strong> You are already lawfully inside a premises (e.g. a shop open to the public, or you were invited in), you see the CCTV DVR, but the owner refuses to provide the password or refuses to let you download the footage.</p>
                 <p><strong>Power: Section 19 PACE 1984 (General Power of Seizure)</strong></p>
                 <p><strong>Action:</strong> Because you are lawfully on the premises, you may physically seize the entire DVR box if you have reasonable grounds to believe:</p>
-                <ul style="margin-top: 8px;">
+                <ul style="margin-top: 8px; padding-left: 20px;">
                     <li>It contains evidence of an offence.</li>
                     <li>Seizure is necessary to prevent the evidence being <strong>C</strong>oncealed, <strong>L</strong>ost, <strong>A</strong>ltered, or <strong>D</strong>estroyed (CLAD).</li>
                 </ul>
-                <p style="margin-top: 10px;"><em>Practical Tip: Explaining to the owner that you have the lawful power to seize their hardware unit under S.19 PACE usually persuades them to log in and allow a USB export instead.</em></p>
+                <p style="margin-top: 15px; color: var(--accent-color);"><em>Practical Tip: Explaining to the owner that you have the lawful power to seize their hardware unit under S.19 PACE usually persuades them to log in and allow a USB export instead.</em></p>
             </div>
         </div>
 
@@ -798,7 +857,7 @@
                 <p><strong>Scenario:</strong> You are lawfully on premises downloading footage. Halfway through, the owner panics, tells you to get out, and tries to stop the download.</p>
                 <p><strong>Power: Section 19 PACE 1984</strong></p>
                 <p><strong>Action:</strong> The moment they withdraw consent and attempt to stop you, the risk of the evidence being "Lost, Altered, or Destroyed" becomes immediate.</p>
-                <ul style="margin-top: 8px;">
+                <ul style="margin-top: 8px; padding-left: 20px;">
                     <li>You no longer rely on consent. </li>
                     <li>You immediately transition to your <strong>Section 19 PACE</strong> powers.</li>
                     <li>You may remain on the premises specifically to secure the evidence, or physically seize the hard drive/DVR to prevent its destruction.</li>
@@ -870,15 +929,15 @@
 
     <!-- TAB 5: DPA DISCLOSURE REQUEST -->
     <div id="dpa-tab" class="tab-content no-print">
-        <h3 style="color: var(--primary-color); margin-top: 0;">Request for Disclosure of Personal Data</h3>
-        <p style="font-size: 0.9em; margin-bottom: 20px;">Under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d) & 9(2)(c). This statutory request provides legal reassurance to organisations disclosing CCTV data for law enforcement purposes.</p>
+        <h3 style="color: var(--primary-color); margin-top: 0; font-size: 1.4em;">Request for Disclosure of Personal Data</h3>
+        <p style="font-size: 1em; margin-bottom: 25px; color: var(--text-muted);">Under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d) & 9(2)(c). This statutory request provides legal reassurance to organisations disclosing CCTV data for law enforcement purposes.</p>
         
         <form id="dpaForm">
             <fieldset>
                 <legend>Recipient Organisation</legend>
                 <div class="form-row">
                     <div class="form-group full-width">
-                        <label for="dpa_email">Recipient Email Address <span style="color:red">*</span></label>
+                        <label for="dpa_email">Recipient Email Address <span style="color:var(--danger)">*</span></label>
                         <input type="email" id="dpa_email" name="Recipient Email" required placeholder="e.g., manager@premises.co.uk">
                     </div>
                     <div class="form-group">
@@ -902,25 +961,16 @@
 
             <fieldset>
                 <legend>Statutory Grounds & Confirmations</legend>
-                <label>I am making enquiries which are concerned with (select all that apply):</label>
-                <div class="checkbox-group" style="margin-bottom: 15px;">
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="dpa_purpose_crime" checked>
-                        <label for="dpa_purpose_crime">The prevention or detection of crime</label>
-                    </div>
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="dpa_purpose_offenders" checked>
-                        <label for="dpa_purpose_offenders">The prosecution or apprehension of offenders</label>
-                    </div>
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="dpa_purpose_vital">
-                        <label for="dpa_purpose_vital">Protecting the vital interests of a person</label>
-                    </div>
+                <label style="font-size: 1.05em; margin-bottom: 12px; color: var(--primary-color);">I am making enquiries which are concerned with (select all that apply):</label>
+                <div class="radio-group" style="margin-bottom: 20px; background: var(--calc-bg); padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <label style="width: 100%; margin-bottom: 8px;"><input type="checkbox" id="dpa_purpose_crime" checked> The prevention or detection of crime</label>
+                    <label style="width: 100%; margin-bottom: 8px;"><input type="checkbox" id="dpa_purpose_offenders" checked> The prosecution or apprehension of offenders</label>
+                    <label style="width: 100%;"><input type="checkbox" id="dpa_purpose_vital"> Protecting the vital interests of a person</label>
                 </div>
 
-                <div style="font-size: 0.85em; color: var(--text-color); background: var(--calc-bg); padding: 12px; border-radius: 5px; border: 1px solid var(--primary-light); margin-bottom: 18px;">
-                    <p style="margin: 0 0 8px 0; color: var(--primary-color);"><strong>Mandatory Officer Declarations:</strong></p>
-                    <p style="margin: 0 0 6px 0;">✓ I confirm that the personal data requested below is needed for the purposes indicated above and a failure to provide that information will be likely to prejudice those matters.</p>
+                <div style="font-size: 0.9em; color: var(--text-color); background: var(--primary-light); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--primary-color); margin-bottom: 20px;">
+                    <p style="margin: 0 0 10px 0; color: var(--primary-color); font-size: 1.1em;"><strong>Mandatory Officer Declarations:</strong></p>
+                    <p style="margin: 0 0 8px 0;">✓ I confirm that the personal data requested below is needed for the purposes indicated above and a failure to provide that information will be likely to prejudice those matters.</p>
                     <p style="margin: 0;">✓ I confirm that the individual(s) whose personal data is sought should not be informed of this request as to do so would be likely to prejudice the matters described above.</p>
                 </div>
 
@@ -966,8 +1016,8 @@
                 </div>
             </fieldset>
 
-            <div class="button-group no-print">
-                <button type="button" class="submit-btn" id="dpaSubmitBtn" onclick="submitAndEmailDPA()" style="background-color: #17a2b8; box-shadow: 0 4px 6px rgba(23, 162, 184, 0.2);">Generate Formal PDF & Send Email</button>
+            <div class="button-group no-print" style="margin-top: 25px;">
+                <button type="button" class="submit-btn" id="dpaSubmitBtn" onclick="submitAndEmailDPA()" style="background-color: var(--action); width: 100%;">Generate Formal PDF & Send Email</button>
             </div>
         </form>
     </div>
@@ -982,19 +1032,118 @@
     </div>
 </div>
 
-<!-- Modal for Copying Statement -->
+<!-- ==============================================================
+     OVERHAULED MG11 MODAL (STRICT COURT LAYOUT - UNTOUCHED DOM)
+     ============================================================== -->
 <div id="mg11Modal" class="modal no-print">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 950px; background: #f8f9fa;">
         <span class="close-btn" onclick="closeModal('mg11Modal')" title="Close">&times;</span>
-        <h2 style="color: #6f42c1; text-align:center; margin-top:0;">Collection Statement</h2>
-        <p style="text-align:center; font-size: 0.9em; color: var(--text-color);">Review the statement below. Tap the button to copy it so you can paste it into your app or records, or generate the PDF.</p>
-        <textarea id="mg11Text" style="width: 100%; height: 350px; font-family: inherit; font-size: 14px; padding: 12px; line-height: 1.6; border: none; outline: none; border-radius: 6px; resize: vertical; background: var(--input-bg); color: var(--input-text);" readonly></textarea>
         
-        <div style="display:flex; gap: 10px;">
-            <button onclick="copyMg11Text()" style="flex: 1; padding: 16px; background-color: #6f42c1; color: white; border: none; font-size: 1.1em; border-radius: 6px; margin-top: 15px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);">Copy to Clipboard</button>
+        <!-- Toolbar -->
+        <div class="mg11-tool-bar" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ccc;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div>
+                    <label style="font-weight: bold; font-size: 0.9em; color: #444; margin-bottom:0; display:inline;">SOE Mode:</label>
+                    <select id="mg11ModeSelect" onchange="refreshMg11Prose()" style="padding: 8px 12px; font-size: 0.9em; border-radius: 6px; border: 1px solid #aaa; background: #fff; margin-left: 8px; color: #000;">
+                        <option value="officer">Officer SOE</option>
+                        <option value="thirdParty">3rd Party / Owner SOE</option>
+                    </select>
+                </div>
+                <button onclick="toggleMg11Edit()" id="btnToggleMg11Edit" style="background-color: #334155; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: var(--shadow-sm);">🔓 Enable Direct Editing</button>
+            </div>
+            <button onclick="downloadMg11Pdf()" id="btnCreateMg11Pdf" style="background-color: #16a34a; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: var(--shadow-md);">📄 Create MG11 PDF</button>
         </div>
-        
-        <div id="copyFeedback" style="text-align:center; color: #28a745; font-weight: bold; display:none; margin-top: 15px; padding: 10px; background: #e8f5e9; border-radius: 4px; border: 1px solid #c8e6c9;">✓ Statement copied successfully!</div>
+
+        <!-- Signature Pad for MG11 -->
+        <div class="mg11-sig-panel" style="background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 25px; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="margin:0; font-size: 1.05em; color: #0b3c68;">Touch/Mouse Signature Pad</h4>
+                <button onclick="clearMg11Signature()" style="background: none; border: none; color: #dc2626; font-size: 0.9em; font-weight: bold; cursor: pointer; padding: 6px 12px; border-radius: 4px;">Clear Signature</button>
+            </div>
+            <div class="mg11-canvas-wrapper" style="border: 2px dashed #94a3b8; height: 120px; position: relative; background: #f8fafc; touch-action: none; border-radius: 6px;">
+                <canvas id="mg11SigCanvas" style="width:100%; height:100%; cursor:crosshair;"></canvas>
+                <div id="mg11SigPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; pointer-events:none; color:#94a3b8; font-style:italic; font-size:1em;">Sign here. Mirrors to document below.</div>
+            </div>
+        </div>
+
+        <!-- MG11 Document Container (A4 Proportions & Typography) -->
+        <div id="mg11DocumentContainer" class="mg11-container avoid-break" style="font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.4; color: #000; background: #fff; padding: 40px 50px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; box-sizing: border-box;">
+            <!-- Header -->
+            <div class="mg11-header-relative" style="position: relative; margin-bottom: 25px;">
+                <div class="mg11-badge" style="position: absolute; right: 0; top: 0; border: 1px solid #000; padding: 4px 12px; font-weight: bold; font-size: 11pt;">MG11</div>
+                <div class="mg11-official" style="text-align: center;"><span style="border: 1px solid #000; padding: 4px 30px; font-weight: bold; font-size: 11pt; display: inline-block;">OFFICIAL – (when complete)</span></div>
+            </div>
+
+            <div class="mg11-title" style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">WITNESS STATEMENT</div>
+            <div class="mg11-citation" style="text-align: center; font-size: 9.5pt; font-weight: bold; margin-bottom: 15px;">Criminal Procedure Rules, r 27.2; Criminal Justice Act 1967, s. 9; Magistrates’ Courts Act 1980, s.5B</div>
+
+            <!-- Refs Row -->
+            <div class="mg11-flex-end" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 5px;">
+                <span style="font-weight: bold;">Crime No.</span>
+                <div id="mg11DocCrime" class="mg11-box-input" style="border: 1px solid #000; width: 220px; height: 26px; margin-left: 10px; padding: 2px 6px; font-weight: normal; box-sizing: border-box;"></div>
+            </div>
+
+            <!-- Main Legal Box -->
+            <div class="mg11-main-box" style="border: 1px solid #000; padding: 12px; margin-bottom: 8px;">
+                <div class="mg11-flex-end" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 8px;">
+                    <span style="font-weight: bold;">URN</span>
+                    <div id="mg11DocUrn" class="mg11-box-input" style="border: 1px solid #000; width: 220px; height: 26px; margin-left: 10px; padding: 2px 6px; font-weight: normal; box-sizing: border-box;"></div>
+                </div>
+
+                <div style="margin-bottom: 6px;">
+                    <span>Statement of</span>
+                    <span id="mg11DocDeclarant" style="font-weight: bold; margin-left: 8px;"></span>
+                </div>
+
+                <div class="mg11-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                    <div>Age if under 18 <span style="font-weight:bold; margin: 0 4px;">Over 18</span> <span style="font-style:italic; font-size:10pt;">(if over 18 insert “over 18”)</span></div>
+                    <div>Occupation <span id="mg11DocOccupation" style="font-weight: bold; margin-left: 8px;"></span></div>
+                </div>
+
+                <div class="mg11-declaration" style="text-align: justify; font-size: 11pt; margin-top: 12px; margin-bottom: 12px;">
+                    This statement (consisting of <span style="font-weight:normal;">1</span> page(s) each signed by me) is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.
+                </div>
+
+                <div class="mg11-sig-row" style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dotted #888; padding-top: 8px;">
+                    <div>
+                        <span style="font-weight: bold;">Signature:</span>
+                        <div class="mg11-sig-line" style="border-bottom: 1px solid #000; width: 140px; display: inline-block; height: 35px; position: relative; margin: 0 5px;">
+                            <img id="mg11TopSigImg" class="mg11-sig-img" alt="Signature" style="max-height: 35px; max-width: 100%; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); display: none;">
+                        </div>
+                        <span>(witness)</span>
+                    </div>
+                    <div>
+                        <span style="font-weight: bold;">Date</span>
+                        <span id="mg11DocDateTop" style="font-weight: bold; margin-left:8px;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-size: 10pt; margin-bottom: 25px;">
+                <span>Tick if witness evidence is visually recorded</span>
+                <span style="border: 1px solid #000; width: 14px; height: 14px; display: inline-block; margin: 0 6px; vertical-align: middle;"></span>
+                <span style="font-style: italic; font-size: 9pt;">(supply witness details on rear)</span>
+            </div>
+
+            <!-- Editable Narrative Body -->
+            <div id="mg11DocNarrative" class="mg11-narrative avoid-break" contenteditable="false" style="text-align: justify; margin-top: 25px; min-height: 150px; outline: none; white-space: pre-wrap;">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- FSR & Footer -->
+            <div class="mg11-footer avoid-break" style="margin-top: 30px; border-top: 1px solid #000; padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="mg11-footer-sig" style="width: 180px; text-align: left;">
+                    <div class="mg11-footer-line" style="border-bottom: 1px solid #000; height: 35px; margin-bottom: 5px; position: relative;">
+                        <img id="mg11BottomSigImg" class="mg11-sig-img" alt="Signature" style="max-height: 45px; max-width: 100%; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); display: none;">
+                    </div>
+                    <div style="font-size:10pt;">Signature of Witness</div>
+                </div>
+                <div class="mg11-footer-date" style="width: 180px; text-align: center;">
+                    <div id="mg11DocDateBottom" class="mg11-footer-line" style="font-weight:bold; font-size:10pt; display:flex; align-items:flex-end; justify-content:center; padding-bottom:3px; border-bottom: 1px solid #000; height: 35px; margin-bottom: 5px;"></div>
+                    <div style="font-size:10pt;">Date</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1691,15 +1840,13 @@
         const earlyInput = document.getElementById('earliest_footage').value;
         const owInput = document.getElementById('overwrite_data');
         
-        owInput.classList.remove('priority-flash');
+        owInput.style.color = "";
         
         if (earlyInput) {
             const earliestDate = safeParseDate(earlyInput);
             
             if (isNaN(earliestDate.getTime())) {
                 owInput.value = "Invalid date format";
-                owInput.style.color = "";
-                owInput.style.fontWeight = "normal";
                 return;
             }
             
@@ -1718,20 +1865,18 @@
             if (diffDays >= 0) {
                 if (diffDays < 7) {
                     owInput.value = `${diffDays} Day${diffDays !== 1 ? "s" : ""} remaining - PRIORITY`;
-                    owInput.classList.add('priority-flash');
+                    owInput.style.color = "var(--danger)";
+                    owInput.style.fontWeight = "bold";
                 } else {
                     owInput.value = `${diffDays} Day${diffDays !== 1 ? "s" : ""} remaining`;
-                    owInput.style.color = "";
-                    owInput.style.fontWeight = "normal";
                 }
             } else {
                 owInput.value = "0 Days remaining (Overwritten)";
-                owInput.classList.add('priority-flash');
+                owInput.style.color = "var(--danger)";
+                owInput.style.fontWeight = "bold";
             }
         } else {
             owInput.value = "";
-            owInput.style.color = "";
-            owInput.style.fontWeight = "normal";
         }
     }
 
@@ -1754,7 +1899,7 @@
 
         // 1. Centered Document Header
         doc.setFontSize(16);
-        doc.setTextColor(0, 86, 179);
+        doc.setTextColor(11, 60, 104);
         doc.setFont("helvetica", "bold");
         doc.text("CCTV Download Form", 105, y, { align: "center" });
         y += 8;
@@ -1774,8 +1919,8 @@
 
         function drawSectionHeader(title) {
             checkPage(20);
-            doc.setFillColor(0, 86, 179); 
-            doc.setDrawColor(0, 86, 179); 
+            doc.setFillColor(11, 60, 104); 
+            doc.setDrawColor(11, 60, 104); 
             doc.roundedRect(margin, y, usableW, 7.5, 1.5, 1.5, 'FD'); 
             
             doc.setFontSize(10);
@@ -1791,13 +1936,13 @@
             doc.setTextColor(70, 70, 70);
             doc.text(label, x, yPos);
             
-            let boxY = yPos + 1.8;
+            let boxY = yPos + 2.5;
             doc.setFontSize(9.5);
             doc.setFont("helvetica", "normal");
             doc.setTextColor(20, 20, 20);
             
             let textLines = doc.splitTextToSize(String(val !== undefined && val !== null && String(val).trim() !== '' ? val : 'N/A'), w - 4);
-            let boxH = isMulti ? Math.max(9, (textLines.length * 4.2) + 4.5) : 8;
+            let boxH = isMulti ? Math.max(9, (textLines.length * 4.2) + 4.5) : 9;
             
             if (customBg) {
                 doc.setFillColor(customBg[0], customBg[1], customBg[2]);
@@ -1813,7 +1958,7 @@
 
             doc.roundedRect(x, boxY, w, boxH, 1.5, 1.5, 'FD');
             doc.text(textLines, x + 2.5, boxY + 5.5);
-            return boxY + boxH + 3.5; 
+            return boxY + boxH + 4; 
         }
 
         // Section: General Information
@@ -1823,7 +1968,7 @@
         y = Math.max(y1, y2);
         y1 = drawField(margin, y, halfW, "Person Attending", data['Person Attending']);
         y2 = drawField(margin + halfW + 4, y, halfW, "Contact Number", data['Contact Number']);
-        y = Math.max(y1, y2) + 1.5;
+        y = Math.max(y1, y2) + 3;
 
         // Section: Venue & Contact Details
         checkPage(35);
@@ -1837,7 +1982,7 @@
         y = Math.max(y1, y2);
         y = drawField(margin, y, usableW, "Venue Notes", data['Venue Notes'], true);
         y = drawField(margin, y, usableW, "Is CCTV Available?", data['CCTV Available']);
-        y += 1.5;
+        y += 3;
 
         if (data['CCTV Available'] !== 'No') {
             // Section: Time Sync & Footage Adjustments
@@ -1849,20 +1994,20 @@
             y = drawField(margin, y, usableW, "Time Difference", data['Calculated Time Difference']);
             y1 = drawField(margin, y, halfW, "Real Time of Incident (Start)", formatUKDateTime(data['Incident Start (Real Time)']));
             y2 = drawField(margin + halfW + 4, y, halfW, "Real Time of Incident (End)", formatUKDateTime(data['Incident End (Real Time)']));
-            y = Math.max(y1, y2) + 1;
+            y = Math.max(y1, y2) + 2;
             
-            // Adjusted DVR Box - Dynamic Height FIX applied to stop text overlap
-            let adjBoxH = 25; 
+            // Adjusted DVR Box
+            let adjBoxH = 26;
             doc.setFillColor(232, 244, 248); 
-            doc.setDrawColor(0, 86, 179); 
+            doc.setDrawColor(11, 60, 104); 
             doc.roundedRect(margin, y, usableW, adjBoxH, 1.5, 1.5, 'FD');
             doc.setFontSize(9.5); 
-            doc.setTextColor(0, 86, 179); 
+            doc.setTextColor(11, 60, 104); 
             doc.setFont("helvetica", "bold");
             doc.text("Adjusted DVR Download Times", 105, y + 5.5, { align: "center" });
             
-            drawField(margin + 3, y + 8, halfW - 2, "DVR Search Start Time", formatUKDateTime(data['DVR Download Start Time']), false, [255, 255, 255], [170, 200, 230]);
-            drawField(margin + halfW + 3, y + 8, halfW - 2, "DVR Search End Time", formatUKDateTime(data['DVR Download End Time']), false, [255, 255, 255], [170, 200, 230]);
+            drawField(margin + 3, y + 9, halfW - 2, "DVR Search Start Time", formatUKDateTime(data['DVR Download Start Time']), false, [255, 255, 255], [170, 200, 230]);
+            drawField(margin + halfW + 3, y + 9, halfW - 2, "DVR Search End Time", formatUKDateTime(data['DVR Download End Time']), false, [255, 255, 255], [170, 200, 230]);
             y += adjBoxH + 4;
 
             // Section: System Details
@@ -1874,7 +2019,7 @@
             y = drawField(margin, y, usableW, "System Username / Passwords", data['System Credentials']);
             y1 = drawField(margin, y, halfW, "Earliest Footage Available", formatUKDateTime(data['Earliest Footage']));
             y2 = drawField(margin + halfW + 4, y, halfW, "When will system overwrite data?", data['Overwrite Timeline']);
-            y = Math.max(y1, y2) + 1.5;
+            y = Math.max(y1, y2) + 3;
 
             // Section: Download Specifics (Multiple Sets supported)
             let dlIndex = 1;
@@ -1899,12 +2044,11 @@
                 y2 = drawField(margin + halfW + 4, y, halfW, "Memory Stick No. / Disc Ref", data[`Media Reference${sfx}`]);
                 y = Math.max(y1, y2);
                 
-                // 3-Column Compact Row for Status Items
                 let colW = (usableW - 6) / 3;
                 let c1 = drawField(margin, y, colW, "Player Downloaded?", data[`Player Downloaded${sfx}`]);
                 let c2 = drawField(margin + colW + 3, y, colW, "Log Downloaded?", data[`Log Downloaded${sfx}`]);
                 let c3 = drawField(margin + (colW * 2) + 6, y, colW, "Audio Recorded?", data[`Audio Recorded${sfx}`]);
-                y = Math.max(c1, c2, c3) + 1.5;
+                y = Math.max(c1, c2, c3) + 3;
 
                 dlIndex++;
                 if (dlIndex > 20) break;
@@ -1932,7 +2076,7 @@
                 doc.addPage();
                 let imgY = 16;
                 doc.setFontSize(14);
-                doc.setTextColor(0, 86, 179);
+                doc.setTextColor(11, 60, 104);
                 doc.setFont("helvetica", "bold");
                 doc.text(`Appendix: DVR System Photo (${idx + 1} of ${photos.length})`, 105, imgY, { align: "center" });
                 
@@ -2021,7 +2165,7 @@
         y += 6;
         doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(0, 86, 179);
+        doc.setTextColor(11, 60, 104);
         doc.text("Under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d) & 9(2)(c)", margin, y);
         y += 10;
 
@@ -2166,7 +2310,7 @@
         y += 12;
 
         doc.setFontSize(13);
-        doc.setTextColor(0, 86, 179);
+        doc.setTextColor(11, 60, 104);
         doc.text("Undertaking of lawful use of data disclosed to the police service:", margin, y);
         y += 8;
 
@@ -2180,7 +2324,7 @@
 
         doc.setFontSize(13);
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(0, 86, 179);
+        doc.setTextColor(11, 60, 104);
         doc.text("Explanatory Note for Recipient Organisations", margin, y);
         y += 8;
 
@@ -2362,9 +2506,8 @@
                         <div class="action-buttons">
                             <button class="view-btn" onclick="viewLog(${index})">View</button>
                             <button class="amend-btn" onclick="amendLog(${index})">Amend</button>
-                            <button class="mg11-btn" onclick="generateMG11Text(${index})">MG11 Text</button>
-                            <button class="mg11-pdf-btn" onclick="downloadMG11PDF(${index}, this)">MG11 PDF</button>
-                            <button class="print-btn" onclick="downloadLogPDF(${index}, this)">Save Form</button>
+                            <button class="mg11-btn" onclick="generateMG11(${index})">Statement</button>
+                            <button class="print-btn" onclick="downloadLogPDF(${index}, this)">Save PDF</button>
                         </div>
                     </td>
                 `;
@@ -2379,7 +2522,7 @@
         if(!record) return;
 
         const safeRef = record['Reference Number'] ? record['Reference Number'].replace(/[\/\s:]/g, '-') : 'Historical_Log';
-        const originalText = btnElement ? btnElement.innerText : "Save Form";
+        const originalText = btnElement ? btnElement.innerText : "Save PDF";
         
         if(btnElement) { 
             btnElement.innerText = "Saving..."; 
@@ -2527,358 +2670,253 @@
         if (event.target == document.getElementById('mg11Modal')) closeModal('mg11Modal');
     }
 
-    function generateMG11Text(index) {
-        const logs = JSON.parse(localStorage.getItem('cctvFullLogs')) || [];
-        const log = logs[index];
-        if(!log) return;
+    let currentMg11Index = null;
+    let isMg11Editing = false;
+    let mg11Canvas, mg11Ctx, mg11Drawing = false, mg11HasSig = false;
 
-        const date = formatUKDateTime(log['Date'], true) || '[Date Not Recorded]';
-        const venue = log['Venue Address'] || '[Venue Not Recorded]';
-        const operation = log['Operation'] || '[Operation Not Recorded]';
+    function generateMG11(index) {
+        currentMg11Index = index;
+        document.getElementById('mg11ModeSelect').value = 'officer'; 
         
-        let statementText = "";
-
-        if (log['CCTV Available'] === 'No') {
-            const vNotes = log['Venue Notes'] ? `\n\nNotes regarding venue: ${log['Venue Notes']}` : '';
-            statementText = 
-`On ${date} I was on duty when I attended ${venue} in relation to Operation ${operation}.
-
-I conducted CCTV enquiries at this location. I can confirm that there is no CCTV available at this venue.${vNotes}
-
-I make this statement to record a negative CCTV enquiry.
-
---------------------------------------------------
-Signature of Witness: ___________________________
-Date: ${date}
-`;
-
-        } else {
-            const contact = log['Venue Contact Name'] || '[Contact Name Not Recorded]';
-            const makeModel = log['System Make and Model'] || '[Make/Model Not Recorded]';
-            const totalCameras = log['Total Cameras'] || '[Number]';
-            const dvrTime = formatUKDateTime(log['DVR Time']) || '[Not Recorded]';
-            const realTime = formatUKDateTime(log['Real Time Sync']) || '[Not Recorded]';
-            const timeDiff = log['Calculated Time Difference'] || '[Difference Not Recorded]';
-            const officer = log['Person Attending'] || '[Officer Not Recorded]';
-            
-            let dlBlocksText = "";
-            let dlIndex = 1;
-            let downloadCountLog = 0;
-
-            while(log[`Cameras Downloaded_${dlIndex}`] !== undefined || (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined)) {
-                let sfx = (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined && !log[`Cameras Downloaded_1`]) ? '' : `_${dlIndex}`;
-                
-                let dlFootageStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]) || '[Not Recorded]';
-                let dlFootageEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]) || '[Not Recorded]';
-                let camerasDl = log[`Cameras Downloaded${sfx}`] || '[Cameras Not Recorded]';
-                let format = log[`Footage Format${sfx}`] || '[Format Not Recorded]';
-                let method = log[`Download Method${sfx}`] || '[Method Not Recorded]';
-                let exhibit = log[`Exhibit Number${sfx}`] || log['Exhibit Number'] || '[Exhibit No Not Recorded]';
-                let player = log[`Player Downloaded${sfx}`] === 'Yes' ? ' A proprietary viewing player was also downloaded onto the media.' : '';
-                let logStatus = log[`Log Downloaded${sfx}`] === 'Yes' ? ' A system audit log was also downloaded onto the media.' : '';
-                
-                let audioStr = '';
-                if (log[`Audio Recorded${sfx}`] === 'Yes') {
-                    audioStr = ' I can confirm the exported footage includes an audio track.';
-                } else if (log[`Audio Recorded${sfx}`] === 'No') {
-                    audioStr = ' The exported footage does not contain audio.';
-                } else {
-                    audioStr = ' It is currently unconfirmed whether the footage contains an audio track.';
-                }
-
-                downloadCountLog++;
-                if (downloadCountLog === 1) {
-                    dlBlocksText += `\nI identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. The footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.${player}${logStatus}${audioStr}\n`;
-                } else {
-                    dlBlocksText += `\nI additionally identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. This footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.${player}${logStatus}${audioStr}\n`;
-                }
-                dlIndex++;
-                if (dlIndex > 20) break;
-            }
-
-            statementText = 
-`OFFICIAL - (when complete)
-
-WITNESS STATEMENT
-Criminal Procedure Rules, r 27.2; Criminal Justice Act 1967, s. 9; Magistrates' Courts Act 1980, s.5B
-
-Statement of: ${officer}
-Age if under 18: Over 18
-Occupation: Police Officer
-
-This statement is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.
-
-I am ${officer}, acting in my capacity as a Police Officer.
-
-On ${date} I was on duty when I attended ${venue} in relation to Operation ${operation}.
-
-At this location, I spoke with ${contact}, who identified themselves as the person responsible for the operation of the closed-circuit television (CCTV) system.
-
-The recording equipment was identified as a ${makeModel} system recording from ${totalCameras} cameras. I conducted a time check comparing the system clock against real atomic time. When the real time was ${realTime}, the CCTV recorder displayed ${dvrTime}. The system was noted as being ${timeDiff}.
-${dlBlocksText}
-To the best of my knowledge and belief, the system was operating properly and the evidential integrity of the data has been maintained without alteration.
-
-Declaration of Compliance with the Forensic Science Regulator Code of Practice: I confirm that, to the best of my knowledge and belief, in carrying out this forensic science activity I have acted in accordance with the Forensic Science Regulator Code of Practice and local force procedures.
-
---------------------------------------------------
-Signature of Witness: ___________________________
-Date: ${date}
-`;
-        }
-
-        document.getElementById('mg11Text').value = statementText;
-        document.getElementById('copyFeedback').style.display = 'none'; 
+        clearMg11Signature();
+        if(isMg11Editing) toggleMg11Edit(); 
+        
+        refreshMg11Prose();
         document.getElementById('mg11Modal').style.display = 'block';
+        
+        setTimeout(() => {
+            initMg11SignaturePad();
+        }, 100);
     }
 
-    // Generate Crisp, Clean Native MG11 PDF using jsPDF
-    function downloadMG11PDF(index, btnElement) {
+    function refreshMg11Prose() {
+        if(currentMg11Index === null) return;
         const logs = JSON.parse(localStorage.getItem('cctvFullLogs')) || [];
-        const log = logs[index];
+        const log = logs[currentMg11Index];
         if(!log) return;
 
-        const originalText = btnElement ? btnElement.innerText : "MG11 PDF";
-        if(btnElement) { 
-            btnElement.innerText = "Saving..."; 
-            btnElement.disabled = true; 
-        }
+        const mode = document.getElementById('mg11ModeSelect').value;
+        const isOfficer = (mode === 'officer');
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        const margin = 15;
-        const pageWidth = 210;
-        const usableW = pageWidth - (margin * 2);
-        let y = 15;
+        const date = formatUKDateTime(log['Date'], true) || 'this date';
+        const venue = log['Venue Address'] || 'the location';
+        const op = log['Operation'] || 'investigations';
+        const officerAttending = log['Person Attending'] || 'Police Officer';
+        const contactName = log['Venue Contact Name'] || 'the operator';
+        const makeModel = log['System Make and Model'] || 'CCTV';
+        const totCams = log['Total Cameras'] || 'multiple';
+        const dvrTime = formatUKDateTime(log['DVR Time']);
+        const realTime = formatUKDateTime(log['Real Time Sync']);
+        const drift = log['Calculated Time Difference'] || 'synchronised';
+        const crime = log['Operation'] || '';
+        const todayStr = new Date().toLocaleDateString('en-GB');
 
-        // Pagination tracker
-        let totalPages = 1;
-        function checkPage(needed) {
-            // Leave 30mm for the repeating signature footer
-            if (y + needed > 265) {
-                doc.addPage();
-                totalPages++;
-                y = 15;
-            }
-        }
+        document.getElementById('mg11DocCrime').innerText = crime;
+        document.getElementById('mg11DocUrn').innerText = ''; 
+        document.getElementById('mg11DocDateTop').innerText = todayStr;
+        document.getElementById('mg11DocDateBottom').innerText = todayStr;
 
-        const dateOnly = formatUKDateTime(log['Date'], true) || 'Unknown';
-        const officer = log['Person Attending'] || 'Officer';
-        const safeRef = `MG11_${officer}_${dateOnly}`.replace(/[\/\s:]/g, '-');
-
-        // Draw Official Headers (Crisp, No Blur)
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        
-        // Center OFFICIAL Box
-        doc.text("OFFICIAL – (when complete)", 105, y + 4.5, { align: "center" });
-        doc.rect(75, y, 60, 7);
-        
-        // Right MG11 Box
-        doc.rect(pageWidth - margin - 15, y, 15, 7);
-        doc.text("MG11", pageWidth - margin - 7.5, y + 4.5, { align: "center" });
-        
-        y += 18;
-        
-        doc.setFontSize(14);
-        doc.text("WITNESS STATEMENT", 105, y, { align: "center" });
-        y += 6;
-        
-        doc.setFontSize(9);
-        doc.text("Criminal Procedure Rules, r 27.2; Criminal Justice Act 1967, s. 9; Magistrates' Courts Act 1980, s.5B", 105, y, { align: "center" });
-        y += 6;
-
-        // Crime No & URN
-        doc.setFontSize(11);
-        doc.text("Crime No.", 125, y + 4.5);
-        doc.rect(145, y, 50, 6);
-        doc.setFont("helvetica", "normal");
-        doc.text(log['Crime No'] || '', 147, y + 4.5);
-        y += 8;
-        
-        let startBoxY = y;
-        doc.setFont("helvetica", "bold");
-        doc.text("URN", 133, y + 4.5);
-        doc.rect(145, y, 50, 6);
-        doc.setFont("helvetica", "normal");
-        doc.text(log['URN'] || '', 147, y + 4.5);
-        y += 10;
-
-        // Statement Of
-        doc.text("Statement of", margin + 3, y);
-        doc.setFont("helvetica", "bold");
-        doc.text(officer, margin + 28, y);
-        y += 8;
-
-        // Age / Occupation
-        doc.setFont("helvetica", "normal");
-        doc.text("Age if under 18", margin + 3, y);
-        doc.setFont("helvetica", "bold");
-        doc.text("Over 18", margin + 33, y);
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(9);
-        doc.text('(if over 18 insert "over 18")', margin + 48, y);
-        
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        doc.text("Occupation", 135, y);
-        doc.setFont("helvetica", "bold");
-        doc.text("Police Officer", 157, y);
-        y += 8;
-
-        // Declaration 
-        doc.setFont("helvetica", "normal");
-        const decText = "This statement (consisting of 1 page(s) each signed by me) is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.";
-        let splitDec = doc.splitTextToSize(decText, usableW - 6);
-        doc.text(splitDec, margin + 3, y);
-        y += (splitDec.length * 5.5) + 12;
-
-        // Top Box Signature line
-        doc.setFont("helvetica", "bold");
-        doc.text("Signature:", margin + 3, y);
-        doc.line(margin + 23, y, margin + 65, y);
-        doc.setFont("helvetica", "normal");
-        doc.text("(witness)", margin + 68, y);
-
-        doc.setFont("helvetica", "bold");
-        doc.text("Date", 155, y);
-        doc.setFont("helvetica", "normal");
-        doc.text(dateOnly, 168, y);
-
-        // Draw main border
-        let endBoxY = y + 4;
-        doc.rect(margin, startBoxY - 2, usableW, endBoxY - startBoxY + 2);
-        y = endBoxY + 4;
-
-        // Visually recorded checkbox
-        doc.setFontSize(10);
-        doc.text("Tick if witness evidence is visually recorded", margin, y);
-        doc.rect(margin + 68, y - 3, 4, 4);
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(9);
-        doc.text("(supply witness details on rear)", margin + 74, y);
-        y += 12;
-
-        // Build continuous paragraphs
-        doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        let declarantName = "";
+        let occupation = "";
         let paragraphs = [];
 
         if (log['CCTV Available'] === 'No') {
-            paragraphs.push(`On ${dateOnly} I was on duty when I attended ${log['Venue Address'] || 'the premises'} in relation to Operation ${log['Operation'] || 'investigations'}.`);
-            paragraphs.push(`I conducted CCTV enquiries at this location. I can confirm that there is no CCTV available at this venue.${log['Venue Notes'] ? ' Notes regarding venue: ' + log['Venue Notes'] : ''}`);
-            paragraphs.push("I make this statement to record a negative CCTV enquiry.");
+            declarantName = officerAttending;
+            occupation = "Police Officer";
+            paragraphs.push(`I am ${declarantName}, acting in my capacity as a Police Officer.`);
+            const vNotes = log['Venue Notes'] ? ` Notes regarding venue: ${log['Venue Notes']}` : '';
+            paragraphs.push(`On ${date}, in connection with Operation ${op}, I attended ${venue}.`);
+            paragraphs.push(`I conducted CCTV enquiries at this location. I can confirm that there is no CCTV available at this venue.${vNotes}`);
+            paragraphs.push(`I make this statement to record a negative CCTV enquiry.`);
         } else {
-            const venue = log['Venue Address'] || '[Venue Not Recorded]';
-            const operation = log['Operation'] || '[Operation Not Recorded]';
-            const contact = log['Venue Contact Name'] || '[Contact Name Not Recorded]';
-            const makeModel = log['System Make and Model'] || '[Make/Model Not Recorded]';
-            const totalCameras = log['Total Cameras'] || '[Number]';
-            const dvrTime = formatUKDateTime(log['DVR Time']) || '[Not Recorded]';
-            const realTime = formatUKDateTime(log['Real Time Sync']) || '[Not Recorded]';
-            const timeDiff = log['Calculated Time Difference'] || '[Difference Not Recorded]';
-
-            paragraphs.push(`I am ${officer}, acting in my capacity as a Police Officer.`);
-            paragraphs.push(`On ${dateOnly}, in connection with Operation ${operation}, I attended ${venue}. At this location, I spoke with ${contact}, who identified themselves as the person responsible for the operation of the closed-circuit television (CCTV) system.`);
-            paragraphs.push(`The recording equipment was identified as a ${makeModel} system recording from ${totalCameras} cameras. I conducted a time check comparing the system clock against real atomic time. When the real time was ${realTime}, the CCTV recorder displayed ${dvrTime}. The system was noted as being ${timeDiff}.`);
+            if (isOfficer) {
+                declarantName = officerAttending;
+                occupation = "Police Officer";
+                paragraphs.push(`I am ${declarantName}, acting in my capacity as a Police Officer.`);
+                paragraphs.push(`On ${date}, in connection with Operation ${op}, I attended ${venue}. At this location, I spoke with ${contactName}, who identified themselves as the person responsible for the operation of the closed-circuit television (CCTV) system.`);
+                let timeClause = (dvrTime && realTime) 
+                    ? `I conducted a time check comparing the system clock against real atomic time. When the real time was ${realTime}, the CCTV recorder displayed ${dvrTime}. The system was noted as being ${drift}.`
+                    : `No time discrepancy audit was recorded.`;
+                paragraphs.push(`The recording equipment was identified as a ${makeModel} system recording from ${totCams} cameras. ${timeClause}`);
+            } else {
+                declarantName = contactName !== 'the operator' ? contactName : "Witness";
+                occupation = "Manager / Staff Member";
+                paragraphs.push(`I am ${declarantName}, employed as ${occupation}. In my role, I am responsible for the management and operation of the closed-circuit television (CCTV) system situated at ${venue}.`);
+                paragraphs.push(`The recording equipment is a ${makeModel} system covering the premises with ${totCams} cameras.`);
+                let timeClause = (dvrTime && realTime) 
+                    ? `I conducted a time check; when the real time was ${realTime}, the CCTV recorder displayed ${dvrTime}, making the system ${drift}.`
+                    : ``;
+                paragraphs.push(`On ${date}, following a request by Police in connection with Operation ${op}, I accessed the system. ${timeClause}`);
+            }
 
             let dlIndex = 1;
             let downloadCountLog = 0;
             while(log[`Cameras Downloaded_${dlIndex}`] !== undefined || (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined)) {
                 let sfx = (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined && !log[`Cameras Downloaded_1`]) ? '' : `_${dlIndex}`;
                 
-                let dlFootageStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]) || '[Not Recorded]';
-                let dlFootageEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]) || '[Not Recorded]';
-                let camerasDl = log[`Cameras Downloaded${sfx}`] || '[Cameras Not Recorded]';
-                let format = log[`Footage Format${sfx}`] || '[Format Not Recorded]';
-                let method = log[`Download Method${sfx}`] || '[Method Not Recorded]';
-                let exhibit = log[`Exhibit Number${sfx}`] || log['Exhibit Number'] || '[Exhibit No Not Recorded]';
+                let dlStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]);
+                let dlEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]);
+                let camsDl = log[`Cameras Downloaded${sfx}`] || 'relevant cameras';
+                let fmt = log[`Footage Format${sfx}`] || 'native';
+                let method = log[`Download Method${sfx}`] || 'media';
+                let exh = log[`Exhibit Number${sfx}`] || log['Exhibit Number'] || 'the exhibit';
                 
+                let extra = [];
+                if(log[`Player Downloaded${sfx}`] === 'Yes') extra.push("A proprietary viewing player was included.");
+                if(log[`Log Downloaded${sfx}`] === 'Yes') extra.push("A system audit log was included.");
+                if(log[`Audio Recorded${sfx}`] === 'Yes') extra.push("The footage includes an audio track.");
+                
+                let extraStr = extra.length > 0 ? " " + extra.join(" ") : "";
+
                 downloadCountLog++;
-                
-                // Narrative flow fix - continuous prose for multiple exhibits
-                if (downloadCountLog === 1) {
-                    paragraphs.push(`I identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. The footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.`);
+
+                if (isOfficer) {
+                    if (downloadCountLog === 1) {
+                        paragraphs.push(`I identified and extracted footage from ${camsDl} covering the period from ${dlStart} to ${dlEnd}. The footage was downloaded in ${fmt} format onto a ${method} and I produce this as master exhibit ${exh}.${extraStr}`);
+                    } else {
+                        paragraphs.push(`I additionally identified and extracted footage from ${camsDl} covering the period from ${dlStart} to ${dlEnd}. This footage was downloaded in ${fmt} format onto a ${method} and I produce this as master exhibit ${exh}.${extraStr}`);
+                    }
                 } else {
-                    paragraphs.push(`I additionally identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. This footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.`);
+                    if (downloadCountLog === 1) {
+                        paragraphs.push(`I downloaded footage from ${camsDl} covering the period from ${dlStart} to ${dlEnd}. I exported this in ${fmt} format onto a ${method}. I handed this media directly to ${officerAttending} and I produce it as master exhibit ${exh}.${extraStr}`);
+                    } else {
+                        paragraphs.push(`I also downloaded further footage from ${camsDl} covering the period from ${dlStart} to ${dlEnd}. I exported this in ${fmt} format onto a ${method}, which I also handed directly to ${officerAttending}, producing it as master exhibit ${exh}.${extraStr}`);
+                    }
                 }
                 dlIndex++;
                 if (dlIndex > 20) break;
             }
 
             paragraphs.push(`To the best of my knowledge and belief, the system was operating properly and the evidential integrity of the data has been maintained without alteration.`);
-            paragraphs.push(`Declaration of Compliance with the Forensic Science Regulator Code of Practice: I confirm that, to the best of my knowledge and belief, in carrying out this forensic science activity I have acted in accordance with the Forensic Science Regulator Code of Practice and local force procedures.`);
-        }
-
-        // Draw text and handle page breaks
-        paragraphs.forEach(para => {
-            let splitPara = doc.splitTextToSize(para, usableW);
-            let needed = splitPara.length * 6;
-            checkPage(needed);
-            doc.text(splitPara, margin, y);
-            y += needed + 4;
-        });
-
-        // Loop through all generated pages and append the repeating signature footer
-        for (let i = 1; i <= totalPages; i++) {
-            doc.setPage(i);
-            
-            // Adjust Page Number logic inside the Declaration Box for page 1
-            if (i === 1) {
-                doc.setFillColor(255, 255, 255);
-                doc.rect(margin + 42.5, startBoxY + 31.5, 6, 5, 'F');
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(11);
-                doc.text(String(totalPages), margin + 44, startBoxY + 35);
+            if (isOfficer) {
+                paragraphs.push(`Declaration of Compliance with the Forensic Science Regulator Code of Practice: I confirm that, to the best of my knowledge and belief, in carrying out this forensic science activity I have acted in accordance with the Forensic Science Regulator Code of Practice and local force procedures.`);
             }
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            
-            // Footer Signature
-            doc.line(15, 280, 80, 280); 
-            doc.text('Signature of Witness', 15, 285);
-            
-            // Footer Date
-            doc.line(150, 280, 195, 280); 
-            doc.text('Date', 168, 285);
-            doc.text(dateOnly, 162, 278);
         }
 
-        doc.save(safeRef + '.pdf');
+        document.getElementById('mg11DocDeclarant').innerText = declarantName;
+        document.getElementById('mg11DocOccupation').innerText = occupation;
+        
+        const narrativeDiv = document.getElementById('mg11DocNarrative');
+        narrativeDiv.innerHTML = paragraphs.map(p => `<p class="avoid-break" style="margin-bottom: 12px;">${p}</p>`).join("");
+    }
 
-        if (btnElement && originalText) {
-            btnElement.innerText = originalText;
-            btnElement.disabled = false;
+    function toggleMg11Edit() {
+        isMg11Editing = !isMg11Editing;
+        const narrativeDiv = document.getElementById('mg11DocNarrative');
+        const btn = document.getElementById('btnToggleMg11Edit');
+        
+        if(isMg11Editing) {
+            narrativeDiv.contentEditable = "true";
+            narrativeDiv.classList.add('editing');
+            btn.innerText = "🔒 Lock Editing";
+            btn.style.backgroundColor = "#d97706";
+        } else {
+            narrativeDiv.contentEditable = "false";
+            narrativeDiv.classList.remove('editing');
+            btn.innerText = "🔓 Enable Direct Editing";
+            btn.style.backgroundColor = "#334155";
         }
     }
 
-    function copyMg11Text() {
-        const textToCopy = document.getElementById('mg11Text');
-        if (!textToCopy) return;
-        textToCopy.select();
-        textToCopy.setSelectionRange(0, 99999); 
-        
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(textToCopy.value).then(() => {
-                const feedback = document.getElementById('copyFeedback');
-                if (feedback) feedback.style.display = 'block';
-            }).catch(err => {
-                fallbackCopyTextCommand();
-            });
-        } else {
-            fallbackCopyTextCommand();
-        }
+    function initMg11SignaturePad() {
+        if (!mg11Canvas) {
+            mg11Canvas = document.getElementById('mg11SigCanvas');
+            mg11Ctx = mg11Canvas.getContext('2d');
+            
+            const getPos = function(e) {
+                const rect = mg11Canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const scaleX = mg11Canvas.width / rect.width;
+                const scaleY = mg11Canvas.height / rect.height;
+                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+            };
 
-        function fallbackCopyTextCommand() {
-            try {
-                document.execCommand('copy');
-                const feedback = document.getElementById('copyFeedback');
-                if (feedback) feedback.style.display = 'block';
-            } catch (err) {
-                alert('Failed to copy text. Please select it manually.');
-            }
+            mg11Canvas.addEventListener('mousedown', function(e) {
+                mg11Drawing = true; mg11HasSig = true;
+                document.getElementById('mg11SigPlaceholder').style.display = 'none';
+                const pos = getPos(e); mg11Ctx.beginPath(); mg11Ctx.moveTo(pos.x, pos.y);
+                if(e.cancelable) e.preventDefault();
+            });
+
+            mg11Canvas.addEventListener('mousemove', function(e) {
+                if(!mg11Drawing) return;
+                const pos = getPos(e); mg11Ctx.lineTo(pos.x, pos.y); mg11Ctx.stroke();
+                if(e.cancelable) e.preventDefault();
+            });
+
+            const stopSign = function() { if(mg11Drawing) { mg11Drawing = false; mirrorMg11Signature(); } };
+            window.addEventListener('mouseup', stopSign);
+            
+            mg11Canvas.addEventListener('touchstart', function(e) {
+                mg11Drawing = true; mg11HasSig = true;
+                document.getElementById('mg11SigPlaceholder').style.display = 'none';
+                const pos = getPos(e); mg11Ctx.beginPath(); mg11Ctx.moveTo(pos.x, pos.y);
+                if(e.cancelable) e.preventDefault();
+            }, {passive:false});
+            
+            mg11Canvas.addEventListener('touchmove', function(e) {
+                if(!mg11Drawing) return;
+                const pos = getPos(e); mg11Ctx.lineTo(pos.x, pos.y); mg11Ctx.stroke();
+                if(e.cancelable) e.preventDefault();
+            }, {passive:false});
+            
+            window.addEventListener('touchend', stopSign);
         }
+        
+        const rect = mg11Canvas.parentElement.getBoundingClientRect();
+        mg11Canvas.width = rect.width;
+        mg11Canvas.height = rect.height || 100;
+        
+        mg11Ctx.lineWidth = 2.5;
+        mg11Ctx.lineCap = "round";
+        mg11Ctx.strokeStyle = "#000000";
+    }
+
+    function mirrorMg11Signature() {
+        if(!mg11HasSig) return;
+        const dataUrl = mg11Canvas.toDataURL();
+        const topImg = document.getElementById('mg11TopSigImg');
+        const botImg = document.getElementById('mg11BottomSigImg');
+        topImg.src = dataUrl; topImg.style.display = 'block';
+        botImg.src = dataUrl; botImg.style.display = 'block';
+    }
+
+    function clearMg11Signature() {
+        if(!mg11Ctx) return;
+        mg11Ctx.clearRect(0, 0, mg11Canvas.width, mg11Canvas.height);
+        mg11HasSig = false;
+        document.getElementById('mg11SigPlaceholder').style.display = 'flex';
+        document.getElementById('mg11TopSigImg').style.display = 'none';
+        document.getElementById('mg11BottomSigImg').style.display = 'none';
+    }
+
+    function downloadMg11Pdf() {
+        const btn = document.getElementById('btnCreateMg11Pdf');
+        const origText = btn.innerText;
+        btn.innerText = "Generating A4 PDF...";
+        btn.disabled = true;
+
+        if(isMg11Editing) toggleMg11Edit(); 
+
+        const element = document.getElementById('mg11DocumentContainer');
+        const declarantName = document.getElementById('mg11DocDeclarant').innerText.replace(/\s+/g, '_') || 'Statement';
+        const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+        const filename = `MG11_${declarantName}_${dateStr}.pdf`;
+
+        const opt = {
+            margin:       [10, 10, 10, 10], 
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            btn.innerText = origText;
+            btn.disabled = false;
+        });
     }
 
     function exportLogToCSV() {
@@ -3035,7 +3073,7 @@ Date: ${date}
                         <p><strong>User:</strong> ${guide.user}</p>
                         <p><strong>Pass:</strong> ${guide.pass}</p>
                         <p><strong>IP:</strong> ${guide.ip}</p>
-                        <p style="margin-top: 10px; font-size: 0.85em; color: var(--text-color); border-top: 1px dashed var(--border-color); padding-top: 5px;">${guide.notes}</p>
+                        <p style="margin-top: 15px; font-size: 0.9em; color: var(--text-muted); border-top: 1px dashed var(--border-color); padding-top: 10px;">${guide.notes}</p>
                     </div>
                     <div class="btn-group">
                         <a href="${guide.url}" target="_blank" class="manual-btn">📖 Manual</a>
@@ -3047,7 +3085,7 @@ Date: ${date}
         });
 
         if(container.innerHTML === "") {
-            container.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #777;'>No matching systems found.</p>";
+            container.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: var(--text-muted); font-style: italic; padding: 20px;'>No matching systems found.</p>";
         }
     }
 
