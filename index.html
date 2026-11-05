@@ -1,10 +1,10 @@
-<!-- Version 54.0 -->
+<!-- Version 69.4 - Merged with Crisp Native MG11 PDF & Flow Fixes -->
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCTV Footage Capture System</title>
+    <title>CCTV Download Form</title>
     
     <!-- PWA Manifest & App Icons -->
     <link rel="manifest" href="manifest.json">
@@ -19,6 +19,7 @@
     <style>
         :root {
             --primary-color: #0056b3;
+            --primary-light: #e6f0fa;
             --bg-color: #f4f7f6;
             --border-color: #ccc;
             --calc-bg: #e8f4f8;
@@ -32,6 +33,7 @@
 
         body.dark-mode {
             --primary-color: #4da3ff;
+            --primary-light: #1a2b3c;
             --bg-color: #121212;
             --border-color: #444;
             --calc-bg: #1e2a30;
@@ -44,13 +46,13 @@
         }
         
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
-            padding: 20px;
+            padding: 15px;
             margin: 0;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .top-bar {
@@ -58,19 +60,19 @@
             justify-content: space-between;
             align-items: center;
             max-width: 900px;
-            margin: 0 auto 10px auto;
+            margin: 0 auto 15px auto;
         }
 
         .dark-mode-toggle {
             background: none;
             border: 2px solid var(--primary-color);
             color: var(--primary-color);
-            padding: 5px 15px;
+            padding: 6px 16px;
             border-radius: 20px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 0.9em;
-            transition: all 0.3s;
+            transition: all 0.2s ease-in-out;
         }
 
         .dark-mode-toggle:hover {
@@ -82,9 +84,9 @@
             max-width: 900px;
             margin: 0 auto;
             background: var(--container-bg);
-            padding: 20px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px 35px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
             transition: background-color 0.3s;
         }
 
@@ -92,28 +94,34 @@
             text-align: center;
             color: var(--primary-color);
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-weight: 700;
         }
 
         .tabs {
             display: flex;
             border-bottom: 2px solid var(--border-color);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
         .tab-btn {
             background: none;
             border: none;
-            padding: 10px 15px;
-            font-size: 1.1em;
+            padding: 12px 15px;
+            font-size: 1.05em;
             cursor: pointer;
             color: #888;
-            font-weight: bold;
+            font-weight: 600;
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
             flex: 1;
             text-align: center;
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
         }
 
         .tab-btn.active {
@@ -121,25 +129,44 @@
             border-bottom-color: var(--primary-color);
         }
 
-        .tab-content { display: none; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
+        
+        .step-container { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .step-container.active-step { display: block; }
+        
+        .step-indicator { text-align: center; color: var(--primary-color); font-weight: 700; margin-bottom: 20px; font-size: 1.1em; background: var(--primary-light); padding: 10px; border-radius: 6px; border: 1px solid rgba(0, 86, 179, 0.2); }
+        body.dark-mode .step-indicator { background: var(--calc-bg); border-color: var(--primary-color); }
+        
+        .form-nav-buttons { display: flex; gap: 10px; margin-top: 25px; margin-bottom: 10px; }
+        .btn-prev { flex: 1; padding: 14px; background-color: transparent; color: var(--text-color); border: 2px solid var(--border-color); font-family: inherit; font-weight: 600; font-size: 1.05em; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .btn-prev:hover { background-color: var(--fieldset-bg); border-color: var(--primary-color); color: var(--primary-color); }
+        .btn-next { flex: 2; padding: 14px; background-color: var(--primary-color); color: white; border: none; font-family: inherit; font-weight: 600; font-size: 1.05em; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2); transition: all 0.2s; }
+        .btn-next:hover { background-color: #004494; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(0, 86, 179, 0.3); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         fieldset {
             border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
+            border-radius: 6px;
+            padding: 18px;
+            margin-bottom: 22px;
             background-color: var(--fieldset-bg);
             transition: background-color 0.3s, border-color 0.3s;
+            position: relative;
         }
 
         legend {
-            font-weight: bold;
+            font-weight: 700;
             color: var(--primary-color);
             background: var(--container-bg);
-            padding: 0 10px;
+            padding: 0 12px;
             border: 1px solid var(--border-color);
-            border-radius: 3px;
+            border-radius: 4px;
+            font-size: 0.95em;
         }
 
         .form-row {
@@ -153,15 +180,15 @@
             display: flex;
             flex-direction: column;
             width: 48%; 
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             box-sizing: border-box;
         }
 
         .form-group.full-width { width: 100%; }
 
         label {
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 6px;
+            font-weight: 600;
             font-size: 0.9em;
             color: var(--text-color);
             display: block; 
@@ -173,78 +200,122 @@
         input[type="datetime-local"],
         input[type="tel"],
         input[type="number"],
+        input[type="email"],
         textarea,
         select {
-            padding: 10px;
+            padding: 11px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 5px;
             font-size: 1em;
             width: 100%;
             box-sizing: border-box;
             background-color: var(--input-bg);
             color: var(--input-text);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            font-family: inherit;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
 
-        input[readonly] { background-color: var(--border-color); cursor: not-allowed; font-weight: bold; opacity: 0.7; }
+        input[readonly] { background-color: var(--border-color); cursor: not-allowed; font-weight: bold; opacity: 0.7; border-color: transparent; }
 
         body:not(.dark-mode) .ref-highlight { background-color: #fff3cd !important; color: #856404 !important; border: 1px solid #ffeeba !important; text-align: center; }
         body.dark-mode .ref-highlight { background-color: #4a401c !important; color: #ffd966 !important; border: 1px solid #856404 !important; text-align: center; }
 
-        @keyframes priorityFlash {
-            0% { background-color: rgba(220, 53, 69, 0.1); border-color: #dc3545; color: #dc3545; }
-            50% { background-color: rgba(220, 53, 69, 0.3); border-color: #ff0000; color: #ff0000; box-shadow: 0 0 8px rgba(220, 53, 69, 0.4); }
-            100% { background-color: rgba(220, 53, 69, 0.1); border-color: #dc3545; color: #dc3545; }
+        textarea { resize: vertical; min-height: 85px; }
+        
+        .address-option { padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 0.9em; color: var(--text-color); transition: background-color 0.2s; }
+        .address-option:last-child { border-bottom: none; }
+        .address-option:hover { background-color: var(--calc-bg); color: var(--primary-color); font-weight: bold; }
+
+        .auto-calc-section { background-color: var(--calc-bg); border: 1px dashed var(--primary-color); padding: 15px; border-radius: 6px; margin-top: 15px; }
+
+        .radio-group { display: flex; gap: 12px; align-items: center; padding: 6px 0; flex-wrap: wrap; }
+        .radio-group label { font-weight: normal; margin: 0; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+
+        .status-row-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px 14px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 16px;
         }
-        .priority-flash {
-            animation: priorityFlash 1.2s infinite !important;
-            font-weight: bold !important;
+
+        .status-col {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
         }
 
-        textarea { resize: vertical; min-height: 80px; }
+        .status-col label.col-title {
+            font-size: 0.85em;
+            margin-bottom: 2px;
+        }
 
-        .auto-calc-section { background-color: var(--calc-bg); border: 1px dashed var(--primary-color); padding: 15px; border-radius: 5px; margin-top: 15px; }
+        button { cursor: pointer; border-radius: 5px; font-size: 1em; font-family: inherit; font-weight: 600; transition: all 0.2s ease; }
+        
+        button.submit-btn { flex: 2; padding: 16px; background-color: var(--primary-color); color: #fff; border: none; font-size: 1.1em; box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2); }
+        button.submit-btn:hover { background-color: #004494; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(0, 86, 179, 0.3); }
+        
+        button.clear-btn { padding: 8px; background-color: transparent; color: #dc3545; border: 1px solid #dc3545; font-size: 0.9em; margin-bottom: 20px; width: 100%; display: block; border-radius: 4px; }
+        button.clear-btn:hover { background-color: #dc3545; color: white; }
 
-        .radio-group { display: flex; gap: 15px; align-items: center; padding: 10px 0; }
-        .radio-group label { font-weight: normal; margin: 0; display: inline; }
+        button.add-dl-btn { background-color: #28a745; color: white; border: none; padding: 12px 20px; font-size: 1em; width: 100%; box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2); margin-top: 5px; margin-bottom: 15px; }
+        button.add-dl-btn:hover { background-color: #218838; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3); }
 
-        button { cursor: pointer; border-radius: 5px; font-size: 1em; transition: background-color 0.3s; }
-        .button-group { display: flex; gap: 10px; margin-top: 20px; }
-        button.submit-btn { flex: 2; padding: 15px; background-color: var(--primary-color); color: #fff; border: none; font-size: 1.1em; }
-        button.submit-btn:hover { background-color: #004494; }
-        button.clear-btn { flex: 1; padding: 15px; background-color: #dc3545; color: #fff; border: none; font-size: 1.1em; }
-        button.clear-btn:hover { background-color: #c82333; }
-
-        .action-buttons { display: flex; gap: 5px; flex-wrap: wrap; }
+        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
         button.view-btn { background-color: #28a745; color: white; border: none; padding: 8px 12px; }
         button.mg11-btn { background-color: #6f42c1; color: white; border: none; padding: 8px 12px; }
+        button.mg11-pdf-btn { background-color: #117a8b; color: white; border: none; padding: 8px 12px; }
         button.print-btn { background-color: #ffc107; color: #212529; border: none; padding: 8px 12px; }
         button.amend-btn { background-color: #fd7e14; color: white; border: none; padding: 8px 12px; }
+        button.delete-btn { background-color: #dc3545; color: white; border: none; padding: 8px 12px; }
         button.export-btn { background-color: #17a2b8; color: white; border: none; padding: 10px 20px; font-size: 1em; }
 
         .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         table, th, td { border: 1px solid var(--border-color); }
-        th, td { padding: 12px; text-align: left; }
+        th, td { padding: 14px 12px; text-align: left; }
         th { background-color: var(--primary-color); color: white; }
         tr:nth-child(even) { background-color: var(--table-even); }
-        .empty-log { text-align: center; padding: 20px; color: #777; font-style: italic; }
+        .empty-log { text-align: center; padding: 30px; color: #777; font-style: italic; background: var(--fieldset-bg); border-radius: 5px; border: 1px dashed var(--border-color); }
 
-        .search-bar { width: 100%; padding: 15px; font-size: 1.1em; border: 2px solid var(--primary-color); border-radius: 5px; box-sizing: border-box; margin-bottom: 20px; background-color: var(--input-bg); color: var(--input-text); }
-        .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .guide-card { border: 1px solid var(--border-color); border-radius: 5px; padding: 15px; background: var(--fieldset-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;}
-        .guide-card h4 { margin: 0 0 10px 0; color: var(--primary-color); font-size: 1.2em; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .guide-card p { margin: 5px 0; font-size: 0.9em; }
+        .search-bar { width: 100%; padding: 14px; font-size: 1.05em; border: 2px solid var(--primary-color); border-radius: 6px; box-sizing: border-box; margin-bottom: 20px; background-color: var(--input-bg); color: var(--input-text); }
+        .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+        .guide-card { border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; background: var(--fieldset-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease;}
+        .guide-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+        .guide-card h4 { margin: 0 0 12px 0; color: var(--primary-color); font-size: 1.2em; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .guide-card p { margin: 6px 0; font-size: 0.9em; }
         
+        .tree-item { border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 12px; background: var(--fieldset-bg); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+        .tree-header { padding: 16px; font-weight: 700; background: var(--input-bg); color: var(--primary-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .tree-header:hover { background: var(--calc-bg); }
+        .tree-body { padding: 18px; display: none; border-top: 1px solid var(--border-color); font-size: 0.95em; }
+        .tree-body.open { display: block; animation: fadeIn 0.2s ease-in-out; }
+        .tree-icon { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #888; font-size: 0.8em; }
+        .tree-item.open .tree-icon { transform: rotate(180deg); color: var(--primary-color); }
+        .law-quote { border-left: 4px solid var(--primary-color); padding: 12px 15px; margin: 12px 0; font-style: italic; color: #555; background: var(--input-bg); border-radius: 0 4px 4px 0; }
+        body.dark-mode .law-quote { color: #ccc; }
+
         .btn-group { display: flex; gap: 8px; margin-top: 15px; }
-        .manual-btn { flex: 1; padding: 8px; text-align: center; background: var(--calc-bg); border: 1px solid var(--primary-color); border-radius: 4px; font-weight: bold; text-decoration: none; color: var(--primary-color); transition: 0.3s; font-size: 0.85em; }
+        .manual-btn { flex: 1; padding: 10px; text-align: center; background: var(--calc-bg); border: 1px solid var(--primary-color); border-radius: 4px; font-weight: 600; text-decoration: none; color: var(--primary-color); transition: 0.2s; font-size: 0.85em; }
         .manual-btn:hover { background: var(--primary-color); color: #fff; }
         
-        .yt-btn { flex: 1; padding: 8px; text-align: center; background: #fff; border: 1px solid #ff0000; border-radius: 4px; font-weight: bold; text-decoration: none; color: #ff0000; transition: 0.3s; font-size: 0.85em; cursor: pointer; }
+        .yt-btn { flex: 1; padding: 10px; text-align: center; background: #fff; border: 1px solid #ff0000; border-radius: 4px; font-weight: 600; text-decoration: none; color: #ff0000; transition: 0.2s; font-size: 0.85em; cursor: pointer; }
         .yt-btn:hover { background: #ff0000; color: #fff; }
         body.dark-mode .yt-btn { background: #2d2d2d; }
         body.dark-mode .yt-btn:hover { background: #ff0000; }
 
-        .map-btn { flex: 1; padding: 8px; text-align: center; background: #fff; border: 1px solid #28a745; border-radius: 4px; font-weight: bold; text-decoration: none; color: #28a745; transition: 0.3s; font-size: 0.85em; cursor: pointer; }
+        .map-btn { flex: 1; padding: 8px; text-align: center; background: #fff; border: 1px solid #28a745; border-radius: 4px; font-weight: 600; text-decoration: none; color: #28a745; transition: 0.2s; font-size: 0.85em; cursor: pointer; }
         .map-btn:hover { background: #28a745; color: #fff; }
         body.dark-mode .map-btn { background: #2d2d2d; }
         body.dark-mode .map-btn:hover { background: #28a745; color: #fff; }
@@ -256,40 +327,46 @@
 
         .input-group-btn { display: flex; gap: 8px; }
 
-        .draft-status { text-align: center; font-size: 0.85em; color: #28a745; margin-top: 10px; font-style: italic; height: 20px; }
+        .draft-status { text-align: center; font-size: 0.85em; color: #28a745; margin-top: 15px; font-style: italic; height: 20px; font-weight: 600; }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
-        .modal-content { background-color: var(--container-bg); margin: 3% auto; padding: 30px; border: 1px solid #888; width: 95%; max-width: 900px; border-radius: 8px; position: relative; }
-        .close-btn { color: #aaa; position: absolute; top: 15px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(3px); }
+        .modal-content { background-color: var(--container-bg); margin: 4% auto; padding: 35px; border: 1px solid #888; width: 95%; max-width: 900px; border-radius: 10px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: fadeIn 0.3s ease-out; }
+        .close-btn { color: #aaa; position: absolute; top: 15px; right: 25px; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10; transition: color 0.2s; }
+        .close-btn:hover { color: #dc3545; }
 
-        #photo_gallery { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px; }
-        .photo-card { display: flex; flex-direction: column; width: 140px; }
-        .photo-filename { font-size: 0.75em; color: var(--primary-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; font-weight: bold; text-align: center; }
-        .photo-wrapper { position: relative; width: 100%; height: 100px; margin-bottom: 5px; }
-        .photo-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; border: 1px solid var(--border-color); }
-        .photo-wrapper button { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; padding: 0; display: flex; align-items: center; justify-content: center; z-index: 5; }
-        .photo-note { padding: 5px !important; font-size: 0.85em !important; border: 1px solid var(--border-color); border-radius: 4px; background: var(--input-bg); color: var(--input-text); width: 100%; box-sizing: border-box; }
+        #photo_gallery { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+        .photo-card { display: flex; flex-direction: column; width: 150px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .photo-filename { font-size: 0.7em; color: var(--primary-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; font-weight: 700; text-align: center; }
+        .photo-datetime { font-size: 0.65em; color: #666; text-align: center; margin-bottom: 6px; }
+        .photo-wrapper { position: relative; width: 100%; height: 110px; margin-bottom: 8px; }
+        .photo-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+        .photo-wrapper button { position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        .photo-wrapper button:hover { transform: scale(1.1); background: #c82333; }
+        .photo-note { padding: 6px !important; font-size: 0.8em !important; border: 1px solid var(--border-color); border-radius: 4px; background: var(--fieldset-bg); color: var(--input-text); width: 100%; box-sizing: border-box; text-align: center; }
 
         @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container, .modal-content { padding: 20px 15px; }
             .form-group { width: 100%; } 
-            .container, .modal-content { padding: 15px; }
-            .log-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .button-group { flex-direction: column; }
+            .log-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .form-nav-buttons { flex-direction: column; gap: 8px; }
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { display: none; }
-            tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 5px; background-color: var(--container-bg); }
+            tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--container-bg); overflow: hidden; }
             tr:nth-child(even) { background-color: var(--container-bg); }
-            td { border: none; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 35%; text-align: right; min-height: 24px; }
-            td::before { position: absolute; top: 12px; left: 10px; width: 30%; padding-right: 10px; white-space: nowrap; text-align: left; font-weight: bold; color: var(--primary-color); }
+            td { border: none; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 38%; text-align: right; min-height: 24px; }
+            td::before { position: absolute; top: 14px; left: 12px; width: 32%; padding-right: 10px; white-space: nowrap; text-align: left; font-weight: bold; color: var(--primary-color); font-size: 0.9em; }
             td:nth-of-type(1)::before { content: "Ref / Date"; }
             td:nth-of-type(2)::before { content: "Operation"; }
             td:nth-of-type(3)::before { content: "Venue"; }
             td:nth-of-type(4)::before { content: "Action"; }
-            td:last-child { border-bottom: none; }
+            td:last-child { border-bottom: none; background: var(--fieldset-bg); }
             .action-buttons { justify-content: flex-end; }
-            .tabs { flex-direction: row; flex-wrap: wrap; border-bottom: none; }
-            .tab-btn { flex: 0 0 50%; box-sizing: border-box; border-left: none; border-bottom: 3px solid transparent; text-align: center; padding: 12px 5px; font-size: 0.95em; }
-            .tab-btn.active { border-left-color: transparent; border-bottom-color: var(--primary-color); }
+            .tabs { flex-direction: row; flex-wrap: wrap; border-bottom: none; gap: 5px; }
+            .tab-btn { flex: 0 0 calc(50% - 5px); box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; padding: 10px 5px; font-size: 0.9em; background: var(--fieldset-bg); margin-bottom: 5px; }
+            .tab-btn.active { border-color: var(--primary-color); background: var(--primary-light); color: var(--primary-color); }
+            .tab-btn:nth-child(5) { flex: 1 1 100%; }
+            .photo-card { width: calc(50% - 8px); }
         }
     </style>
 </head>
@@ -298,128 +375,120 @@
 <div class="top-bar no-print">
     <div style="font-weight: bold; color: var(--primary-color);"></div>
     <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-weight: bold; color: var(--primary-color); font-size: 1.1em;">v54.0</span>
-        <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌓 Toggle Dark Mode</button>
+        <span style="font-weight: 700; color: var(--primary-color); font-size: 1.1em; letter-spacing: 0.5px;">v69.4</span>
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌓 Dark Mode</button>
     </div>
 </div>
 
 <div class="container" id="mainContainer">
-    <h2 class="no-print">CCTV Retrieval System</h2>
+    <h2 class="no-print">CCTV Download Form</h2>
 
     <div class="tabs no-print">
         <button class="tab-btn active" onclick="switchTab('form-tab')">Capture Form</button>
         <button class="tab-btn" onclick="switchTab('log-tab')">Submission Log</button>
         <button class="tab-btn" onclick="switchTab('guides-tab')">System Guides</button>
+        <button class="tab-btn" onclick="switchTab('powers-tab')">Legal Powers</button>
+        <button class="tab-btn" onclick="switchTab('dpa-tab')">DPA Request</button>
     </div>
 
     <div id="form-tab" class="tab-content active">
+        
+        <div id="stepIndicator" class="step-indicator no-print">Step 1 of 6: General Information</div>
+        <button type="button" class="clear-btn no-print" onclick="clearForm()">↺ Clear Form & Keep Operation Info</button>
+
         <form id="cctvForm">
-            <div class="no-print" style="margin-bottom: 20px;">
-                <button type="button" class="clear-btn" onclick="clearForm()" style="width: 100%; display: block;">Clear Form & Keep Top Info</button>
-            </div>
-
-            <fieldset>
-                <legend>General Information</legend>
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="ref_number">Unique Reference Number</label>
-                        <input type="text" id="ref_number" name="Reference Number" value="Generated upon submission" class="ref-highlight" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="operation">Operation</label>
-                        <input type="text" id="operation" name="Operation" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="date" id="date" name="Date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="person_attending">Person Attending</label>
-                        <input type="text" id="person_attending" name="Person Attending">
-                    </div>
-                    <div class="form-group">
-                        <label for="contact_number">Contact Number</label>
-                        <input type="tel" id="contact_number" name="Contact Number">
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Venue & Contact Details</legend>
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="venue_address">Venue Name / Address & Postcode</label>
-                        <textarea id="venue_address" name="Venue Address" rows="2" required placeholder="Enter building name, street, etc."></textarea>
-                        <div class="input-group-btn" style="margin-top: 5px;">
-                            <button type="button" class="map-btn gps-btn no-print" id="gpsBtn" onclick="autoLocate()" title="Auto-Locate via GPS" style="flex: 1; max-width: 110px;">📍 Locate</button>
-                            <input type="text" id="postcode" name="Postcode" style="flex: 2; text-transform: uppercase;" placeholder="Postcode (e.g. B1 1AA)">
-                            <button type="button" class="map-btn no-print" onclick="openMaps()" title="Open Specific Address in Maps" style="flex: 1; max-width: 90px;">🗺️ Map</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="venue_contact_name">Contact Name</label>
-                        <input type="text" id="venue_contact_name" name="Venue Contact Name">
-                    </div>
-                    <div class="form-group">
-                        <label for="dob">Date of Birth <span id="age_display" style="color:var(--primary-color); font-weight:normal;"></span></label>
-                        <input type="date" id="dob" name="Contact DOB" onchange="calculateAge()">
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="venue_telephone">Telephone Number</label>
-                        <input type="tel" id="venue_telephone" name="Venue Telephone">
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label for="venue_notes">Venue Notes</label>
-                        <textarea id="venue_notes" name="Venue Notes" rows="2" placeholder="e.g., Directions to DVR, owner's working hours, system condition..."></textarea>
-                    </div>
-                    
-                    <div class="form-group full-width no-print">
-                        <label style="color: var(--primary-color); font-size: 1.1em;">Is CCTV Available at this location?</label>
-                        <div class="radio-group" style="background-color: var(--container-bg); padding: 10px; border: 1px solid var(--border-color); border-radius: 5px;">
-                            <input type="radio" id="cctv_avail_yes" name="CCTV Available" value="Yes" checked onchange="toggleCctvDetails()">
-                            <label for="cctv_avail_yes" style="font-weight: bold; margin-right: 20px;">Yes</label>
-                            
-                            <input type="radio" id="cctv_avail_no" name="CCTV Available" value="No" onchange="toggleCctvDetails()">
-                            <label for="cctv_avail_no" style="font-weight: bold; color: #dc3545;">No (Negative Enquiry)</label>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-
-            <div id="cctv-details-section">
+            
+            <!-- STEP 1: General Info -->
+            <div id="step-1" class="step-container active-step">
                 <fieldset>
-                    <legend>System Details</legend>
+                    <legend>General Information</legend>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="make_model">CCTV System Make/Model</label>
-                            <div class="input-group-btn">
-                                <input type="text" id="make_model" name="System Make and Model" list="cctv_brands" autocomplete="off" style="flex: 1;">
-                                <button type="button" class="yt-btn no-print" onclick="searchInlineYT()" style="width: auto; padding: 0 15px; margin: 0;" title="Search YouTube for instructions">▶️ Search YT</button>
-                            </div>
-                            <datalist id="cctv_brands">
-                                <option value="Abus"></option><option value="ACTi"></option><option value="Adata"></option><option value="ADT"></option><option value="Aimetis"></option><option value="Alibi"></option><option value="Altronix"></option><option value="Amcrest"></option><option value="American Dynamics"></option><option value="Annke"></option><option value="Arecont Vision"></option><option value="Arlo"></option><option value="Aventura"></option><option value="AvertX"></option><option value="Avigilon"></option><option value="Axis"></option><option value="Baxall"></option><option value="Blink"></option><option value="Bolide"></option><option value="Bosch"></option><option value="Brickcom"></option><option value="Cathexis"></option><option value="CCTV Security Pros"></option><option value="Cisco"></option><option value="Clinton Electronics"></option><option value="Concept Pro"></option><option value="Costar"></option><option value="Costco"></option><option value="CP Plus"></option><option value="Dahua"></option><option value="Dedicated Micros"></option><option value="Defender"></option><option value="Digital Watchdog"></option><option value="Eufy"></option><option value="Exacq"></option><option value="Exvision"></option><option value="FLIR"></option><option value="Foscam"></option><option value="Genetec"></option><option value="GeoVision"></option><option value="Geutebruck"></option><option value="Google Nest"></option><option value="Grandstream"></option><option value="GW Security"></option><option value="Hanwha Vision"></option><option value="Hikvision"></option><option value="Honeywell"></option><option value="IC Realtime"></option><option value="Ikegami"></option><option value="IndigoVision"></option><option value="Infinova"></option><option value="InVid"></option><option value="Kasa"></option><option value="Lorex"></option><option value="LTS"></option><option value="Luma Surveillance"></option><option value="Luxriot"></option><option value="Mace"></option><option value="March Networks"></option><option value="Merit Lilin"></option><option value="Milestone Systems"></option><option value="Mobotix"></option><option value="Montavue"></option><option value="Night Owl"></option><option value="Northern"></option><option value="OnSSI"></option><option value="OpenEye"></option><option value="Optiview"></option><option value="Panasonic"></option><option value="Pelco"></option><option value="Q-See"></option><option value="QNAP"></option><option value="Qognify"></option><option value="Reolink"></option><option value="Ring"></option><option value="Salient"></option><option value="Sannce"></option><option value="SimpliSafe"></option><option value="Sony"></option><option value="Speco Technologies"></option><option value="Swann"></option><option value="Synology"></option><option value="Tapo"></option><option value="Tiandy"></option><option value="TP-Link"></option><option value="TVT"></option><option value="Ubiquiti"></option><option value="Uniview"></option><option value="Verint"></option><option value="Vicon"></option><option value="Vista"></option><option value="Vitek"></option><option value="Vivotek"></option><option value="Wansview"></option><option value="Wavestore"></option><option value="W Box"></option><option value="Wyze"></option><option value="Yi"></option><option value="Zmodo"></option><option value="Zosi"></option>
-                            </datalist>
-                        </div>
-                        <div class="form-group">
-                            <label for="total_cameras">Total Number of Cameras</label>
-                            <input type="number" id="total_cameras" name="Total Cameras">
-                        </div>
-                        <div class="form-group">
-                            <label for="credentials">System Username / Passwords</label>
-                            <input type="text" id="credentials" name="System Credentials">
-                        </div>
                         <div class="form-group full-width">
-                            <label for="earliest_footage">Earliest Footage Available</label>
-                            <input type="datetime-local" id="earliest_footage" name="Earliest Footage" step="1">
+                            <label for="ref_number">Unique Reference Number</label>
+                            <input type="text" id="ref_number" name="Reference Number" value="Generated upon submission" class="ref-highlight" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="overwrite_data">When will system overwrite data?</label>
-                            <input type="text" id="overwrite_data" name="Overwrite Timeline" readonly placeholder="Auto-calculated">
+                            <label for="operation">Operation / Incident Ref <span style="color:red">*</span></label>
+                            <input type="text" id="operation" name="Operation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date <span style="color:red">*</span></label>
+                            <input type="date" id="date" name="Date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="person_attending">Officer Attending</label>
+                            <input type="text" id="person_attending" name="Person Attending">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_number">Officer Contact Number</label>
+                            <input type="tel" id="contact_number" name="Contact Number">
                         </div>
                     </div>
                 </fieldset>
+                
+                <div class="form-nav-buttons no-print">
+                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 1;">Next: Venue Details ➔</button>
+                </div>
+            </div>
 
+            <!-- STEP 2: Venue & Contact -->
+            <div id="step-2" class="step-container">
+                <fieldset>
+                    <legend>Venue & Contact Details</legend>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="venue_address">Venue Name / Address & Postcode <span style="color:red">*</span></label>
+                            <div style="display: flex; gap: 8px;">
+                                <textarea id="venue_address" name="Venue Address" rows="2" required placeholder="Enter building name, street, etc." style="flex: 1; margin-bottom: 5px;"></textarea>
+                                <button type="button" class="view-btn no-print" onclick="searchAddress()" id="searchAddrBtn" style="padding: 10px; margin-bottom: 5px; border-radius: 4px; font-weight: bold; background: var(--primary-color);">🔍 Find</button>
+                            </div>
+                            <div id="address_results" class="no-print" style="display: none; border: 1px solid var(--border-color); background: var(--input-bg); max-height: 160px; overflow-y: auto; margin-bottom: 10px; border-radius: 4px;"></div>
+                            
+                            <div class="input-group-btn" style="margin-top: 5px;">
+                                <button type="button" class="map-btn gps-btn no-print" id="gpsBtn" onclick="autoLocate()" title="Auto-Locate via GPS" style="flex: 1; max-width: 110px;">📍 Locate</button>
+                                <input type="text" id="postcode" name="Postcode" style="flex: 2; text-transform: uppercase;" placeholder="Postcode (e.g. B1 1AA)">
+                                <button type="button" class="map-btn no-print" onclick="openMaps()" title="Open Specific Address in Maps" style="flex: 1; max-width: 90px;">🗺️ Map</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="venue_contact_name">Venue Contact Name</label>
+                            <input type="text" id="venue_contact_name" name="Venue Contact Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Contact Date of Birth <span id="age_display" style="color:var(--primary-color); font-weight:normal;"></span></label>
+                            <input type="date" id="dob" name="Contact DOB" onchange="calculateAge()">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="venue_telephone">Venue Telephone Number</label>
+                            <input type="tel" id="venue_telephone" name="Venue Telephone">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="venue_notes">Venue Notes</label>
+                            <textarea id="venue_notes" name="Venue Notes" rows="2" placeholder="e.g., Directions to DVR, owner's working hours, system condition..."></textarea>
+                        </div>
+                        
+                        <div class="form-group full-width no-print">
+                            <label style="color: var(--primary-color); font-size: 1.05em;">Is CCTV Available at this location?</label>
+                            <div class="radio-group" style="background-color: var(--container-bg); padding: 12px; border: 1px solid var(--border-color); border-radius: 5px;">
+                                <input type="radio" id="cctv_avail_yes" name="CCTV Available" value="Yes" checked onchange="toggleCctvDetails()">
+                                <label for="cctv_avail_yes" style="font-weight: 600; margin-right: 25px;">Yes</label>
+                                
+                                <input type="radio" id="cctv_avail_no" name="CCTV Available" value="No" onchange="toggleCctvDetails()">
+                                <label for="cctv_avail_no" style="font-weight: 600; color: #dc3545;">No (Negative Enquiry)</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                
+                <div class="form-nav-buttons no-print">
+                    <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
+                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: Time Sync ➔</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Time Sync -->
+            <div id="step-3" class="step-container">
                 <fieldset>
                     <legend>Time Sync & Footage Adjustments</legend>
                     <div class="form-row no-print">
@@ -430,6 +499,9 @@
                         <div class="form-group">
                             <label for="real_time">Real Date & Time</label>
                             <input type="datetime-local" id="real_time" name="Real Time Sync" class="time-calc" step="1">
+                        </div>
+                        <div class="form-group full-width no-print" style="margin-top: 5px; margin-bottom: 10px;">
+                            <button type="button" class="view-btn" onclick="setTimeAccurate()" style="width: 100%; padding: 12px; font-weight: bold; background: var(--primary-color); border: none; border-radius: 4px; color: white;">⏱️ Time Accurate (Set DVR & Real Time to Current Device Time)</button>
                         </div>
                         <div class="form-group full-width">
                             <label for="time_difference">Time Difference</label>
@@ -463,84 +535,170 @@
                         <div id="incident_duration" style="text-align:center; font-weight:bold; color:var(--primary-color); margin-top:5px;"></div>
                     </div>
                 </fieldset>
+                
+                <div class="form-nav-buttons no-print">
+                    <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
+                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: System Details ➔</button>
+                </div>
+            </div>
 
+            <!-- STEP 4: System Details -->
+            <div id="step-4" class="step-container">
                 <fieldset>
-                    <legend>Download Specifics</legend>
+                    <legend>System Details</legend>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="dl_footage_start">Downloaded Footage (Start Date & Time)</label>
-                            <input type="datetime-local" id="dl_footage_start" name="Downloaded Footage Start" step="1">
-                        </div>
-                        <div class="form-group">
-                            <label for="dl_footage_end">Downloaded Footage (End Date & Time)</label>
-                            <input type="datetime-local" id="dl_footage_end" name="Downloaded Footage End" step="1">
-                        </div>
-                        <div class="form-group">
-                            <label for="cameras_downloaded">Cameras Downloaded</label>
-                            <input type="text" id="cameras_downloaded" name="Cameras Downloaded" placeholder="e.g., Cam 1, Front Door">
-                        </div>
-                        <div class="form-group">
-                            <label for="format_footage">Format of Footage</label>
-                            <input type="text" id="format_footage" name="Footage Format" placeholder="e.g., .mp4, .avi, proprietary">
-                        </div>
-                        <div class="form-group">
-                            <label for="download_method">Download Method</label>
-                            <input type="text" id="download_method" name="Download Method" placeholder="e.g., USB, Disc, Network, AirDrop">
-                        </div>
-                        <div class="form-group">
-                            <label for="memory_stick_no">Memory Stick No. / Disc Ref</label>
-                            <input type="text" id="memory_stick_no" name="Media Reference">
-                        </div>
-                        <div class="form-group">
-                            <label>Player Downloaded?</label>
-                            <div class="radio-group" style="padding-top: 5px;">
-                                <input type="radio" id="player_yes" name="Player Downloaded" value="Yes">
-                                <label for="player_yes">Yes</label>
-                                <input type="radio" id="player_no" name="Player Downloaded" value="No" checked>
-                                <label for="player_no">No</label>
+                            <label for="make_model">CCTV System Make/Model</label>
+                            <div class="input-group-btn">
+                                <input type="text" id="make_model" name="System Make and Model" list="cctv_brands" autocomplete="off" style="flex: 1;">
+                                <button type="button" class="yt-btn no-print" onclick="searchInlineYT()" style="width: auto; padding: 0 15px; margin: 0;" title="Search YouTube for instructions">▶️ Search YT</button>
                             </div>
+                            <datalist id="cctv_brands">
+                                <option value="Abus"></option><option value="ACTi"></option><option value="Adata"></option><option value="ADT"></option><option value="Aimetis"></option><option value="Alibi"></option><option value="Altronix"></option><option value="Amcrest"></option><option value="American Dynamics"></option><option value="Annke"></option><option value="Arecont Vision"></option><option value="Arlo"></option><option value="Aventura"></option><option value="AvertX"></option><option value="Avigilon"></option><option value="Axis"></option><option value="Baxall"></option><option value="Blink"></option><option value="Bolide"></option><option value="Bosch"></option><option value="Brickcom"></option><option value="Cathexis"></option><option value="CCTV Security Pros"></option><option value="Cisco"></option><option value="Clinton Electronics"></option><option value="Concept Pro"></option><option value="Costar"></option><option value="Costco"></option><option value="CP Plus"></option><option value="Dahua"></option><option value="Dedicated Micros"></option><option value="Defender"></option><option value="Digital Watchdog"></option><option value="Eufy"></option><option value="Exacq"></option><option value="Exvision"></option><option value="FLIR"></option><option value="Foscam"></option><option value="Genetec"></option><option value="GeoVision"></option><option value="Geutebruck"></option><option value="Google Nest"></option><option value="Grandstream"></option><option value="GW Security"></option><option value="Hanwha Vision"></option><option value="Hikvision"></option><option value="Honeywell"></option><option value="IC Realtime"></option><option value="Ikegami"></option><option value="IndigoVision"></option><option value="Infinova"></option><option value="InVid"></option><option value="Kasa"></option><option value="Lorex"></option><option value="LTS"></option><option value="Luma Surveillance"></option><option value="Luxriot"></option><option value="Mace"></option><option value="March Networks"></option><option value="Merit Lilin"></option><option value="Milestone Systems"></option><option value="Mobotix"></option><option value="Montavue"></option><option value="Night Owl"></option><option value="Northern"></option><option value="OnSSI"></option><option value="OpenEye"></option><option value="Optiview"></option><option value="Panasonic"></option><option value="Pelco"></option><option value="Q-See"></option><option value="QNAP"></option><option value="Qognify"></option><option value="Reolink"></option><option value="Ring"></option><option value="Salient"></option><option value="Sannce"></option><option value="SimpliSafe"></option><option value="Sony"></option><option value="Speco Technologies"></option><option value="Swann"></option><option value="Synology"></option><option value="Tapo"></option><option value="Tiandy"></option><option value="TP-Link"></option><option value="TVT"></option><option value="Ubiquiti"></option><option value="Uniview"></option><option value="Verint"></option><option value="Vicon"></option><option value="Vista"></option><option value="Vitek"></option><option value="Vivotek"></option><option value="Wansview"></option><option value="Wavestore"></option><option value="W Box"></option><option value="Wyze"></option><option value="Yi"></option><option value="Zmodo"></option><option value="Zosi"></option>
+                            </datalist>
                         </div>
                         <div class="form-group">
-                            <label>Audio Recorded?</label>
-                            <div class="radio-group" style="padding-top: 5px;">
-                                <input type="radio" id="audio_yes" name="Audio Recorded" value="Yes">
-                                <label for="audio_yes">Yes</label>
-                                <input type="radio" id="audio_no" name="Audio Recorded" value="No" checked>
-                                <label for="audio_no">No</label>
-                            </div>
+                            <label for="total_cameras">Total Number of Cameras</label>
+                            <input type="number" id="total_cameras" name="Total Cameras">
+                        </div>
+                        <div class="form-group">
+                            <label for="credentials">System Username / Passwords</label>
+                            <input type="text" id="credentials" name="System Credentials">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="earliest_footage">Earliest Footage Available</label>
+                            <input type="datetime-local" id="earliest_footage" name="Earliest Footage" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="overwrite_data">When will system overwrite data?</label>
+                            <input type="text" id="overwrite_data" name="Overwrite Timeline" readonly placeholder="Auto-calculated">
                         </div>
                     </div>
                 </fieldset>
-            </div>
-
-            <fieldset>
-                <legend>Additional Exhibits & Photos</legend>
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="notes">Additional CCTV Notes</label>
-                        <textarea id="notes" name="Notes"></textarea>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="exhibit_number">Exhibit Number</label>
-                        <input type="text" id="exhibit_number" name="Exhibit Number">
-                    </div>
-                    <div class="form-group full-width" id="photo_section">
-                        <label>DVR System Photos</label>
-                        <div class="no-print" style="margin-bottom: 10px;">
-                            <input type="file" id="dvr_photo" accept="image/*" multiple onchange="handlePhotoUpload(event)">
-                            <p style="font-size: 0.8em; color: #666; margin-top: 5px;">You can select multiple photos. Add notes to them below once uploaded.</p>
-                        </div>
-                        <input type="hidden" id="dvr_photos_base64" name="DVR Photos">
-                        <div id="photo_gallery"></div> 
-                    </div>
+                
+                <div class="form-nav-buttons no-print">
+                    <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
+                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: Download Specifics ➔</button>
                 </div>
-            </fieldset>
-
-            <div id="draftStatus" class="draft-status no-print"></div>
-
-            <div class="button-group no-print">
-                <button type="button" class="submit-btn" id="pdfSubmitBtn" onclick="submitAndDownloadPDF()">Submit & Download PDF</button>
             </div>
+
+            <!-- STEP 5: Download Specifics -->
+            <div id="step-5" class="step-container">
+                <fieldset>
+                    <legend>Download Specifics</legend>
+                    
+                    <div id="downloads_container">
+                        <div class="download-block" data-index="1" style="position:relative; border-bottom: 2px dashed var(--border-color); padding-bottom: 20px; margin-bottom: 20px;">
+                            <h4 style="margin-top:0; color:var(--primary-color);">Download 1</h4>
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label for="exhibit_number_1">Exhibit Number</label>
+                                    <input type="text" id="exhibit_number_1" name="Exhibit Number_1" placeholder="e.g., AB/1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dl_footage_start_1">Downloaded Footage (Start Date & Time)</label>
+                                    <input type="datetime-local" id="dl_footage_start_1" name="Downloaded Footage Start_1" step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dl_footage_end_1">Downloaded Footage (End Date & Time)</label>
+                                    <input type="datetime-local" id="dl_footage_end_1" name="Downloaded Footage End_1" step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cameras_downloaded_1">Cameras Downloaded</label>
+                                    <input type="text" id="cameras_downloaded_1" name="Cameras Downloaded_1" placeholder="e.g., Cam 1, Front Door">
+                                </div>
+                                <div class="form-group">
+                                    <label for="format_footage_1">Format of Footage</label>
+                                    <select id="format_footage_1" name="Footage Format_1">
+                                        <option value="" disabled selected>-- Select Format --</option>
+                                        <option value=".mp4">.mp4</option>
+                                        <option value=".avi">.avi</option>
+                                        <option value=".mkv">.mkv</option>
+                                        <option value=".mov">.mov</option>
+                                        <option value=".asf">.asf</option>
+                                        <option value=".dav">.dav (Dahua proprietary)</option>
+                                        <option value=".h264">.h264</option>
+                                        <option value=".h265">.h265</option>
+                                        <option value=".264">.264</option>
+                                        <option value=".sec">.sec (Samsung/Hanwha)</option>
+                                        <option value="Proprietary">Proprietary</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="download_method_1">Download Method</label>
+                                    <input type="text" id="download_method_1" name="Download Method_1" placeholder="e.g., USB, Disc, Network, AirDrop">
+                                </div>
+                                <div class="form-group">
+                                    <label for="memory_stick_no_1">Memory Stick No. / Disc Ref</label>
+                                    <input type="text" id="memory_stick_no_1" name="Media Reference_1">
+                                </div>
+
+                                <div class="status-row-container">
+                                    <div class="status-col">
+                                        <label class="col-title"><strong>Player Downloaded?</strong></label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" id="player_yes_1" name="Player Downloaded_1" value="Yes"> Yes</label>
+                                            <label><input type="radio" id="player_no_1" name="Player Downloaded_1" value="No" checked> No</label>
+                                        </div>
+                                    </div>
+                                    <div class="status-col">
+                                        <label class="col-title"><strong>Log Downloaded?</strong></label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" id="log_yes_1" name="Log Downloaded_1" value="Yes"> Yes</label>
+                                            <label><input type="radio" id="log_no_1" name="Log Downloaded_1" value="No" checked> No</label>
+                                        </div>
+                                    </div>
+                                    <div class="status-col">
+                                        <label class="col-title"><strong>Audio Recorded?</strong></label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" id="audio_yes_1" name="Audio Recorded_1" value="Yes"> Yes</label>
+                                            <label><input type="radio" id="audio_no_1" name="Audio Recorded_1" value="No"> No</label>
+                                            <label><input type="radio" id="audio_unsure_1" name="Audio Recorded_1" value="Unsure" checked> Unsure</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="add-dl-btn no-print" onclick="addDownloadBlock()">➕ Add Another Download Set</button>
+                </fieldset>
+                
+                <div class="form-nav-buttons no-print">
+                    <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
+                    <button type="button" class="btn-next" onclick="nextStep()" style="flex: 2;">Next: Exhibits & Notes ➔</button>
+                </div>
+            </div>
+
+            <!-- STEP 6: Exhibits & Submission -->
+            <div id="step-6" class="step-container">
+                <fieldset>
+                    <legend>Additional Exhibits & Photos</legend>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="notes">Additional CCTV Notes</label>
+                            <textarea id="notes" name="Notes"></textarea>
+                        </div>
+                        <div class="form-group full-width" id="photo_section">
+                            <label>DVR System Photos</label>
+                            <div class="no-print" style="margin-bottom: 10px;">
+                                <input type="file" id="dvr_photo" accept="image/*" multiple onchange="handlePhotoUpload(event)">
+                                <p style="font-size: 0.8em; color: #666; margin-top: 8px;">Select photos to attach as an Appendix. Add descriptive notes to them below once uploaded.</p>
+                            </div>
+                            <input type="hidden" id="dvr_photos_base64" name="DVR Photos">
+                            <div id="photo_gallery"></div> 
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div id="draftStatus" class="draft-status no-print"></div>
+
+                <div class="form-nav-buttons no-print">
+                    <button type="button" class="btn-prev" onclick="prevStep()">⬅ Back</button>
+                    <button type="button" class="btn-next submit-btn" id="pdfSubmitBtn" onclick="submitAndDownloadPDF()" style="flex: 2;">Generate Full Report & Submit</button>
+                </div>
+            </div>
+            
         </form>
     </div>
 
@@ -548,42 +706,277 @@
     <div id="log-tab" class="tab-content no-print">
         <div class="log-header">
             <h3 style="color: var(--primary-color); margin: 0;">Historical Submissions</h3>
-            <button class="export-btn" onclick="exportLogToCSV()">Export Log to CSV</button>
+            <button class="export-btn" onclick="exportLogToCSV()">Export to CSV</button>
         </div>
-        <div style="overflow-x: auto;">
-            <table>
+        <div style="overflow-x: auto; border-radius: 6px; border: 1px solid var(--border-color);">
+            <table style="margin-top: 0; border: none;">
                 <thead>
                     <tr>
-                        <th>Ref Number (Date)</th>
-                        <th>Operation</th>
-                        <th>Venue</th>
-                        <th>Action</th>
+                        <th style="border-top: none; border-left: none;">Ref Number (Date)</th>
+                        <th style="border-top: none;">Operation</th>
+                        <th style="border-top: none;">Venue</th>
+                        <th style="border-top: none; border-right: none;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="logTableBody">
                     <!-- Populated by JS -->
                 </tbody>
             </table>
-            <div id="emptyLogMessage" class="empty-log">No forms submitted yet.</div>
+            <div id="emptyLogMessage" class="empty-log">No submission records found on this device.</div>
         </div>
     </div>
 
     <!-- TAB 3: SYSTEM GUIDES -->
     <div id="guides-tab" class="tab-content no-print">
-        <h3 style="color: var(--primary-color); margin-top: 0;">Default System Logins & App Guides</h3>
+        <h3 style="color: var(--primary-color); margin-top: 0;">Default System Logins & Guides</h3>
         <p style="font-size: 0.9em; margin-bottom: 15px;">Search common CCTV manufacturers for default engineer passwords, or look up export instructions for cloud-based apps.</p>
         
-        <input type="text" id="guideSearch" class="search-bar" placeholder="Search for brand or model (e.g., Hikvision, Ring, Eufy)..." onkeyup="filterGuides()">
+        <input type="text" id="guideSearch" class="search-bar" placeholder="Search for brand or model (e.g., Hikvision, Ring)..." onkeyup="filterGuides()">
         
         <div id="guidesContainer" class="guide-grid">
             <!-- Populated by JS -->
         </div>
+    </div>
+
+    <!-- TAB 4: LEGAL POWERS -->
+    <div id="powers-tab" class="tab-content no-print">
+        <h3 style="color: var(--primary-color); margin-top: 0;">Seizure & Recovery Powers (PACE 1984)</h3>
+        <p style="font-size: 0.9em; margin-bottom: 20px;">Use this reference to determine your lawful authority to recover CCTV evidence when faced with resistance in the field.</p>
+        
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                1. Voluntary Consent (Normal Route)
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> The owner/manager allows you entry and consents to the download.</p>
+                <p><strong>Action:</strong> Proceed with a standard recovery using the Capture Form. Ensure the owner is aware of what footage is being taken and what it is for.</p>
+                <div class="law-quote">"If a person consents to a search or to the seizure of property, an officer must ensure the consent is informed and given voluntarily."</div>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                2. Refusal of Entry (The Closed Door)
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> You are standing outside a premises (e.g. a locked shop or private home) and the owner refuses to let you inside to view or secure the CCTV.</p>
+                <p><strong>Power:</strong> You generally <strong>cannot</strong> force entry solely to secure CCTV unless you have a warrant or are executing an arrest.</p>
+                <p><strong>Action:</strong></p>
+                <ul style="margin-top: 8px;">
+                    <li>Do not force entry.</li>
+                    <li>Serve a formal preservation request (often verbal initially, followed by written) reminding them of the offence of Perverting the Course of Justice.</li>
+                    <li>Consider applying for a <strong>Section 8 PACE 1984</strong> Search Warrant via a magistrate.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                3. Refusal to Download (The Hostile Owner)
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> You are already lawfully inside a premises (e.g. a shop open to the public, or you were invited in), you see the CCTV DVR, but the owner refuses to provide the password or refuses to let you download the footage.</p>
+                <p><strong>Power: Section 19 PACE 1984 (General Power of Seizure)</strong></p>
+                <p><strong>Action:</strong> Because you are lawfully on the premises, you may physically seize the entire DVR box if you have reasonable grounds to believe:</p>
+                <ul style="margin-top: 8px;">
+                    <li>It contains evidence of an offence.</li>
+                    <li>Seizure is necessary to prevent the evidence being <strong>C</strong>oncealed, <strong>L</strong>ost, <strong>A</strong>ltered, or <strong>D</strong>estroyed (CLAD).</li>
+                </ul>
+                <p style="margin-top: 10px;"><em>Practical Tip: Explaining to the owner that you have the lawful power to seize their hardware unit under S.19 PACE usually persuades them to log in and allow a USB export instead.</em></p>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                4. Consent Withdrawn Mid-Recovery
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> You are lawfully on premises downloading footage. Halfway through, the owner panics, tells you to get out, and tries to stop the download.</p>
+                <p><strong>Power: Section 19 PACE 1984</strong></p>
+                <p><strong>Action:</strong> The moment they withdraw consent and attempt to stop you, the risk of the evidence being "Lost, Altered, or Destroyed" becomes immediate.</p>
+                <ul style="margin-top: 8px;">
+                    <li>You no longer rely on consent. </li>
+                    <li>You immediately transition to your <strong>Section 19 PACE</strong> powers.</li>
+                    <li>You may remain on the premises specifically to secure the evidence, or physically seize the hard drive/DVR to prevent its destruction.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                5. Bulk Data Seizure (Too Much Data)
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> You locate a highly complex CCTV network or massive DVR, but the sheer volume of data makes it impossible or impractical to extract the specific footage at the scene.</p>
+                <p><strong>Power: Section 50 of the Criminal Justice and Police Act 2001 (CJPA)</strong></p>
+                <p><strong>Action:</strong> This power allows you to physically seize and remove the property from the premises so you can sift through and examine the data elsewhere. You must serve a written notice when exercising this power.</p>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                6. Arrested Suspect's Premises
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> A suspect has been arrested for an indictable offence, and you need to secure the CCTV from their home or business address.</p>
+                <p><strong>Power: Section 18 PACE 1984</strong></p>
+                <p><strong>Action:</strong> You may enter and search any premises occupied or controlled by the arrested person without a warrant. You must have reasonable grounds for suspecting that evidence relating to the offence is on the premises.</p>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                7. Cloud or Remote Server Storage
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> The physical camera is on the premises, but the footage is stored on a remote server or in the cloud rather than a local hard drive.</p>
+                <p><strong>Power: Sections 19(4) and 20 PACE 1984</strong></p>
+                <p><strong>Action:</strong> Section 20 extends seizure powers to computerised information. Under Section 19(4), if you have reasonable grounds to believe the electronic data is evidence of an offence, you can legally require the occupier to produce that information in a visible, legible form that can be taken away.</p>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                8. The Pre-Planned Raid (Judicial Warrant)
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> You anticipate that an owner will refuse entry and hide or delete crucial CCTV footage before you can secure it.</p>
+                <p><strong>Power: Section 8 PACE 1984</strong></p>
+                <p><strong>Action:</strong> You must apply to a magistrate or judge for a warrant. You must demonstrate reasonable grounds for believing an indictable offence occurred and that the premises contain material of substantial value to the investigation.</p>
+            </div>
+        </div>
+
+        <div class="tree-item">
+            <div class="tree-header" onclick="toggleTree(this)">
+                9. Protected or Privileged Environments
+                <span class="tree-icon">▼</span>
+            </div>
+            <div class="tree-body">
+                <p><strong>Scenario:</strong> You are attempting to seize CCTV from a solicitor's office, a medical clinic, or another environment containing highly confidential files.</p>
+                <p><strong>Power: Section 19(6) PACE 1984 / Legal Professional Privilege (LPP)</strong></p>
+                <p><strong>Action:</strong> You cannot legally seize material that you have reasonable grounds to believe is subject to legal privilege, such as private medical or legal documentation.</p>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- TAB 5: DPA DISCLOSURE REQUEST -->
+    <div id="dpa-tab" class="tab-content no-print">
+        <h3 style="color: var(--primary-color); margin-top: 0;">Request for Disclosure of Personal Data</h3>
+        <p style="font-size: 0.9em; margin-bottom: 20px;">Under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d) & 9(2)(c). This statutory request provides legal reassurance to organisations disclosing CCTV data for law enforcement purposes.</p>
+        
+        <form id="dpaForm">
+            <fieldset>
+                <legend>Recipient Organisation</legend>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="dpa_email">Recipient Email Address <span style="color:red">*</span></label>
+                        <input type="email" id="dpa_email" name="Recipient Email" required placeholder="e.g., manager@premises.co.uk">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpa_to">To (Name)</label>
+                        <input type="text" id="dpa_to" name="To Person">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpa_position">Position</label>
+                        <input type="text" id="dpa_position" name="Position" placeholder="e.g., Store Manager, CCTV Operator">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpa_organisation">Organisation / Business</label>
+                        <input type="text" id="dpa_organisation" name="Organisation">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpa_address">Address & Postcode</label>
+                        <input type="text" id="dpa_address" name="Address">
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Statutory Grounds & Confirmations</legend>
+                <label>I am making enquiries which are concerned with (select all that apply):</label>
+                <div class="checkbox-group" style="margin-bottom: 15px;">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="dpa_purpose_crime" checked>
+                        <label for="dpa_purpose_crime">The prevention or detection of crime</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="dpa_purpose_offenders" checked>
+                        <label for="dpa_purpose_offenders">The prosecution or apprehension of offenders</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="dpa_purpose_vital">
+                        <label for="dpa_purpose_vital">Protecting the vital interests of a person</label>
+                    </div>
+                </div>
+
+                <div style="font-size: 0.85em; color: var(--text-color); background: var(--calc-bg); padding: 12px; border-radius: 5px; border: 1px solid var(--primary-light); margin-bottom: 18px;">
+                    <p style="margin: 0 0 8px 0; color: var(--primary-color);"><strong>Mandatory Officer Declarations:</strong></p>
+                    <p style="margin: 0 0 6px 0;">✓ I confirm that the personal data requested below is needed for the purposes indicated above and a failure to provide that information will be likely to prejudice those matters.</p>
+                    <p style="margin: 0;">✓ I confirm that the individual(s) whose personal data is sought should not be informed of this request as to do so would be likely to prejudice the matters described above.</p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="dpa_info_required">Information Required</label>
+                        <textarea id="dpa_info_required" name="Information Required" rows="3"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="dpa_why_necessary">Why the information is necessary for the purpose</label>
+                        <textarea id="dpa_why_necessary" name="Why Necessary" rows="3"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Police Details</legend>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dpa_police_ref">Police Reference / Operation</label>
+                        <input type="text" id="dpa_police_ref" name="Police Reference">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpa_officer">Rank / Collar / Name</label>
+                        <input type="text" id="dpa_officer" name="Officer">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpa_station">Station / Base</label>
+                        <input type="text" id="dpa_station" name="Station" placeholder="e.g., Central Police Station">
+                    </div>
+                    <div class="form-group">
+                        <label for="dpa_tel">Contact Telephone</label>
+                        <input type="tel" id="dpa_tel" name="Telephone">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="dpa_officer_email">Officer Email</label>
+                        <input type="email" id="dpa_officer_email" name="Officer Email" placeholder="e.g., officer@police.uk">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="dpa_countersign">Supervisor Counter-Signature / Rank / Name (If required)</label>
+                        <input type="text" id="dpa_countersign" name="Counter Signature" placeholder="e.g., PS 1234 Smith">
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="button-group no-print">
+                <button type="button" class="submit-btn" id="dpaSubmitBtn" onclick="submitAndEmailDPA()" style="background-color: #17a2b8; box-shadow: 0 4px 6px rgba(23, 162, 184, 0.2);">Generate Formal PDF & Send Email</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- Modal for Viewing Record in Form Format -->
 <div id="viewModal" class="modal no-print">
     <div class="modal-content" id="modalDataContent">
+        <span class="close-btn" onclick="closeModal('viewModal')" title="Close">&times;</span>
         <h2 style="color: var(--primary-color); text-align:center; margin-top:0;" class="no-print">Submitted Record Data</h2>
         <div id="modalFormInject"></div>
     </div>
@@ -594,15 +987,146 @@
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal('mg11Modal')" title="Close">&times;</span>
         <h2 style="color: #6f42c1; text-align:center; margin-top:0;">Collection Statement</h2>
-        <p style="text-align:center; font-size: 0.9em; color: var(--text-color);">Review the statement below. Tap the button to copy it so you can paste it into your app or records.</p>
-        <textarea id="mg11Text" style="width: 100%; height: 350px; font-family: Arial, sans-serif; font-size: 14px; padding: 10px; line-height: 1.5; border: 1px solid var(--border-color); border-radius: 4px; resize: vertical;" readonly></textarea>
-        <button onclick="copyMg11Text()" style="width: 100%; padding: 15px; background-color: #6f42c1; color: white; border: none; font-size: 1.1em; border-radius: 5px; margin-top: 15px; cursor: pointer;">Copy Statement to Clipboard</button>
-        <div id="copyFeedback" style="text-align:center; color: #28a745; font-weight: bold; display:none; margin-top: 10px;">Statement copied successfully!</div>
+        <p style="text-align:center; font-size: 0.9em; color: var(--text-color);">Review the statement below. Tap the button to copy it so you can paste it into your app or records, or generate the PDF.</p>
+        <textarea id="mg11Text" style="width: 100%; height: 350px; font-family: inherit; font-size: 14px; padding: 12px; line-height: 1.6; border: none; outline: none; border-radius: 6px; resize: vertical; background: var(--input-bg); color: var(--input-text);" readonly></textarea>
+        
+        <div style="display:flex; gap: 10px;">
+            <button onclick="copyMg11Text()" style="flex: 1; padding: 16px; background-color: #6f42c1; color: white; border: none; font-size: 1.1em; border-radius: 6px; margin-top: 15px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);">Copy to Clipboard</button>
+        </div>
+        
+        <div id="copyFeedback" style="text-align:center; color: #28a745; font-weight: bold; display:none; margin-top: 15px; padding: 10px; background: #e8f5e9; border-radius: 4px; border: 1px solid #c8e6c9;">✓ Statement copied successfully!</div>
     </div>
 </div>
 
 <script>
     let uploadedPhotos = []; 
+    let downloadCount = 1;
+    
+    // Step Wizard Logic
+    let currentStep = 1;
+    const maxSteps = 6;
+    const stepTitles = ["", "General Information", "Venue Details", "Time Sync & Adjustments", "System Details", "Download Specifics", "Exhibits & Submission"];
+
+    // SMART DATE PARSER 
+    function safeParseDate(str) {
+        if (!str) return new Date(NaN);
+        let d = new Date(str);
+        if (!isNaN(d.getTime())) return d;
+        
+        const ukMatch = str.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+        if (ukMatch) {
+            return new Date(ukMatch[3], ukMatch[2] - 1, ukMatch[1], ukMatch[4] || 0, ukMatch[5] || 0, ukMatch[6] || 0);
+        }
+        return new Date(NaN);
+    }
+
+    function setTimeAccurate() {
+        const now = new Date();
+        const formatted = formatForDateTimeLocal(now);
+        document.getElementById('system_time').value = formatted;
+        document.getElementById('real_time').value = formatted;
+        calculateAdjustments();
+        saveDraft();
+    }
+
+    function addDownloadBlock() {
+        downloadCount++;
+        const container = document.getElementById('downloads_container');
+        const template = container.querySelector('.download-block');
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = template.innerHTML;
+        
+        tempDiv.innerHTML = tempDiv.innerHTML.replace(/_1"/g, `_${downloadCount}"`);
+        tempDiv.innerHTML = tempDiv.innerHTML.replace(/_1'/g, `_${downloadCount}'`);
+        tempDiv.innerHTML = tempDiv.innerHTML.replace(/>Download 1</g, `>Download ${downloadCount}<`);
+        
+        const block = document.createElement('div');
+        block.className = 'download-block';
+        block.setAttribute('data-index', downloadCount);
+        block.style.cssText = template.style.cssText;
+        block.innerHTML = tempDiv.innerHTML;
+        
+        block.querySelectorAll('input[type="text"], input[type="datetime-local"]').forEach(i => i.value = '');
+        block.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+        block.querySelectorAll('input[type="radio"][value="No"]').forEach(i => i.checked = true);
+        const unsureRadio = block.querySelector('input[type="radio"][value="Unsure"]');
+        if (unsureRadio) unsureRadio.checked = true;
+        
+        const rmBtn = document.createElement('button');
+        rmBtn.type = 'button';
+        rmBtn.className = 'delete-btn no-print';
+        rmBtn.innerText = '🗑️ Remove';
+        rmBtn.style.position = 'absolute';
+        rmBtn.style.top = '0px';
+        rmBtn.style.right = '0px';
+        rmBtn.onclick = function() { 
+            block.remove(); 
+            saveDraft(); 
+        };
+        block.appendChild(rmBtn);
+        
+        container.appendChild(block);
+        saveDraft();
+    }
+
+    function resetDownloadBlocks() {
+        downloadCount = 1;
+        const container = document.getElementById('downloads_container');
+        const blocks = container.querySelectorAll('.download-block');
+        for (let i = 1; i < blocks.length; i++) {
+            blocks[i].remove();
+        }
+        const firstBlock = blocks[0];
+        firstBlock.querySelectorAll('input[type="text"], input[type="datetime-local"]').forEach(input => input.value = '');
+        firstBlock.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+        firstBlock.querySelectorAll('input[type="radio"][value="No"]').forEach(input => input.checked = true);
+        const unsureRadio = firstBlock.querySelector('input[type="radio"][value="Unsure"]');
+        if (unsureRadio) unsureRadio.checked = true;
+    }
+
+    function showStep(n) {
+        const isNo = document.getElementById('cctv_avail_no').checked;
+        if (isNo && n >= 3 && n <= 5) {
+            if (currentStep < n) {
+                n = 6; 
+            } else {
+                n = 2; 
+            }
+        }
+        
+        document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active-step'));
+        document.getElementById('step-' + n).classList.add('active-step');
+        currentStep = n;
+        
+        const stepInd = document.getElementById('stepIndicator');
+        if(stepInd) stepInd.innerText = `Step ${currentStep} of ${maxSteps}: ${stepTitles[currentStep]}`;
+        
+        saveDraft(); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextStep() {
+        const stepEl = document.getElementById('step-' + currentStep);
+        const inputs = stepEl.querySelectorAll('input, select, textarea');
+        
+        for (let input of inputs) {
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                return;
+            }
+        }
+        
+        if (currentStep < maxSteps) {
+            showStep(currentStep + 1);
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 1) {
+            showStep(currentStep - 1);
+        }
+    }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -626,15 +1150,38 @@
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        
+        if (event && event.currentTarget && event.currentTarget.classList) {
+            event.currentTarget.classList.add('active');
+        } else {
+            const matchedBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+            if (matchedBtn) matchedBtn.classList.add('active');
+        }
+        
+        if(tabId === 'dpa-tab') {
+            syncDPAForm();
+        }
+    }
+
+    function toggleTree(element) {
+        const item = element.parentElement;
+        const body = item.querySelector('.tree-body');
+        const isOpen = item.classList.contains('open');
+        
+        document.querySelectorAll('.tree-item').forEach(i => {
+            i.classList.remove('open');
+            i.querySelector('.tree-body').classList.remove('open');
+        });
+
+        if (!isOpen) {
+            item.classList.add('open');
+            body.classList.add('open');
+        }
     }
 
     function toggleCctvDetails() {
         const isAvailable = document.getElementById('cctv_avail_yes').checked;
-        const detailsSection = document.getElementById('cctv-details-section');
         const photoSection = document.getElementById('photo_section');
-        
-        detailsSection.style.display = isAvailable ? 'block' : 'none';
         if(photoSection) photoSection.style.display = isAvailable ? 'block' : 'none';
     }
 
@@ -645,7 +1192,8 @@
         localStorage.setItem('cctvDraft', JSON.stringify(draftData));
         const now = new Date();
         const pad = n => n.toString().padStart(2, '0');
-        document.getElementById('draftStatus').innerText = `Draft auto-saved locally at ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        const draftEls = document.querySelectorAll('.draft-status');
+        draftEls.forEach(el => el.innerText = `Draft auto-saved locally at ${pad(now.getHours())}:${pad(now.getMinutes())}`);
     }
 
     document.getElementById('cctvForm').addEventListener('input', saveDraft);
@@ -657,7 +1205,11 @@
             ageDisplay.innerText = ''; 
             return; 
         }
-        const dob = new Date(dobInput);
+        const dob = safeParseDate(dobInput);
+        if (isNaN(dob.getTime())) {
+            ageDisplay.innerText = ''; 
+            return; 
+        }
         const today = new Date();
         let age = today.getFullYear() - dob.getFullYear();
         const m = today.getMonth() - dob.getMonth();
@@ -674,6 +1226,14 @@
         const form = document.getElementById('cctvForm');
 
         if (savedDraft) {
+            let maxDl = 1;
+            Object.keys(savedDraft).forEach(key => {
+                let match = key.match(/Cameras Downloaded_(\d+)/);
+                if (match && parseInt(match[1]) > maxDl) maxDl = parseInt(match[1]);
+            });
+            resetDownloadBlocks();
+            for (let i = 2; i <= maxDl; i++) addDownloadBlock();
+
             form.querySelectorAll('input, textarea, select').forEach(input => {
                 const fieldName = input.name;
                 if(fieldName && savedDraft[fieldName] !== undefined) {
@@ -700,12 +1260,14 @@
                 }
             }
 
-            document.getElementById('draftStatus').innerText = "Draft restored.";
+            const draftEls = document.querySelectorAll('.draft-status');
+            draftEls.forEach(el => el.innerText = "Draft restored.");
         } else {
             document.getElementById('ref_number').value = "Generated upon submission";
             
             const todayDate = new Date();
-            document.getElementById('date').value = `${todayDate.getFullYear()}-${String(todayDate.getMonth()+1).padStart(2, '0')}-${String(todayDate.getDate()).padStart(2, '0')}`;
+            const pad = n => n.toString().padStart(2, '0');
+            document.getElementById('date').value = `${todayDate.getFullYear()}-${pad(todayDate.getMonth()+1)}-${pad(todayDate.getDate())}`;
             
             const logs = JSON.parse(localStorage.getItem('cctvFullLogs')) || [];
             if (logs.length > 0) {
@@ -713,8 +1275,18 @@
                 document.getElementById('person_attending').value = logs[0]['Person Attending'] || '';
                 document.getElementById('contact_number').value = logs[0]['Contact Number'] || '';
             }
+            
+            document.getElementById('dvr_photo').value = '';
+            uploadedPhotos = [];
+            document.getElementById('photo_gallery').innerHTML = '';
+            document.getElementById('dvr_photos_base64').value = '';
+            resetDownloadBlocks();
+
             toggleCctvDetails();
         }
+        
+        currentStep = 1;
+        showStep(1);
         loadLogs();
         renderGuides();
     }
@@ -727,12 +1299,14 @@
 
             document.getElementById('cctvForm').reset();
             localStorage.removeItem('cctvDraft');
-            document.getElementById('draftStatus').innerText = "";
+            const draftEls = document.querySelectorAll('.draft-status');
+            draftEls.forEach(el => el.innerText = "");
             document.getElementById('ref_number').value = "Generated upon submission";
             document.getElementById('age_display').innerText = "";
-            document.getElementById('audio_no').checked = true;
-            document.getElementById('player_no').checked = true;
             
+            resetDownloadBlocks();
+
+            document.getElementById('dvr_photo').value = '';
             uploadedPhotos = [];
             renderPhotoGallery();
 
@@ -741,7 +1315,8 @@
             document.getElementById('contact_number').value = cn;
             
             const now = new Date();
-            document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const pad = n => n.toString().padStart(2, '0');
+            document.getElementById('date').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
 
             document.getElementById('cctv_avail_yes').checked = true;
             toggleCctvDetails();
@@ -749,6 +1324,7 @@
             updateOverwriteCalculation();
             
             saveDraft();
+            showStep(1);
         }
     }
 
@@ -816,14 +1392,103 @@
         }, { timeout: 10000 });
     }
 
-    function handlePhotoUpload(event) {
+    async function searchAddress() {
+        const query = document.getElementById('venue_address').value.trim();
+        const btn = document.getElementById('searchAddrBtn');
+        const resultsContainer = document.getElementById('address_results');
+        
+        if (!query) {
+            alert("Please enter a partial address or postcode first.");
+            return;
+        }
+        
+        const origText = btn.innerText;
+        btn.innerText = "⏳...";
+        btn.disabled = true;
+        resultsContainer.style.display = 'none';
+        resultsContainer.innerHTML = '';
+        
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5`);
+            const data = await res.json();
+            
+            if (data && data.length > 0) {
+                if (data.length === 1) {
+                    selectAddress(data[0]);
+                } else {
+                    resultsContainer.style.display = 'block';
+                    data.forEach((item) => {
+                        const div = document.createElement('div');
+                        div.className = 'address-option';
+                        div.innerText = item.display_name;
+                        div.onclick = () => selectAddress(item);
+                        resultsContainer.appendChild(div);
+                    });
+                }
+            } else {
+                alert("No addresses found. Try being more specific or use the GPS button.");
+            }
+        } catch(e) {
+            alert("Search failed. Check your internet connection.");
+        } finally {
+            btn.innerText = origText;
+            btn.disabled = false;
+        }
+    }
+
+    function selectAddress(item) {
+        const resultsContainer = document.getElementById('address_results');
+        resultsContainer.style.display = 'none';
+        resultsContainer.innerHTML = '';
+        
+        let addressText = item.display_name;
+        if (item.address && item.address.postcode) {
+            addressText = addressText.replace(', ' + item.address.postcode, '');
+            addressText = addressText.replace(item.address.postcode, '');
+        }
+        addressText = addressText.replace(', United Kingdom', '');
+        
+        document.getElementById('venue_address').value = addressText;
+        if (item.address && item.address.postcode) {
+            document.getElementById('postcode').value = item.address.postcode;
+        }
+        saveDraft();
+    }
+
+    async function handlePhotoUpload(event) {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
         let filesProcessed = 0;
 
-        Array.from(files).forEach(file => {
+        for (let file of files) {
             const fileName = file.name; 
+            
+            let dateTaken = 'Unknown';
+            try {
+                const buffer = await file.slice(0, 131072).arrayBuffer();
+                const arr = new Uint8Array(buffer);
+                let str = "";
+                for(let i=0; i<arr.length; i++) {
+                    if(arr[i] >= 32 && arr[i] <= 126) str += String.fromCharCode(arr[i]);
+                }
+                const match = str.match(/(20\d\d):(0[1-9]|1[012]):(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)/);
+                
+                if (match) {
+                    dateTaken = `${match[3]}/${match[2]}/${match[1]} ${match[4]}:${match[5]}`;
+                } else if (file.lastModified) {
+                    const fileDate = new Date(file.lastModified);
+                    const pad = n => n.toString().padStart(2, '0');
+                    dateTaken = `${pad(fileDate.getDate())}/${pad(fileDate.getMonth()+1)}/${fileDate.getFullYear()} ${pad(fileDate.getHours())}:${pad(fileDate.getMinutes())}`;
+                }
+            } catch(e) {
+                if (file.lastModified) {
+                    const fileDate = new Date(file.lastModified);
+                    const pad = n => n.toString().padStart(2, '0');
+                    dateTaken = `${pad(fileDate.getDate())}/${pad(fileDate.getMonth()+1)}/${fileDate.getFullYear()} ${pad(fileDate.getHours())}:${pad(fileDate.getMinutes())}`;
+                }
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -840,7 +1505,7 @@
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                     const base64Str = canvas.toDataURL('image/jpeg', 0.5); 
-                    uploadedPhotos.push({ src: base64Str, caption: '', filename: fileName });
+                    uploadedPhotos.push({ src: base64Str, caption: '', filename: fileName, dateTaken: dateTaken });
                     renderPhotoGallery();
                     
                     filesProcessed++;
@@ -852,7 +1517,7 @@
                 img.src = e.target.result;
             }
             reader.readAsDataURL(file);
-        });
+        }
     }
 
     function renderPhotoGallery() {
@@ -863,7 +1528,7 @@
         
         uploadedPhotos.forEach((photoObj, index) => {
             if (typeof photoObj === 'string') {
-                photoObj = { src: photoObj, caption: '', filename: 'photo.jpg' };
+                photoObj = { src: photoObj, caption: '', filename: 'photo.jpg', dateTaken: 'Unknown' };
                 uploadedPhotos[index] = photoObj;
             }
 
@@ -874,6 +1539,10 @@
             nameDiv.className = 'photo-filename';
             nameDiv.title = photoObj.filename || 'Attached Photo';
             nameDiv.innerText = photoObj.filename || 'Attached Photo';
+
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'photo-datetime';
+            dateDiv.innerText = photoObj.dateTaken || 'Unknown';
 
             const wrapper = document.createElement('div');
             wrapper.className = 'photo-wrapper';
@@ -907,6 +1576,7 @@
             wrapper.appendChild(removeBtn);
             
             card.appendChild(nameDiv);
+            card.appendChild(dateDiv);
             card.appendChild(wrapper);
             card.appendChild(noteInput);
             gallery.appendChild(card);
@@ -915,20 +1585,17 @@
 
     function formatUKDateTime(dtStr, isDateOnly = false) {
         if (!dtStr) return '';
-        const parts = dtStr.split('T');
-        const dateParts = parts[0].split('-'); 
-        if (dateParts.length !== 3) return dtStr; 
+        const d = safeParseDate(dtStr);
+        if (isNaN(d.getTime())) return dtStr;
         
-        const ukDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+        const pad = n => n.toString().padStart(2, '0');
+        const ukDate = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
         
-        if (isDateOnly) return ukDate;
-        
-        if (parts.length > 1) {
-            let timeStr = parts[1];
-            if (timeStr.length === 5) timeStr += ':00'; 
-            return `${ukDate} ${timeStr}`;
+        if (isDateOnly || (d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0)) {
+            return ukDate;
         }
-        return ukDate;
+        
+        return `${ukDate} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }
 
     document.querySelectorAll('.time-calc').forEach(input => input.addEventListener('change', calculateAdjustments));
@@ -973,34 +1640,44 @@
         const sysVal = document.getElementById('system_time').value;
         const realVal = document.getElementById('real_time').value;
         let offsetMs = null;
+        
+        const sysDate = safeParseDate(sysVal);
+        const realDate = safeParseDate(realVal);
 
-        if (sysVal && realVal) {
-            offsetMs = new Date(realVal).getTime() - new Date(sysVal).getTime();
+        if (sysVal && realVal && !isNaN(sysDate.getTime()) && !isNaN(realDate.getTime())) {
+            offsetMs = realDate.getTime() - sysDate.getTime();
             document.getElementById('time_difference').value = formatTimeDifference(offsetMs);
         } else {
             document.getElementById('time_difference').value = "";
         }
 
-        const incStart = document.getElementById('incident_start').value;
-        const incEnd = document.getElementById('incident_end').value;
+        const incStartVal = document.getElementById('incident_start').value;
+        const incEndVal = document.getElementById('incident_end').value;
 
-        if (offsetMs !== null && incStart && incEnd) {
-            document.getElementById('dl_start').value = formatForDateTimeLocal(new Date(new Date(incStart).getTime() - offsetMs));
-            document.getElementById('dl_end').value = formatForDateTimeLocal(new Date(new Date(incEnd).getTime() - offsetMs));
+        if (offsetMs !== null && incStartVal && incEndVal) {
+            const incStartDate = safeParseDate(incStartVal);
+            const incEndDate = safeParseDate(incEndVal);
+            
+            if(!isNaN(incStartDate.getTime()) && !isNaN(incEndDate.getTime())) {
+                document.getElementById('dl_start').value = formatForDateTimeLocal(new Date(incStartDate.getTime() - offsetMs));
+                document.getElementById('dl_end').value = formatForDateTimeLocal(new Date(incEndDate.getTime() - offsetMs));
+            }
         } else {
             document.getElementById('dl_start').value = "";
             document.getElementById('dl_end').value = "";
         }
 
         const durationDisplay = document.getElementById('incident_duration');
-        if (incStart && incEnd) {
-            const startMs = new Date(incStart).getTime();
-            const endMs = new Date(incEnd).getTime();
-            if (endMs >= startMs) {
-                const diffMs = endMs - startMs;
-                durationDisplay.innerText = "Duration: " + formatDuration(diffMs);
-            } else {
-                durationDisplay.innerText = "Duration: Invalid (End time is before Start time)";
+        if (incStartVal && incEndVal) {
+            const startMs = safeParseDate(incStartVal).getTime();
+            const endMs = safeParseDate(incEndVal).getTime();
+            if (!isNaN(startMs) && !isNaN(endMs)) {
+                if (endMs >= startMs) {
+                    const diffMs = endMs - startMs;
+                    durationDisplay.innerText = "Duration: " + formatDuration(diffMs);
+                } else {
+                    durationDisplay.innerText = "Duration: Invalid (End time is before Start time)";
+                }
             }
         } else {
             durationDisplay.innerText = "";
@@ -1017,10 +1694,25 @@
         owInput.classList.remove('priority-flash');
         
         if (earlyInput) {
-            const earliestDate = new Date(earlyInput);
+            const earliestDate = safeParseDate(earlyInput);
+            
+            if (isNaN(earliestDate.getTime())) {
+                owInput.value = "Invalid date format";
+                owInput.style.color = "";
+                owInput.style.fontWeight = "normal";
+                return;
+            }
+            
             earliestDate.setHours(0,0,0,0);
-            let targetDate = document.getElementById('incident_start').value ? new Date(document.getElementById('incident_start').value) : new Date();
+            
+            let targetDateStr = document.getElementById('incident_start').value;
+            let targetDate = targetDateStr ? safeParseDate(targetDateStr) : new Date();
+            
+            if (isNaN(targetDate.getTime())) {
+                targetDate = new Date();
+            }
             targetDate.setHours(0,0,0,0);
+            
             const diffDays = Math.floor((targetDate - earliestDate) / (1000 * 60 * 60 * 24));
             
             if (diffDays >= 0) {
@@ -1047,148 +1739,186 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        let y = 20; 
-        const margin = 15;
+        let y = 14; 
+        const margin = 14;
         const pageWidth = 210;
         const usableW = pageWidth - (margin * 2);
-        const halfW = (usableW - 5) / 2; 
+        const halfW = (usableW - 4) / 2; 
 
         function checkPage(needed) {
-            if (y + needed > 285) { doc.addPage(); y = 20; }
+            if (y + needed > 282) { 
+                doc.addPage(); 
+                y = 14; 
+            }
         }
 
-        doc.setFontSize(18);
+        // 1. Centered Document Header
+        doc.setFontSize(16);
         doc.setTextColor(0, 86, 179);
         doc.setFont("helvetica", "bold");
-        doc.text("CCTV Retrieval System", 105, y, { align: "center" });
-        y += 12;
+        doc.text("CCTV Download Form", 105, y, { align: "center" });
+        y += 8;
+
+        // 2. Centered Prominent Reference Number Box
+        doc.setFillColor(255, 243, 205); 
+        doc.setDrawColor(230, 210, 150); 
+        doc.roundedRect(margin, y, usableW, 14, 2, 2, 'FD'); 
+        doc.setFontSize(8.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(133, 100, 4);
+        doc.text("Unique Reference Number", 105, y + 4.5, { align: "center" });
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        doc.text(String(data['Reference Number'] || 'N/A'), 105, y + 10.5, { align: "center" });
+        y += 18;
 
         function drawSectionHeader(title) {
-            checkPage(15);
-            doc.setFillColor(250, 250, 250); 
-            doc.setDrawColor(204, 204, 204); 
-            doc.rect(margin, y, usableW, 9, 'FD'); 
+            checkPage(20);
+            doc.setFillColor(0, 86, 179); 
+            doc.setDrawColor(0, 86, 179); 
+            doc.roundedRect(margin, y, usableW, 7.5, 1.5, 1.5, 'FD'); 
             
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 86, 179); 
-            doc.text(title, margin + 3, y + 6);
-            y += 13;
+            doc.setTextColor(255, 255, 255); 
+            doc.text(title, margin + 3.5, y + 5.2);
+            y += 10.5;
         }
 
         function drawField(x, yPos, w, label, val, isMulti = false, customBg = null, customBorder = null) {
-            doc.setFontSize(9);
+            doc.setFontSize(8.5);
             doc.setFont("helvetica", "bold");
-            doc.setTextColor(51, 51, 51);
+            doc.setTextColor(70, 70, 70);
             doc.text(label, x, yPos);
             
-            let boxY = yPos + 2;
+            let boxY = yPos + 1.8;
+            doc.setFontSize(9.5);
             doc.setFont("helvetica", "normal");
-            doc.setTextColor(0, 0, 0);
+            doc.setTextColor(20, 20, 20);
             
-            let textLines = doc.splitTextToSize(String(val || ''), w - 4);
-            let boxH = isMulti ? Math.max(10, (textLines.length * 4) + 6) : 9;
+            let textLines = doc.splitTextToSize(String(val !== undefined && val !== null && String(val).trim() !== '' ? val : 'N/A'), w - 4);
+            let boxH = isMulti ? Math.max(9, (textLines.length * 4.2) + 4.5) : 8;
             
             if (customBg) {
                 doc.setFillColor(customBg[0], customBg[1], customBg[2]);
             } else {
-                doc.setFillColor(255, 255, 255); 
+                doc.setFillColor(248, 250, 252); 
             }
             
             if (customBorder) {
                 doc.setDrawColor(customBorder[0], customBorder[1], customBorder[2]);
             } else {
-                doc.setDrawColor(204, 204, 204); 
+                doc.setDrawColor(205, 215, 225); 
             }
 
-            doc.rect(x, boxY, w, boxH, 'FD');
-            
-            if(label === "Unique Reference Number") doc.setTextColor(133, 100, 4);
-            
-            doc.text(textLines, x + 2, boxY + 6);
-            return boxY + boxH + 5; 
+            doc.roundedRect(x, boxY, w, boxH, 1.5, 1.5, 'FD');
+            doc.text(textLines, x + 2.5, boxY + 5.5);
+            return boxY + boxH + 3.5; 
         }
-        
+
+        // Section: General Information
         drawSectionHeader("General Information");
-        let nextY = drawField(margin, y, usableW, "Unique Reference Number", data['Reference Number'], false, [255, 243, 205], [255, 238, 186]); 
-        y = nextY;
         let y1 = drawField(margin, y, halfW, "Operation", data['Operation']);
-        let y2 = drawField(margin + halfW + 5, y, halfW, "Date", formatUKDateTime(data['Date'], true));
+        let y2 = drawField(margin + halfW + 4, y, halfW, "Date", formatUKDateTime(data['Date'], true));
         y = Math.max(y1, y2);
         y1 = drawField(margin, y, halfW, "Person Attending", data['Person Attending']);
-        y2 = drawField(margin + halfW + 5, y, halfW, "Contact Number", data['Contact Number']);
-        y = Math.max(y1, y2) + 2;
+        y2 = drawField(margin + halfW + 4, y, halfW, "Contact Number", data['Contact Number']);
+        y = Math.max(y1, y2) + 1.5;
 
-        checkPage(40);
+        // Section: Venue & Contact Details
+        checkPage(35);
         drawSectionHeader("Venue & Contact Details");
         y = drawField(margin, y, usableW, "Venue Name / Address", data['Venue Address'], true);
         y1 = drawField(margin, y, halfW, "Postcode", data['Postcode']);
-        y2 = drawField(margin + halfW + 5, y, halfW, "Contact Name", data['Venue Contact Name']);
+        y2 = drawField(margin + halfW + 4, y, halfW, "Contact Name", data['Venue Contact Name']);
         y = Math.max(y1, y2);
         y1 = drawField(margin, y, halfW, "Date of Birth", formatUKDateTime(data['Contact DOB'], true));
-        y2 = drawField(margin + halfW + 5, y, halfW, "Telephone Number", data['Venue Telephone']);
+        y2 = drawField(margin + halfW + 4, y, halfW, "Telephone Number", data['Venue Telephone']);
         y = Math.max(y1, y2);
         y = drawField(margin, y, usableW, "Venue Notes", data['Venue Notes'], true);
         y = drawField(margin, y, usableW, "Is CCTV Available?", data['CCTV Available']);
-        y += 2;
+        y += 1.5;
 
         if (data['CCTV Available'] !== 'No') {
+            // Section: Time Sync & Footage Adjustments
             checkPage(45);
-            drawSectionHeader("System Details");
-            y1 = drawField(margin, y, halfW, "CCTV System Make/Model", data['System Make and Model']);
-            y2 = drawField(margin + halfW + 5, y, halfW, "Total Number of Cameras", data['Total Cameras']);
-            y = Math.max(y1, y2);
-            y = drawField(margin, y, usableW, "System Username / Passwords", data['System Credentials']);
-            y1 = drawField(margin, y, halfW, "Earliest Footage Available", formatUKDateTime(data['Earliest Footage']));
-            y2 = drawField(margin + halfW + 5, y, halfW, "When will system overwrite data?", data['Overwrite Timeline']);
-            y = Math.max(y1, y2) + 2;
-
-            checkPage(50);
             drawSectionHeader("Time Sync & Footage Adjustments");
             y1 = drawField(margin, y, halfW, "DVR System Date & Time", formatUKDateTime(data['DVR Time']));
-            y2 = drawField(margin + halfW + 5, y, halfW, "Real Date & Time", formatUKDateTime(data['Real Time Sync']));
+            y2 = drawField(margin + halfW + 4, y, halfW, "Real Date & Time", formatUKDateTime(data['Real Time Sync']));
             y = Math.max(y1, y2);
             y = drawField(margin, y, usableW, "Time Difference", data['Calculated Time Difference']);
             y1 = drawField(margin, y, halfW, "Real Time of Incident (Start)", formatUKDateTime(data['Incident Start (Real Time)']));
-            y2 = drawField(margin + halfW + 5, y, halfW, "Real Time of Incident (End)", formatUKDateTime(data['Incident End (Real Time)']));
-            y = Math.max(y1, y2) + 2;
+            y2 = drawField(margin + halfW + 4, y, halfW, "Real Time of Incident (End)", formatUKDateTime(data['Incident End (Real Time)']));
+            y = Math.max(y1, y2) + 1;
             
+            // Adjusted DVR Box - Dynamic Height FIX applied to stop text overlap
+            let adjBoxH = 25; 
             doc.setFillColor(232, 244, 248); 
             doc.setDrawColor(0, 86, 179); 
-            doc.rect(margin, y, usableW, 23, 'FD');
-            let calcY = y + 5;
-            doc.setFontSize(10); 
+            doc.roundedRect(margin, y, usableW, adjBoxH, 1.5, 1.5, 'FD');
+            doc.setFontSize(9.5); 
             doc.setTextColor(0, 86, 179); 
             doc.setFont("helvetica", "bold");
-            doc.text("Adjusted DVR Download Times", margin + 3, calcY);
-            calcY += 4;
-            drawField(margin + 3, calcY, halfW - 4, "DVR Search Start Time", formatUKDateTime(data['DVR Download Start Time']));
-            drawField(margin + halfW + 5, calcY, halfW - 4, "DVR Search End Time", formatUKDateTime(data['DVR Download End Time']));
-            y += 28;
+            doc.text("Adjusted DVR Download Times", 105, y + 5.5, { align: "center" });
+            
+            drawField(margin + 3, y + 8, halfW - 2, "DVR Search Start Time", formatUKDateTime(data['DVR Download Start Time']), false, [255, 255, 255], [170, 200, 230]);
+            drawField(margin + halfW + 3, y + 8, halfW - 2, "DVR Search End Time", formatUKDateTime(data['DVR Download End Time']), false, [255, 255, 255], [170, 200, 230]);
+            y += adjBoxH + 4;
 
-            checkPage(50);
-            drawSectionHeader("Download Specifics");
-            y1 = drawField(margin, y, halfW, "Downloaded Footage Start", formatUKDateTime(data['Downloaded Footage Start']));
-            y2 = drawField(margin + halfW + 5, y, halfW, "Downloaded Footage End", formatUKDateTime(data['Downloaded Footage End']));
+            // Section: System Details
+            checkPage(35);
+            drawSectionHeader("System Details");
+            y1 = drawField(margin, y, halfW, "CCTV System Make/Model", data['System Make and Model']);
+            y2 = drawField(margin + halfW + 4, y, halfW, "Total Number of Cameras", data['Total Cameras']);
             y = Math.max(y1, y2);
-            y1 = drawField(margin, y, halfW, "Cameras Downloaded", data['Cameras Downloaded']);
-            y2 = drawField(margin + halfW + 5, y, halfW, "Format of Footage", data['Footage Format']);
-            y = Math.max(y1, y2);
-            y1 = drawField(margin, y, halfW, "Download Method", data['Download Method']);
-            y2 = drawField(margin + halfW + 5, y, halfW, "Memory Stick No. / Disc Ref", data['Media Reference']);
-            y = Math.max(y1, y2);
-            y1 = drawField(margin, y, halfW, "Player Downloaded?", data['Player Downloaded']);
-            y2 = drawField(margin + halfW + 5, y, halfW, "Audio Recorded?", data['Audio Recorded']);
-            y = Math.max(y1, y2) + 2;
+            y = drawField(margin, y, usableW, "System Username / Passwords", data['System Credentials']);
+            y1 = drawField(margin, y, halfW, "Earliest Footage Available", formatUKDateTime(data['Earliest Footage']));
+            y2 = drawField(margin + halfW + 4, y, halfW, "When will system overwrite data?", data['Overwrite Timeline']);
+            y = Math.max(y1, y2) + 1.5;
 
-            checkPage(30);
-            drawSectionHeader("Additional Exhibits");
+            // Section: Download Specifics (Multiple Sets supported)
+            let dlIndex = 1;
+            while (data[`Cameras Downloaded_${dlIndex}`] !== undefined || (dlIndex === 1 && (data[`Cameras Downloaded`] !== undefined || data[`Exhibit Number_1`] !== undefined || data[`Exhibit Number`] !== undefined))) {
+                let sfx = (dlIndex === 1 && data[`Cameras Downloaded`] !== undefined && !data[`Cameras Downloaded_1`]) ? '' : `_${dlIndex}`;
+                
+                checkPage(48);
+                drawSectionHeader(`Download Specifics (Set ${dlIndex})`);
+                
+                let exVal = data[`Exhibit Number${sfx}`] || (dlIndex === 1 ? data['Exhibit Number'] : '');
+                y = drawField(margin, y, usableW, "Exhibit Number", exVal);
+                
+                y1 = drawField(margin, y, halfW, "Downloaded Footage Start", formatUKDateTime(data[`Downloaded Footage Start${sfx}`]));
+                y2 = drawField(margin + halfW + 4, y, halfW, "Downloaded Footage End", formatUKDateTime(data[`Downloaded Footage End${sfx}`]));
+                y = Math.max(y1, y2);
+                
+                y1 = drawField(margin, y, halfW, "Cameras Downloaded", data[`Cameras Downloaded${sfx}`]);
+                y2 = drawField(margin + halfW + 4, y, halfW, "Format of Footage", data[`Footage Format${sfx}`]);
+                y = Math.max(y1, y2);
+                
+                y1 = drawField(margin, y, halfW, "Download Method", data[`Download Method${sfx}`]);
+                y2 = drawField(margin + halfW + 4, y, halfW, "Memory Stick No. / Disc Ref", data[`Media Reference${sfx}`]);
+                y = Math.max(y1, y2);
+                
+                // 3-Column Compact Row for Status Items
+                let colW = (usableW - 6) / 3;
+                let c1 = drawField(margin, y, colW, "Player Downloaded?", data[`Player Downloaded${sfx}`]);
+                let c2 = drawField(margin + colW + 3, y, colW, "Log Downloaded?", data[`Log Downloaded${sfx}`]);
+                let c3 = drawField(margin + (colW * 2) + 6, y, colW, "Audio Recorded?", data[`Audio Recorded${sfx}`]);
+                y = Math.max(c1, c2, c3) + 1.5;
+
+                dlIndex++;
+                if (dlIndex > 20) break;
+            }
+
+            // Section: Additional Exhibits & Photos
+            checkPage(25);
+            drawSectionHeader("Additional Notes");
             y = drawField(margin, y, usableW, "Additional CCTV Notes", data['Notes'], true);
-            y = drawField(margin, y, usableW, "Exhibit Number", data['Exhibit Number']);
         }
 
+        // Photos as Appendices
         let photos = [];
-        if(data['DVR Photos']) {
+        if (data['DVR Photos']) {
             try { photos = JSON.parse(data['DVR Photos']); } catch(e) {}
         }
         
@@ -1197,18 +1927,19 @@
                 let photoStr = typeof photoData === 'string' ? photoData : photoData.src;
                 let caption = typeof photoData === 'string' ? '' : photoData.caption;
                 let filename = typeof photoData === 'string' ? 'Attached Photo' : (photoData.filename || 'Attached Photo');
+                let dateTaken = typeof photoData === 'string' ? 'Unknown' : (photoData.dateTaken || 'Unknown');
 
                 doc.addPage();
-                let imgY = 20;
+                let imgY = 16;
                 doc.setFontSize(14);
                 doc.setTextColor(0, 86, 179);
                 doc.setFont("helvetica", "bold");
                 doc.text(`Appendix: DVR System Photo (${idx + 1} of ${photos.length})`, 105, imgY, { align: "center" });
                 
-                doc.setFontSize(10);
+                doc.setFontSize(9.5);
                 doc.setFont("helvetica", "normal");
-                doc.setTextColor(100, 100, 100);
-                doc.text(`File: ${filename}`, 105, imgY + 6, { align: "center" });
+                doc.setTextColor(90, 90, 90);
+                doc.text(`File: ${filename}  |  Taken: ${dateTaken}`, 105, imgY + 5.5, { align: "center" });
                 
                 try {
                     const props = doc.getImageProperties(photoStr);
@@ -1216,9 +1947,9 @@
                     const ratio = props.height / props.width;
                     let imgH = maxImgW * ratio;
                     
-                    let renderedImgY = imgY + 15;
-                    if (imgH > 220) {
-                        imgH = 220;
+                    let renderedImgY = imgY + 12;
+                    if (imgH > 215) {
+                        imgH = 215;
                         const newW = imgH / ratio;
                         doc.addImage(photoStr, 'JPEG', 105 - (newW / 2), renderedImgY, newW, imgH);
                     } else {
@@ -1226,11 +1957,11 @@
                     }
 
                     if (caption) {
-                        doc.setFontSize(11);
+                        doc.setFontSize(10);
                         doc.setFont("helvetica", "normal");
-                        doc.setTextColor(51, 51, 51);
+                        doc.setTextColor(40, 40, 40);
                         const captionLines = doc.splitTextToSize("Note: " + caption, usableW);
-                        doc.text(captionLines, margin, renderedImgY + imgH + 15);
+                        doc.text(captionLines, margin, renderedImgY + imgH + 10);
                     }
                 } catch(e) {
                     doc.setFont("helvetica", "normal");
@@ -1242,15 +1973,290 @@
 
         doc.save(safeRef + '.pdf');
 
-        if(btnElement && originalText) {
+        if (btnElement && originalText) {
             btnElement.innerText = originalText;
             btnElement.disabled = false;
         }
     }
 
+    function syncDPAForm() {
+        document.getElementById('dpa_officer').value = document.getElementById('person_attending').value || '';
+        document.getElementById('dpa_police_ref').value = document.getElementById('operation').value || '';
+        document.getElementById('dpa_organisation').value = document.getElementById('venue_address').value ? document.getElementById('venue_address').value.split('\n')[0] : '';
+        document.getElementById('dpa_address').value = document.getElementById('venue_address').value || '';
+        document.getElementById('dpa_to').value = document.getElementById('venue_contact_name').value || '';
+        document.getElementById('dpa_tel').value = document.getElementById('contact_number').value || '';
+        
+        const cams = (document.getElementById('cameras_downloaded_1') ? document.getElementById('cameras_downloaded_1').value : '') || 'All relevant cameras covering scene';
+        const start = formatUKDateTime(document.getElementById('dl_footage_start_1') ? document.getElementById('dl_footage_start_1').value : '') || formatUKDateTime(document.getElementById('dl_start').value) || 'Relevant timeframe';
+        const end = formatUKDateTime(document.getElementById('dl_footage_end_1') ? document.getElementById('dl_footage_end_1').value : '') || formatUKDateTime(document.getElementById('dl_end').value) || 'Relevant timeframe';
+        const format = (document.getElementById('format_footage_1') ? document.getElementById('format_footage_1').value : '') || 'Native export';
+        
+        document.getElementById('dpa_info_required').value = `Closed Circuit Television (CCTV) recordings from ${start} to ${end}, covering: ${cams}. Format: ${format}.`;
+        
+        const opName = document.getElementById('operation').value ? `Operation ${document.getElementById('operation').value}` : 'a criminal investigation';
+        document.getElementById('dpa_why_necessary').value = `Personal data (CCTV footage) is necessary for evidential purposes in connection with ${opName}. Failure to provide this information would be likely to prejudice the investigation, detection, and prosecution of offenders.`;
+    }
+
+    function generateDPAPDF(data, safeRef) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        let y = 15;
+        const margin = 15;
+        const pageWidth = 210;
+        const usableW = pageWidth - (margin * 2);
+
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(120, 120, 120);
+        doc.text("OFFICIAL [when completed]", 105, y, { align: "center" });
+        doc.text("Page 1 of 2", pageWidth - margin, y, { align: "right" });
+        y += 10;
+
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 0, 0);
+        doc.text("Request to external organisation for the disclosure of personal data to the police", margin, y);
+        y += 6;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 86, 179);
+        doc.text("Under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d) & 9(2)(c)", margin, y);
+        y += 10;
+
+        doc.setDrawColor(200, 210, 220);
+        doc.setFillColor(250, 252, 255);
+        doc.roundedRect(margin, y, usableW, 30, 2, 2, 'FD');
+        
+        doc.setFontSize(10);
+        doc.setTextColor(80, 80, 80);
+        doc.setFont("helvetica", "bold");
+        doc.text("To:", margin + 4, y + 6);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(data['To'] || 'The Data Controller / Manager', margin + 30, y + 6);
+
+        doc.setTextColor(80, 80, 80);
+        doc.setFont("helvetica", "bold");
+        doc.text("Position:", margin + 4, y + 13);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(data['Position'] || 'Manager / Data Controller', margin + 30, y + 13);
+
+        doc.setTextColor(80, 80, 80);
+        doc.setFont("helvetica", "bold");
+        doc.text("Organisation:", margin + 4, y + 20);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(data['Organisation'] || 'N/A', margin + 30, y + 20);
+
+        doc.setTextColor(80, 80, 80);
+        doc.setFont("helvetica", "bold");
+        doc.text("Address:", margin + 4, y + 27);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        let splitAddr = doc.splitTextToSize(data['Address'] || 'N/A', usableW - 35);
+        doc.text(splitAddr[0] || 'N/A', margin + 30, y + 27);
+        y += 36;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text("I am making enquiries which are concerned with (mark as appropriate):", margin, y);
+        y += 6;
+
+        doc.setFont("helvetica", "normal");
+        doc.text(`[${data['Crime'] ? 'X' : ' '}]  The prevention or detection of crime`, margin + 5, y);
+        y += 6;
+        doc.text(`[${data['Offenders'] ? 'X' : ' '}]  The prosecution or apprehension of offenders`, margin + 5, y);
+        y += 6;
+        doc.text(`[${data['Vital'] ? 'X' : ' '}]  Protecting the vital interests of a person (UK GDPR Art 6(1)(d) & 9(2)(c))`, margin + 5, y);
+        y += 8;
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(9);
+        let dec1 = doc.splitTextToSize("• I confirm that the personal data requested below is needed for the purposes indicated above and a failure to provide that information will be likely to prejudice those matters.", usableW - 8);
+        let dec2 = doc.splitTextToSize("• I confirm that the individual(s) whose personal data is sought should not be informed of this request as to do so would be likely to prejudice the matters described above.", usableW - 8);
+        let decBoxH = (dec1.length * 4) + (dec2.length * 4) + 8;
+
+        doc.setFillColor(245, 248, 250);
+        doc.setDrawColor(200, 210, 220);
+        doc.roundedRect(margin, y, usableW, decBoxH, 2, 2, 'FD');
+        
+        doc.text(dec1, margin + 4, y + 6);
+        let yOffset2 = y + 6 + (dec1.length * 4) + 1;
+        doc.text(dec2, margin + 4, yOffset2);
+        
+        y += decBoxH + 6;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("Information required:", margin, y);
+        y += 2.5;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        let splitReq = doc.splitTextToSize(data['Information Required'] || 'N/A', usableW - 8);
+        let reqH = (splitReq.length * 5) + 6;
+        doc.roundedRect(margin, y, usableW, Math.max(16, reqH), 2, 2, 'S');
+        doc.text(splitReq, margin + 4, y + 6);
+        y += Math.max(16, reqH) + 6;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Why the information is necessary for the purpose:", margin, y);
+        y += 2.5;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        let splitWhy = doc.splitTextToSize(data['Why Necessary'] || 'N/A', usableW - 8);
+        let whyH = (splitWhy.length * 5) + 6;
+        doc.roundedRect(margin, y, usableW, Math.max(16, whyH), 2, 2, 'S');
+        doc.text(splitWhy, margin + 4, y + 6);
+        y += Math.max(16, whyH) + 8;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text("Police Reference: " + (data['Police Reference'] || 'N/A'), margin, y);
+        y += 4;
+        
+        doc.setFillColor(250, 252, 255);
+        doc.roundedRect(margin, y, usableW, 35, 2, 2, 'FD');
+        
+        doc.setFontSize(10);
+        doc.setTextColor(80, 80, 80);
+        doc.text("From (Officer):", margin + 4, y + 6);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(data['Officer'] || 'N/A', margin + 40, y + 6);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(80, 80, 80);
+        doc.text("Station / Base:", margin + 4, y + 13);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(data['Station'] || 'N/A', margin + 40, y + 13);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(80, 80, 80);
+        doc.text("Date / Time:", margin + 4, y + 20);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(data['Date Time'] || 'N/A', margin + 40, y + 20);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(80, 80, 80);
+        doc.text("Phone / Email:", margin + 4, y + 27);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(`${data['Telephone'] || ''}  |  ${data['Officer Email'] || ''}`, margin + 40, y + 27);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(80, 80, 80);
+        doc.text("Counter-Signature:", margin + 110, y + 6);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        doc.text(data['Counter Signature'] || 'N/A', margin + 145, y + 6);
+
+        doc.addPage();
+        y = 15;
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(120, 120, 120);
+        doc.text("OFFICIAL [when completed]", 105, y, { align: "center" });
+        doc.text("Page 2 of 2", pageWidth - margin, y, { align: "right" });
+        y += 12;
+
+        doc.setFontSize(13);
+        doc.setTextColor(0, 86, 179);
+        doc.text("Undertaking of lawful use of data disclosed to the police service:", margin, y);
+        y += 8;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        const undertakingText = "Information disclosed to the police service is protected against unlawful reuse by the second data protection principle, which prohibits data collected for one purpose being reused for another. If data disclosed to the police service is needed for another purpose, it will be reused only if the new purpose is lawful or a lawful exemption applies, and only data necessary and proportionate to that new purpose will be used.\n\nTherefore, the police service undertakes to ensure that any use or reuse of the data disclosed is lawful, compliant with data protection principles and processed using appropriate safeguards to the rights and freedoms of the data subject.\n\nPlease be aware that we cannot comply with a request to limit use of data which is overridden by a statutory or common law duty or obligation. However, the reuse will be subject to the safeguards described above. We respectfully request that equivalent measures are observed in your handling of this request.";
+        let splitUndertaking = doc.splitTextToSize(undertakingText, usableW);
+        doc.text(splitUndertaking, margin, y);
+        y += (splitUndertaking.length * 5) + 10;
+
+        doc.setFontSize(13);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 86, 179);
+        doc.text("Explanatory Note for Recipient Organisations", margin, y);
+        y += 8;
+
+        doc.setFontSize(9.5);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(20, 20, 20);
+        const explText = "This form is used by the police service when making a formal request to other organisations for personal data where disclosure is necessary for the purposes of the prevention or detection of crime or the apprehension or prosecution of offenders. It places no compulsion on the recipient to disclose the information, but provides necessary legal reassurance that a disclosure for these purposes is appropriate and fully compliant with the Data Protection Act 2018 and the UK General Data Protection Regulation (UK GDPR).\n\n" +
+        "Crime and Taxation: The UK GDPR regulates the processing of personal data where it is done so for non-Law Enforcement purposes. Article 23 of the UK GDPR permits the UK Parliament to create exemptions from particular elements which would otherwise compromise the public interest. The Data Protection Act 2018 sets out exemptions that apply in specific circumstances.\n\n" +
+        "The most relevant exemption for Law Enforcement is that within the Data Protection Act 2018 at Schedule 2 Part 1 Paragraph 2 (Crime & taxation: general). This applies where personal data is disclosed by an organisation subject to the UK GDPR to the police for the purposes of the prevention or detection of crime or the apprehension or prosecution of offenders.\n\n" +
+        "It restricts the application of the UK GDPR data protection principles and subject rights to the extent that application of those provisions would be likely to prejudice the prevention or detection of crime or the apprehension or prosecution of offenders. In effect, the exemption means that an organisation can provide personal data (including CCTV recordings) to the police where necessary without fear of breaching the UK GDPR or Data Protection Act 2018.\n\n" +
+        "Vital Interests: To protect life or prevent an immediate and credible risk to life, UK GDPR Article 6(1)(d) provides a lawful basis for organisations to disclose personal data to the police where the disclosure is necessary to protect the vital interests of the data subject or of another natural person. Article 9(2)(c) provides for processing of special category data to the same ends where consent cannot be given.";
+
+        let splitExpl = doc.splitTextToSize(explText, usableW);
+        doc.text(splitExpl, margin, y);
+
+        doc.save(safeRef + '.pdf');
+    }
+
+    function submitAndEmailDPA() {
+        const form = document.getElementById('dpaForm');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+
+        const email = document.getElementById('dpa_email').value;
+        const btn = document.getElementById('dpaSubmitBtn');
+        const originalText = btn.innerText;
+        btn.innerText = "Generating Statutory PDF...";
+        btn.disabled = true;
+
+        const now = new Date();
+        const pad = n => n.toString().padStart(2, '0');
+        const exactDateTime = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+        const data = {
+            'Date Time': exactDateTime,
+            'To': document.getElementById('dpa_to').value,
+            'Position': document.getElementById('dpa_position').value,
+            'Organisation': document.getElementById('dpa_organisation').value,
+            'Address': document.getElementById('dpa_address').value,
+            'Crime': document.getElementById('dpa_purpose_crime').checked,
+            'Offenders': document.getElementById('dpa_purpose_offenders').checked,
+            'Vital': document.getElementById('dpa_purpose_vital').checked,
+            'Information Required': document.getElementById('dpa_info_required').value,
+            'Why Necessary': document.getElementById('dpa_why_necessary').value,
+            'Police Reference': document.getElementById('dpa_police_ref').value,
+            'Officer': document.getElementById('dpa_officer').value,
+            'Station': document.getElementById('dpa_station').value,
+            'Telephone': document.getElementById('dpa_tel').value,
+            'Officer Email': document.getElementById('dpa_officer_email').value,
+            'Counter Signature': document.getElementById('dpa_countersign').value
+        };
+
+        const safeRef = `DPA_Schedule2_Request_${(data['Police Reference'] || 'Police').replace(/[\/\s:]/g, '-')}`;
+        
+        generateDPAPDF(data, safeRef);
+
+        setTimeout(() => {
+            const subject = encodeURIComponent(`Formal Police Request for CCTV Disclosure - Ref: ${data['Police Reference']}`);
+            const body = encodeURIComponent(`Dear ${data['To'] || 'Data Controller / Manager'},\n\nPlease find attached a formal Request for the Disclosure of Personal Data to the Police under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d).\n\nThis statutory document confirms that the CCTV footage requested from ${data['Organisation'] || 'your premises'} is required for the prevention or detection of crime and the apprehension or prosecution of offenders, and provides the necessary legal reassurance for your organisation's data protection logs.\n\nKind regards,\n\n${data['Officer']}\nPolice Reference: ${data['Police Reference']}\nContact No: ${data['Telephone']}\n\n[OFFICER: PLEASE REMEMBER TO TAP 'ATTACH' AND SELECT THE DPA PDF THAT JUST DOWNLOADED BEFORE HITTING SEND]`);
+            
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }, 1000); 
+    }
+
     function submitAndDownloadPDF() {
         const form = document.getElementById('cctvForm');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
+        
+        const inputs = form.querySelectorAll('input, select, textarea');
+        for (let input of inputs) {
+            if (input.closest('.step-container').style.display !== 'none' && !input.checkValidity()) {
+                input.reportValidity();
+                return;
+            }
+        }
 
         if (!confirm("Are you sure you are ready to submit this record and download the PDF?")) {
             return;
@@ -1264,7 +2270,13 @@
         const pad = n => n.toString().padStart(2, '0');
         const now = new Date();
         const exactDateTime = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-        document.getElementById('ref_number').value = exactDateTime;
+        
+        let firstEx = (document.getElementById('exhibit_number_1') ? document.getElementById('exhibit_number_1').value.trim() : '');
+        let prefix = firstEx ? `${firstEx}_` : '';
+        let safePrefix = prefix.replace(/[\/\s:]/g, '-');
+        
+        const finalRef = prefix + exactDateTime;
+        document.getElementById('ref_number').value = finalRef;
 
         const formData = new FormData(form);
         const fullRecord = Object.fromEntries(formData.entries());
@@ -1273,7 +2285,7 @@
         logs.unshift(fullRecord);
         localStorage.setItem('cctvFullLogs', JSON.stringify(logs));
         
-        const safeRef = exactDateTime.replace(/[\/\s:]/g, '-');
+        const safeRef = (safePrefix + exactDateTime).replace(/[\/\s:]/g, '-');
         
         generateRawPDF(fullRecord, safeRef, btn, originalText);
 
@@ -1283,21 +2295,23 @@
 
         form.reset();
         localStorage.removeItem('cctvDraft');
-        document.getElementById('draftStatus').innerText = "Form submitted successfully. Ready for next entry.";
+        const draftEls = document.querySelectorAll('.draft-status');
+        draftEls.forEach(el => el.innerText = "Form submitted successfully. Ready for next entry.");
         
         document.getElementById('ref_number').value = "Generated upon submission";
         
         const freshDate = new Date();
-        document.getElementById('date').value = `${freshDate.getFullYear()}-${String(freshDate.getMonth()+1).padStart(2, '0')}-${String(freshDate.getDate()).padStart(2, '0')}`;
+        document.getElementById('date').value = `${freshDate.getFullYear()}-${pad(freshDate.getMonth()+1)}-${pad(freshDate.getDate())}`;
         
         document.getElementById('operation').value = prevOp;
         document.getElementById('person_attending').value = prevPerson;
         document.getElementById('contact_number').value = prevContact;
         
         document.getElementById('age_display').innerText = "";
-        document.getElementById('audio_no').checked = true;
-        document.getElementById('player_no').checked = true;
         
+        resetDownloadBlocks();
+
+        document.getElementById('dvr_photo').value = '';
         uploadedPhotos = [];
         document.getElementById('photo_gallery').innerHTML = '';
         document.getElementById('dvr_photos_base64').value = '';
@@ -1308,6 +2322,7 @@
         updateOverwriteCalculation();
 
         loadLogs();
+        showStep(1); 
     }
 
     function amendLog(index) {
@@ -1322,7 +2337,8 @@
             localStorage.setItem('cctvDraft', JSON.stringify(draftData));
             initForm();
             switchTab('form-tab');
-            document.getElementById('draftStatus').innerText = "Historical record loaded for amendment.";
+            const draftEls = document.querySelectorAll('.draft-status');
+            draftEls.forEach(el => el.innerText = "Historical record loaded for amendment.");
         }
     }
 
@@ -1346,8 +2362,9 @@
                         <div class="action-buttons">
                             <button class="view-btn" onclick="viewLog(${index})">View</button>
                             <button class="amend-btn" onclick="amendLog(${index})">Amend</button>
-                            <button class="mg11-btn" onclick="generateMG11(${index})">Statement</button>
-                            <button class="print-btn" onclick="downloadLogPDF(${index}, this)">Save PDF</button>
+                            <button class="mg11-btn" onclick="generateMG11Text(${index})">MG11 Text</button>
+                            <button class="mg11-pdf-btn" onclick="downloadMG11PDF(${index}, this)">MG11 PDF</button>
+                            <button class="print-btn" onclick="downloadLogPDF(${index}, this)">Save Form</button>
                         </div>
                     </td>
                 `;
@@ -1362,7 +2379,7 @@
         if(!record) return;
 
         const safeRef = record['Reference Number'] ? record['Reference Number'].replace(/[\/\s:]/g, '-') : 'Historical_Log';
-        const originalText = btnElement ? btnElement.innerText : "Save PDF";
+        const originalText = btnElement ? btnElement.innerText : "Save Form";
         
         if(btnElement) { 
             btnElement.innerText = "Saving..."; 
@@ -1382,8 +2399,34 @@
             const formClone = document.getElementById('cctvForm').cloneNode(true);
             formClone.id = 'clonedViewForm';
             formClone.onsubmit = null;
+            
+            formClone.querySelectorAll('.form-nav-buttons').forEach(el => el.remove());
+            const stepInd = formClone.querySelector('.step-indicator');
+            if (stepInd) stepInd.remove();
+
+            const addBtn = formClone.querySelector('.add-dl-btn');
+            if (addBtn) addBtn.remove();
 
             formClone.querySelectorAll('.no-print').forEach(el => el.remove());
+
+            let maxDl = 1;
+            Object.keys(record).forEach(key => {
+                let match = key.match(/Cameras Downloaded_(\d+)/);
+                if (match && parseInt(match[1]) > maxDl) maxDl = parseInt(match[1]);
+            });
+
+            const container = formClone.querySelector('#downloads_container');
+            if (container) {
+                const template = container.querySelector('.download-block');
+                for (let i = 2; i <= maxDl; i++) {
+                    const block = template.cloneNode(true);
+                    block.setAttribute('data-index', i);
+                    block.querySelector('h4').innerText = `Download ${i}`;
+                    block.innerHTML = block.innerHTML.replace(/_1"/g, `_${i}"`);
+                    block.innerHTML = block.innerHTML.replace(/_1'/g, `_${i}'`);
+                    container.appendChild(block);
+                }
+            }
 
             formClone.querySelectorAll('input, textarea, select').forEach(input => {
                 const fieldName = input.name;
@@ -1397,11 +2440,22 @@
                 }
                 input.disabled = true;
             });
+            
+            formClone.querySelectorAll('.step-container').forEach(el => {
+                el.classList.add('active-step');
+                el.style.display = 'block'; 
+            });
 
             const isNo = record['CCTV Available'] === 'No';
-            const detailsSection = formClone.querySelector('#cctv-details-section');
-            if(detailsSection) detailsSection.style.display = isNo ? 'none' : 'block';
-            
+            const step3 = formClone.querySelector('#step-3');
+            const step4 = formClone.querySelector('#step-4');
+            const step5 = formClone.querySelector('#step-5');
+            if(isNo) {
+                if(step3) step3.style.display = 'none';
+                if(step4) step4.style.display = 'none';
+                if(step5) step5.style.display = 'none';
+            }
+
             let photos = [];
             if(record['DVR Photos']) {
                 try { photos = JSON.parse(record['DVR Photos']); } catch(e) {}
@@ -1418,6 +2472,7 @@
                     let photoStr = typeof photoData === 'string' ? photoData : photoData.src;
                     let caption = typeof photoData === 'string' ? '' : photoData.caption;
                     let filename = typeof photoData === 'string' ? 'Attached Photo' : (photoData.filename || 'Attached Photo');
+                    let dateTaken = typeof photoData === 'string' ? 'Unknown' : (photoData.dateTaken || 'Unknown');
 
                     const card = document.createElement('div');
                     card.style.display = 'flex';
@@ -1472,7 +2527,7 @@
         if (event.target == document.getElementById('mg11Modal')) closeModal('mg11Modal');
     }
 
-    function generateMG11(index) {
+    function generateMG11Text(index) {
         const logs = JSON.parse(localStorage.getItem('cctvFullLogs')) || [];
         const log = logs[index];
         if(!log) return;
@@ -1490,7 +2545,12 @@
 
 I conducted CCTV enquiries at this location. I can confirm that there is no CCTV available at this venue.${vNotes}
 
-I make this statement to record a negative CCTV enquiry.`;
+I make this statement to record a negative CCTV enquiry.
+
+--------------------------------------------------
+Signature of Witness: ___________________________
+Date: ${date}
+`;
 
         } else {
             const contact = log['Venue Contact Name'] || '[Contact Name Not Recorded]';
@@ -1499,26 +2559,71 @@ I make this statement to record a negative CCTV enquiry.`;
             const dvrTime = formatUKDateTime(log['DVR Time']) || '[Not Recorded]';
             const realTime = formatUKDateTime(log['Real Time Sync']) || '[Not Recorded]';
             const timeDiff = log['Calculated Time Difference'] || '[Difference Not Recorded]';
+            const officer = log['Person Attending'] || '[Officer Not Recorded]';
             
-            const dlFootageStart = formatUKDateTime(log['Downloaded Footage Start']) || '[Not Recorded]';
-            const dlFootageEnd = formatUKDateTime(log['Downloaded Footage End']) || '[Not Recorded]';
-            const camerasDl = log['Cameras Downloaded'] || '[Cameras Not Recorded]';
-            const format = log['Footage Format'] || '[Format Not Recorded]';
-            const method = log['Download Method'] || '[Method Not Recorded]';
-            const exhibit = log['Exhibit Number'] || '[Exhibit No Not Recorded]';
-            const player = log['Player Downloaded'] === 'Yes' ? ' A proprietary viewing player was also downloaded onto the media.' : '';
-            const audioStr = log['Audio Recorded'] === 'Yes' ? ' I can confirm the exported footage includes an audio track.' : '';
+            let dlBlocksText = "";
+            let dlIndex = 1;
+            let downloadCountLog = 0;
+
+            while(log[`Cameras Downloaded_${dlIndex}`] !== undefined || (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined)) {
+                let sfx = (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined && !log[`Cameras Downloaded_1`]) ? '' : `_${dlIndex}`;
+                
+                let dlFootageStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]) || '[Not Recorded]';
+                let dlFootageEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]) || '[Not Recorded]';
+                let camerasDl = log[`Cameras Downloaded${sfx}`] || '[Cameras Not Recorded]';
+                let format = log[`Footage Format${sfx}`] || '[Format Not Recorded]';
+                let method = log[`Download Method${sfx}`] || '[Method Not Recorded]';
+                let exhibit = log[`Exhibit Number${sfx}`] || log['Exhibit Number'] || '[Exhibit No Not Recorded]';
+                let player = log[`Player Downloaded${sfx}`] === 'Yes' ? ' A proprietary viewing player was also downloaded onto the media.' : '';
+                let logStatus = log[`Log Downloaded${sfx}`] === 'Yes' ? ' A system audit log was also downloaded onto the media.' : '';
+                
+                let audioStr = '';
+                if (log[`Audio Recorded${sfx}`] === 'Yes') {
+                    audioStr = ' I can confirm the exported footage includes an audio track.';
+                } else if (log[`Audio Recorded${sfx}`] === 'No') {
+                    audioStr = ' The exported footage does not contain audio.';
+                } else {
+                    audioStr = ' It is currently unconfirmed whether the footage contains an audio track.';
+                }
+
+                downloadCountLog++;
+                if (downloadCountLog === 1) {
+                    dlBlocksText += `\nI identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. The footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.${player}${logStatus}${audioStr}\n`;
+                } else {
+                    dlBlocksText += `\nI additionally identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. This footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.${player}${logStatus}${audioStr}\n`;
+                }
+                dlIndex++;
+                if (dlIndex > 20) break;
+            }
 
             statementText = 
-`On ${date} I was on duty when I attended ${venue} in relation to Operation ${operation}.
+`OFFICIAL - (when complete)
 
-Whilst there, I spoke with the system operator, ${contact}. I was shown the premises' CCTV system, which is a ${makeModel} system consisting of ${totalCameras} cameras in total.
+WITNESS STATEMENT
+Criminal Procedure Rules, r 27.2; Criminal Justice Act 1967, s. 9; Magistrates' Courts Act 1980, s.5B
 
-To ensure evidential integrity, I checked the DVR system time against the real time. I noted that the DVR time was ${dvrTime} whilst the real time was ${realTime}. This means the system was ${timeDiff}.
+Statement of: ${officer}
+Age if under 18: Over 18
+Occupation: Police Officer
 
-I identified relevant footage on cameras ${camerasDl}. I downloaded this footage (spanning from ${dlFootageStart} to ${dlFootageEnd}) in ${format} format onto a ${method}.${player}${audioStr}
+This statement is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.
 
-I subsequently exhibited this media as ${exhibit}.`;
+I am ${officer}, acting in my capacity as a Police Officer.
+
+On ${date} I was on duty when I attended ${venue} in relation to Operation ${operation}.
+
+At this location, I spoke with ${contact}, who identified themselves as the person responsible for the operation of the closed-circuit television (CCTV) system.
+
+The recording equipment was identified as a ${makeModel} system recording from ${totalCameras} cameras. I conducted a time check comparing the system clock against real atomic time. When the real time was ${realTime}, the CCTV recorder displayed ${dvrTime}. The system was noted as being ${timeDiff}.
+${dlBlocksText}
+To the best of my knowledge and belief, the system was operating properly and the evidential integrity of the data has been maintained without alteration.
+
+Declaration of Compliance with the Forensic Science Regulator Code of Practice: I confirm that, to the best of my knowledge and belief, in carrying out this forensic science activity I have acted in accordance with the Forensic Science Regulator Code of Practice and local force procedures.
+
+--------------------------------------------------
+Signature of Witness: ___________________________
+Date: ${date}
+`;
         }
 
         document.getElementById('mg11Text').value = statementText;
@@ -1526,15 +2631,254 @@ I subsequently exhibited this media as ${exhibit}.`;
         document.getElementById('mg11Modal').style.display = 'block';
     }
 
+    // Generate Crisp, Clean Native MG11 PDF using jsPDF
+    function downloadMG11PDF(index, btnElement) {
+        const logs = JSON.parse(localStorage.getItem('cctvFullLogs')) || [];
+        const log = logs[index];
+        if(!log) return;
+
+        const originalText = btnElement ? btnElement.innerText : "MG11 PDF";
+        if(btnElement) { 
+            btnElement.innerText = "Saving..."; 
+            btnElement.disabled = true; 
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const margin = 15;
+        const pageWidth = 210;
+        const usableW = pageWidth - (margin * 2);
+        let y = 15;
+
+        // Pagination tracker
+        let totalPages = 1;
+        function checkPage(needed) {
+            // Leave 30mm for the repeating signature footer
+            if (y + needed > 265) {
+                doc.addPage();
+                totalPages++;
+                y = 15;
+            }
+        }
+
+        const dateOnly = formatUKDateTime(log['Date'], true) || 'Unknown';
+        const officer = log['Person Attending'] || 'Officer';
+        const safeRef = `MG11_${officer}_${dateOnly}`.replace(/[\/\s:]/g, '-');
+
+        // Draw Official Headers (Crisp, No Blur)
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        
+        // Center OFFICIAL Box
+        doc.text("OFFICIAL – (when complete)", 105, y + 4.5, { align: "center" });
+        doc.rect(75, y, 60, 7);
+        
+        // Right MG11 Box
+        doc.rect(pageWidth - margin - 15, y, 15, 7);
+        doc.text("MG11", pageWidth - margin - 7.5, y + 4.5, { align: "center" });
+        
+        y += 18;
+        
+        doc.setFontSize(14);
+        doc.text("WITNESS STATEMENT", 105, y, { align: "center" });
+        y += 6;
+        
+        doc.setFontSize(9);
+        doc.text("Criminal Procedure Rules, r 27.2; Criminal Justice Act 1967, s. 9; Magistrates' Courts Act 1980, s.5B", 105, y, { align: "center" });
+        y += 6;
+
+        // Crime No & URN
+        doc.setFontSize(11);
+        doc.text("Crime No.", 125, y + 4.5);
+        doc.rect(145, y, 50, 6);
+        doc.setFont("helvetica", "normal");
+        doc.text(log['Crime No'] || '', 147, y + 4.5);
+        y += 8;
+        
+        let startBoxY = y;
+        doc.setFont("helvetica", "bold");
+        doc.text("URN", 133, y + 4.5);
+        doc.rect(145, y, 50, 6);
+        doc.setFont("helvetica", "normal");
+        doc.text(log['URN'] || '', 147, y + 4.5);
+        y += 10;
+
+        // Statement Of
+        doc.text("Statement of", margin + 3, y);
+        doc.setFont("helvetica", "bold");
+        doc.text(officer, margin + 28, y);
+        y += 8;
+
+        // Age / Occupation
+        doc.setFont("helvetica", "normal");
+        doc.text("Age if under 18", margin + 3, y);
+        doc.setFont("helvetica", "bold");
+        doc.text("Over 18", margin + 33, y);
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(9);
+        doc.text('(if over 18 insert "over 18")', margin + 48, y);
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.text("Occupation", 135, y);
+        doc.setFont("helvetica", "bold");
+        doc.text("Police Officer", 157, y);
+        y += 8;
+
+        // Declaration 
+        doc.setFont("helvetica", "normal");
+        const decText = "This statement (consisting of 1 page(s) each signed by me) is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.";
+        let splitDec = doc.splitTextToSize(decText, usableW - 6);
+        doc.text(splitDec, margin + 3, y);
+        y += (splitDec.length * 5.5) + 12;
+
+        // Top Box Signature line
+        doc.setFont("helvetica", "bold");
+        doc.text("Signature:", margin + 3, y);
+        doc.line(margin + 23, y, margin + 65, y);
+        doc.setFont("helvetica", "normal");
+        doc.text("(witness)", margin + 68, y);
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Date", 155, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(dateOnly, 168, y);
+
+        // Draw main border
+        let endBoxY = y + 4;
+        doc.rect(margin, startBoxY - 2, usableW, endBoxY - startBoxY + 2);
+        y = endBoxY + 4;
+
+        // Visually recorded checkbox
+        doc.setFontSize(10);
+        doc.text("Tick if witness evidence is visually recorded", margin, y);
+        doc.rect(margin + 68, y - 3, 4, 4);
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(9);
+        doc.text("(supply witness details on rear)", margin + 74, y);
+        y += 12;
+
+        // Build continuous paragraphs
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        let paragraphs = [];
+
+        if (log['CCTV Available'] === 'No') {
+            paragraphs.push(`On ${dateOnly} I was on duty when I attended ${log['Venue Address'] || 'the premises'} in relation to Operation ${log['Operation'] || 'investigations'}.`);
+            paragraphs.push(`I conducted CCTV enquiries at this location. I can confirm that there is no CCTV available at this venue.${log['Venue Notes'] ? ' Notes regarding venue: ' + log['Venue Notes'] : ''}`);
+            paragraphs.push("I make this statement to record a negative CCTV enquiry.");
+        } else {
+            const venue = log['Venue Address'] || '[Venue Not Recorded]';
+            const operation = log['Operation'] || '[Operation Not Recorded]';
+            const contact = log['Venue Contact Name'] || '[Contact Name Not Recorded]';
+            const makeModel = log['System Make and Model'] || '[Make/Model Not Recorded]';
+            const totalCameras = log['Total Cameras'] || '[Number]';
+            const dvrTime = formatUKDateTime(log['DVR Time']) || '[Not Recorded]';
+            const realTime = formatUKDateTime(log['Real Time Sync']) || '[Not Recorded]';
+            const timeDiff = log['Calculated Time Difference'] || '[Difference Not Recorded]';
+
+            paragraphs.push(`I am ${officer}, acting in my capacity as a Police Officer.`);
+            paragraphs.push(`On ${dateOnly}, in connection with Operation ${operation}, I attended ${venue}. At this location, I spoke with ${contact}, who identified themselves as the person responsible for the operation of the closed-circuit television (CCTV) system.`);
+            paragraphs.push(`The recording equipment was identified as a ${makeModel} system recording from ${totalCameras} cameras. I conducted a time check comparing the system clock against real atomic time. When the real time was ${realTime}, the CCTV recorder displayed ${dvrTime}. The system was noted as being ${timeDiff}.`);
+
+            let dlIndex = 1;
+            let downloadCountLog = 0;
+            while(log[`Cameras Downloaded_${dlIndex}`] !== undefined || (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined)) {
+                let sfx = (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined && !log[`Cameras Downloaded_1`]) ? '' : `_${dlIndex}`;
+                
+                let dlFootageStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]) || '[Not Recorded]';
+                let dlFootageEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]) || '[Not Recorded]';
+                let camerasDl = log[`Cameras Downloaded${sfx}`] || '[Cameras Not Recorded]';
+                let format = log[`Footage Format${sfx}`] || '[Format Not Recorded]';
+                let method = log[`Download Method${sfx}`] || '[Method Not Recorded]';
+                let exhibit = log[`Exhibit Number${sfx}`] || log['Exhibit Number'] || '[Exhibit No Not Recorded]';
+                
+                downloadCountLog++;
+                
+                // Narrative flow fix - continuous prose for multiple exhibits
+                if (downloadCountLog === 1) {
+                    paragraphs.push(`I identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. The footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.`);
+                } else {
+                    paragraphs.push(`I additionally identified and extracted footage from relevant cameras covering the period from ${dlFootageStart} to ${dlFootageEnd}. This footage was downloaded in ${format} format onto a ${method} and I produce this as master exhibit ${exhibit}.`);
+                }
+                dlIndex++;
+                if (dlIndex > 20) break;
+            }
+
+            paragraphs.push(`To the best of my knowledge and belief, the system was operating properly and the evidential integrity of the data has been maintained without alteration.`);
+            paragraphs.push(`Declaration of Compliance with the Forensic Science Regulator Code of Practice: I confirm that, to the best of my knowledge and belief, in carrying out this forensic science activity I have acted in accordance with the Forensic Science Regulator Code of Practice and local force procedures.`);
+        }
+
+        // Draw text and handle page breaks
+        paragraphs.forEach(para => {
+            let splitPara = doc.splitTextToSize(para, usableW);
+            let needed = splitPara.length * 6;
+            checkPage(needed);
+            doc.text(splitPara, margin, y);
+            y += needed + 4;
+        });
+
+        // Loop through all generated pages and append the repeating signature footer
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            
+            // Adjust Page Number logic inside the Declaration Box for page 1
+            if (i === 1) {
+                doc.setFillColor(255, 255, 255);
+                doc.rect(margin + 42.5, startBoxY + 31.5, 6, 5, 'F');
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(11);
+                doc.text(String(totalPages), margin + 44, startBoxY + 35);
+            }
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            
+            // Footer Signature
+            doc.line(15, 280, 80, 280); 
+            doc.text('Signature of Witness', 15, 285);
+            
+            // Footer Date
+            doc.line(150, 280, 195, 280); 
+            doc.text('Date', 168, 285);
+            doc.text(dateOnly, 162, 278);
+        }
+
+        doc.save(safeRef + '.pdf');
+
+        if (btnElement && originalText) {
+            btnElement.innerText = originalText;
+            btnElement.disabled = false;
+        }
+    }
+
     function copyMg11Text() {
         const textToCopy = document.getElementById('mg11Text');
+        if (!textToCopy) return;
         textToCopy.select();
         textToCopy.setSelectionRange(0, 99999); 
-        navigator.clipboard.writeText(textToCopy.value).then(() => {
-            document.getElementById('copyFeedback').style.display = 'block';
-        }).catch(err => {
-            alert('Failed to copy text. Please select it manually.');
-        });
+        
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textToCopy.value).then(() => {
+                const feedback = document.getElementById('copyFeedback');
+                if (feedback) feedback.style.display = 'block';
+            }).catch(err => {
+                fallbackCopyTextCommand();
+            });
+        } else {
+            fallbackCopyTextCommand();
+        }
+
+        function fallbackCopyTextCommand() {
+            try {
+                document.execCommand('copy');
+                const feedback = document.getElementById('copyFeedback');
+                if (feedback) feedback.style.display = 'block';
+            } catch (err) {
+                alert('Failed to copy text. Please select it manually.');
+            }
+        }
     }
 
     function exportLogToCSV() {
@@ -1559,7 +2903,8 @@ I subsequently exhibited this media as ${exhibit}.`;
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         const now = new Date();
-        const safeDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        const pad = n => n.toString().padStart(2, '0');
+        const safeDate = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
         
         link.setAttribute("href", url);
         link.setAttribute("download", `CCTV_Submission_Log_${safeDate}.csv`);
