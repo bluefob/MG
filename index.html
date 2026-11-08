@@ -1,4 +1,4 @@
-<!-- Version 69.3 - UI Overhaul -->
+html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
@@ -15,8 +15,6 @@
     
     <!-- PURE jsPDF LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- html2pdf.js for Strict MG11 Court Layout Rendering -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         /* --- MODERN SLICK UI VARIABLES --- */
@@ -137,8 +135,8 @@
         .tab-btn {
             background: transparent;
             border: none;
-            padding: 12px 15px;
-            font-size: 0.95em;
+            padding: 8px 10px;
+            font-size: 0.85em;
             cursor: pointer;
             color: var(--text-muted);
             font-weight: 600;
@@ -330,28 +328,6 @@
         tr:hover { background-color: var(--calc-bg); }
         .empty-log { text-align: center; padding: 40px; color: var(--text-muted); font-style: italic; background: var(--calc-bg); border-radius: var(--radius-md); border: 2px dashed var(--border-color); }
 
-        /* --- UTILITY / SEARCH --- */
-        .search-bar { width: 100%; padding: 16px; font-size: 1.05em; border: 2px solid var(--border-color); border-radius: var(--radius-md); box-sizing: border-box; margin-bottom: 25px; background-color: var(--input-bg); color: var(--input-text); transition: border-color 0.2s; }
-        .search-bar:focus { border-color: var(--primary-color); }
-        
-        .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .guide-card { border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; background: var(--fieldset-bg); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;}
-        .guide-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-color); }
-        .guide-card h4 { margin: 0 0 15px 0; color: var(--primary-color); font-size: 1.25em; border-bottom: 2px solid var(--calc-bg); padding-bottom: 10px; }
-        .guide-card p { margin: 8px 0; font-size: 0.95em; color: var(--text-color); }
-        
-        /* --- ACCORDIONS (LEGAL) --- */
-        .tree-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 12px; background: var(--fieldset-bg); overflow: hidden; box-shadow: var(--shadow-sm); transition: border-color 0.2s; }
-        .tree-header { padding: 18px 20px; font-weight: 700; background: var(--input-bg); color: var(--primary-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; font-size: 1.05em; }
-        .tree-header:hover { background: var(--calc-bg); }
-        .tree-body { padding: 20px; display: none; border-top: 1px solid var(--border-color); font-size: 0.95em; line-height: 1.7; }
-        .tree-body.open { display: block; animation: fadeIn 0.2s ease-in-out; }
-        .tree-icon { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text-muted); font-size: 0.8em; }
-        .tree-item.open { border-color: var(--primary-color); }
-        .tree-item.open .tree-header { background: var(--primary-color); color: #fff; }
-        .tree-item.open .tree-icon { transform: rotate(180deg); color: #fff; }
-        .law-quote { border-left: 4px solid var(--primary-color); padding: 15px 20px; margin: 15px 0; font-style: italic; color: var(--text-muted); background: var(--calc-bg); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
-
         /* --- MINI UTILITY BUTTONS --- */
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         .manual-btn, .yt-btn, .map-btn { flex: 1; padding: 10px; text-align: center; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; transition: 0.2s; font-size: 0.9em; cursor: pointer; }
@@ -392,37 +368,53 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- RESPONSIVE MOBILE TWEAKS --- */
+        /* --- RESPONSIVE MOBILE TWEAKS (HYPER COMPRESSED) --- */
         @media (max-width: 650px) {
-            body { padding: 10px; }
-            .container, .modal-content { padding: 20px 15px; }
-            .form-group { width: 100%; } 
-            fieldset { padding: 15px; }
-            .log-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .form-nav-buttons { flex-direction: column; gap: 10px; }
+            body { padding: 4px; line-height: 1.2; }
+            .container, .modal-content { padding: 6px 8px; border-radius: 6px; box-shadow: none; border: none; }
+            .top-bar { margin-bottom: 6px; }
+            h2 { margin-bottom: 8px; font-size: 1.2em; }
+            
+            /* Puts all 3 tabs on one line and shrinks them */
+            .tabs { margin-bottom: 8px; flex-direction: row; flex-wrap: nowrap; background: transparent; border: none; padding: 0; gap: 4px; }
+            .tab-btn { flex: 1; box-sizing: border-box; border: 1px solid var(--border-color); background: var(--fieldset-bg); margin-bottom: 0; padding: 6px 2px; font-size: 0.75em; border-radius: 4px; }
+            
+            .step-indicator { margin: 0 auto 8px auto; padding: 4px 12px; font-size: 0.8em; }
+            button.clear-btn { margin-bottom: 8px; padding: 6px; font-size: 0.8em; }
+            
+            fieldset { padding: 8px 10px; margin-bottom: 8px; border-radius: 6px; }
+            legend { padding: 2px 8px; font-size: 0.8em; }
+            .form-group { width: 100%; margin-bottom: 4px; }
+            label { margin-bottom: 2px; font-size: 0.8em; }
+            
+            /* Shrinks the tall input boxes */
+            input[type="text"], input[type="date"], input[type="time"], input[type="datetime-local"],
+            input[type="tel"], input[type="number"], input[type="email"], textarea, select {
+                padding: 6px 8px; font-size: 0.9em; height: auto;
+            }
+            
+            /* Puts navigation buttons side by side instead of stacked */
+            .form-nav-buttons { margin-top: 10px; gap: 6px; flex-direction: row; margin-bottom: 4px; }
+            .btn-prev, .btn-next, .submit-btn { padding: 8px; font-size: 0.85em; flex: 1; }
+            
+            .log-header { flex-direction: column; align-items: flex-start; gap: 8px; }
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { display: none; }
-            tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background-color: var(--fieldset-bg); overflow: hidden; box-shadow: var(--shadow-sm); }
-            td { border: none; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 40%; text-align: right; min-height: 28px; }
-            td::before { position: absolute; top: 16px; left: 14px; width: 35%; padding-right: 10px; white-space: nowrap; text-align: left; font-weight: bold; color: var(--primary-color); font-size: 0.9em; }
+            tr { margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background-color: var(--fieldset-bg); overflow: hidden; box-shadow: var(--shadow-sm); }
+            td { border: none; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 40%; text-align: right; min-height: 24px; padding-top: 8px; padding-bottom: 8px; }
+            td::before { position: absolute; top: 8px; left: 10px; width: 35%; padding-right: 5px; white-space: nowrap; text-align: left; font-weight: bold; color: var(--primary-color); font-size: 0.85em; }
             td:nth-of-type(1)::before { content: "Ref / Date"; }
             td:nth-of-type(2)::before { content: "Operation"; }
             td:nth-of-type(3)::before { content: "Venue"; }
             td:nth-of-type(4)::before { content: "Action"; }
             td:last-child { border-bottom: none; background: var(--calc-bg); }
             .action-buttons { justify-content: flex-end; }
-            .tabs { flex-direction: row; flex-wrap: wrap; background: transparent; border: none; padding: 0; }
-            .tab-btn { flex: 0 0 calc(50% - 5px); box-sizing: border-box; border: 1px solid var(--border-color); background: var(--fieldset-bg); margin-bottom: 5px; }
-            .tab-btn:nth-child(5) { flex: 1 1 100%; }
             .photo-card { width: calc(50% - 8px); }
         }
 
-        /* ==============================================================
-           MG11 MODAL CSS (STRICT COURT LAYOUT - UNTOUCHED FOR COMPLIANCE)
-           ============================================================== */
+        /* MG11 Display Styles */
         .mg11-narrative.editing { background-color: #fff3cd !important; padding: 15px; border: 2px dashed #ca8a04; outline: none; border-radius: 4px; }
         .avoid-break { page-break-inside: avoid; }
-        /* Prevent dark mode bleed into formal document */
         body.dark-mode #mg11DocumentContainer { background: #fff !important; color: #000 !important; border-color: #000 !important; }
         body.dark-mode #mg11DocumentContainer * { color: #000 !important; border-color: #000 !important; }
         .mg11-container * { box-sizing: border-box; }
@@ -431,9 +423,9 @@
 <body>
 
 <div class="top-bar no-print">
-    <div style="font-weight: 800; color: var(--primary-color); font-size: 1.2em;">Digital Forensics Unit</div>
+    <div style="font-weight: 800; color: var(--primary-color); font-size: 1.2em;"></div>
     <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-weight: 700; color: var(--text-muted); font-size: 1em; letter-spacing: 0.5px; background: var(--input-bg); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color);">v69.3</span>
+        <span style="font-weight: 700; color: var(--text-muted); font-size: 1em; letter-spacing: 0.5px; background: var(--input-bg); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color);">v69.5</span>
         <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌓 Mode</button>
     </div>
 </div>
@@ -444,9 +436,7 @@
     <div class="tabs no-print">
         <button class="tab-btn active" onclick="switchTab('form-tab')">Capture Form</button>
         <button class="tab-btn" onclick="switchTab('log-tab')">Submission Log</button>
-        <button class="tab-btn" onclick="switchTab('guides-tab')">System Guides</button>
-        <button class="tab-btn" onclick="switchTab('powers-tab')">Legal Powers</button>
-        <button class="tab-btn" onclick="switchTab('dpa-tab')">DPA Request</button>
+        <button class="tab-btn" style="color: #6366f1; border: 1px solid #6366f1;" onclick="generateCurrentMG11()">MG11 Statement</button>
     </div>
 
     <div id="form-tab" class="tab-content active">
@@ -609,12 +599,8 @@
                         <div class="form-group">
                             <label for="make_model">CCTV System Make/Model</label>
                             <div class="input-group-btn">
-                                <input type="text" id="make_model" name="System Make and Model" list="cctv_brands" autocomplete="off" style="flex: 1;">
-                                <button type="button" class="yt-btn no-print" onclick="searchInlineYT()" style="width: auto; padding: 0 16px; margin: 0; border-radius: var(--radius-md);" title="Search YouTube for instructions">▶️ YT</button>
+                                <input type="text" id="make_model" name="System Make and Model" autocomplete="off" style="flex: 1;">
                             </div>
-                            <datalist id="cctv_brands">
-                                <option value="Abus"></option><option value="ACTi"></option><option value="Adata"></option><option value="ADT"></option><option value="Aimetis"></option><option value="Alibi"></option><option value="Altronix"></option><option value="Amcrest"></option><option value="American Dynamics"></option><option value="Annke"></option><option value="Arecont Vision"></option><option value="Arlo"></option><option value="Aventura"></option><option value="AvertX"></option><option value="Avigilon"></option><option value="Axis"></option><option value="Baxall"></option><option value="Blink"></option><option value="Bolide"></option><option value="Bosch"></option><option value="Brickcom"></option><option value="Cathexis"></option><option value="CCTV Security Pros"></option><option value="Cisco"></option><option value="Clinton Electronics"></option><option value="Concept Pro"></option><option value="Costar"></option><option value="Costco"></option><option value="CP Plus"></option><option value="Dahua"></option><option value="Dedicated Micros"></option><option value="Defender"></option><option value="Digital Watchdog"></option><option value="Eufy"></option><option value="Exacq"></option><option value="Exvision"></option><option value="FLIR"></option><option value="Foscam"></option><option value="Genetec"></option><option value="GeoVision"></option><option value="Geutebruck"></option><option value="Google Nest"></option><option value="Grandstream"></option><option value="GW Security"></option><option value="Hanwha Vision"></option><option value="Hikvision"></option><option value="Honeywell"></option><option value="IC Realtime"></option><option value="Ikegami"></option><option value="IndigoVision"></option><option value="Infinova"></option><option value="InVid"></option><option value="Kasa"></option><option value="Lorex"></option><option value="LTS"></option><option value="Luma Surveillance"></option><option value="Luxriot"></option><option value="Mace"></option><option value="March Networks"></option><option value="Merit Lilin"></option><option value="Milestone Systems"></option><option value="Mobotix"></option><option value="Montavue"></option><option value="Night Owl"></option><option value="Northern"></option><option value="OnSSI"></option><option value="OpenEye"></option><option value="Optiview"></option><option value="Panasonic"></option><option value="Pelco"></option><option value="Q-See"></option><option value="QNAP"></option><option value="Qognify"></option><option value="Reolink"></option><option value="Ring"></option><option value="Salient"></option><option value="Sannce"></option><option value="SimpliSafe"></option><option value="Sony"></option><option value="Speco Technologies"></option><option value="Swann"></option><option value="Synology"></option><option value="Tapo"></option><option value="Tiandy"></option><option value="TP-Link"></option><option value="TVT"></option><option value="Ubiquiti"></option><option value="Uniview"></option><option value="Verint"></option><option value="Vicon"></option><option value="Vista"></option><option value="Vitek"></option><option value="Vivotek"></option><option value="Wansview"></option><option value="Wavestore"></option><option value="W Box"></option><option value="Wyze"></option><option value="Yi"></option><option value="Zmodo"></option><option value="Zosi"></option>
-                            </datalist>
                         </div>
                         <div class="form-group">
                             <label for="total_cameras">Total Number of Cameras</label>
@@ -784,243 +770,6 @@
             <div id="emptyLogMessage" class="empty-log">No submission records found on this device.</div>
         </div>
     </div>
-
-    <!-- TAB 3: SYSTEM GUIDES -->
-    <div id="guides-tab" class="tab-content no-print">
-        <h3 style="color: var(--primary-color); margin-top: 0; font-size: 1.4em;">Default System Logins & Guides</h3>
-        <p style="font-size: 1em; margin-bottom: 20px; color: var(--text-muted);">Search common CCTV manufacturers for default engineer passwords, or look up export instructions for cloud-based apps.</p>
-        
-        <input type="text" id="guideSearch" class="search-bar" placeholder="Search for brand or model (e.g., Hikvision, Ring)..." onkeyup="filterGuides()">
-        
-        <div id="guidesContainer" class="guide-grid">
-            <!-- Populated by JS -->
-        </div>
-    </div>
-
-    <!-- TAB 4: LEGAL POWERS -->
-    <div id="powers-tab" class="tab-content no-print">
-        <h3 style="color: var(--primary-color); margin-top: 0; font-size: 1.4em;">Seizure & Recovery Powers (PACE 1984)</h3>
-        <p style="font-size: 1em; margin-bottom: 25px; color: var(--text-muted);">Use this reference to determine your lawful authority to recover CCTV evidence when faced with resistance in the field.</p>
-        
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                1. Voluntary Consent (Normal Route)
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> The owner/manager allows you entry and consents to the download.</p>
-                <p><strong>Action:</strong> Proceed with a standard recovery using the Capture Form. Ensure the owner is aware of what footage is being taken and what it is for.</p>
-                <div class="law-quote">"If a person consents to a search or to the seizure of property, an officer must ensure the consent is informed and given voluntarily."</div>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                2. Refusal of Entry (The Closed Door)
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> You are standing outside a premises (e.g. a locked shop or private home) and the owner refuses to let you inside to view or secure the CCTV.</p>
-                <p><strong>Power:</strong> You generally <strong>cannot</strong> force entry solely to secure CCTV unless you have a warrant or are executing an arrest.</p>
-                <p><strong>Action:</strong></p>
-                <ul style="margin-top: 8px; padding-left: 20px;">
-                    <li>Do not force entry.</li>
-                    <li>Serve a formal preservation request (often verbal initially, followed by written) reminding them of the offence of Perverting the Course of Justice.</li>
-                    <li>Consider applying for a <strong>Section 8 PACE 1984</strong> Search Warrant via a magistrate.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                3. Refusal to Download (The Hostile Owner)
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> You are already lawfully inside a premises (e.g. a shop open to the public, or you were invited in), you see the CCTV DVR, but the owner refuses to provide the password or refuses to let you download the footage.</p>
-                <p><strong>Power: Section 19 PACE 1984 (General Power of Seizure)</strong></p>
-                <p><strong>Action:</strong> Because you are lawfully on the premises, you may physically seize the entire DVR box if you have reasonable grounds to believe:</p>
-                <ul style="margin-top: 8px; padding-left: 20px;">
-                    <li>It contains evidence of an offence.</li>
-                    <li>Seizure is necessary to prevent the evidence being <strong>C</strong>oncealed, <strong>L</strong>ost, <strong>A</strong>ltered, or <strong>D</strong>estroyed (CLAD).</li>
-                </ul>
-                <p style="margin-top: 15px; color: var(--accent-color);"><em>Practical Tip: Explaining to the owner that you have the lawful power to seize their hardware unit under S.19 PACE usually persuades them to log in and allow a USB export instead.</em></p>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                4. Consent Withdrawn Mid-Recovery
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> You are lawfully on premises downloading footage. Halfway through, the owner panics, tells you to get out, and tries to stop the download.</p>
-                <p><strong>Power: Section 19 PACE 1984</strong></p>
-                <p><strong>Action:</strong> The moment they withdraw consent and attempt to stop you, the risk of the evidence being "Lost, Altered, or Destroyed" becomes immediate.</p>
-                <ul style="margin-top: 8px; padding-left: 20px;">
-                    <li>You no longer rely on consent. </li>
-                    <li>You immediately transition to your <strong>Section 19 PACE</strong> powers.</li>
-                    <li>You may remain on the premises specifically to secure the evidence, or physically seize the hard drive/DVR to prevent its destruction.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                5. Bulk Data Seizure (Too Much Data)
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> You locate a highly complex CCTV network or massive DVR, but the sheer volume of data makes it impossible or impractical to extract the specific footage at the scene.</p>
-                <p><strong>Power: Section 50 of the Criminal Justice and Police Act 2001 (CJPA)</strong></p>
-                <p><strong>Action:</strong> This power allows you to physically seize and remove the property from the premises so you can sift through and examine the data elsewhere. You must serve a written notice when exercising this power.</p>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                6. Arrested Suspect's Premises
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> A suspect has been arrested for an indictable offence, and you need to secure the CCTV from their home or business address.</p>
-                <p><strong>Power: Section 18 PACE 1984</strong></p>
-                <p><strong>Action:</strong> You may enter and search any premises occupied or controlled by the arrested person without a warrant. You must have reasonable grounds for suspecting that evidence relating to the offence is on the premises.</p>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                7. Cloud or Remote Server Storage
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> The physical camera is on the premises, but the footage is stored on a remote server or in the cloud rather than a local hard drive.</p>
-                <p><strong>Power: Sections 19(4) and 20 PACE 1984</strong></p>
-                <p><strong>Action:</strong> Section 20 extends seizure powers to computerised information. Under Section 19(4), if you have reasonable grounds to believe the electronic data is evidence of an offence, you can legally require the occupier to produce that information in a visible, legible form that can be taken away.</p>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                8. The Pre-Planned Raid (Judicial Warrant)
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> You anticipate that an owner will refuse entry and hide or delete crucial CCTV footage before you can secure it.</p>
-                <p><strong>Power: Section 8 PACE 1984</strong></p>
-                <p><strong>Action:</strong> You must apply to a magistrate or judge for a warrant. You must demonstrate reasonable grounds for believing an indictable offence occurred and that the premises contain material of substantial value to the investigation.</p>
-            </div>
-        </div>
-
-        <div class="tree-item">
-            <div class="tree-header" onclick="toggleTree(this)">
-                9. Protected or Privileged Environments
-                <span class="tree-icon">▼</span>
-            </div>
-            <div class="tree-body">
-                <p><strong>Scenario:</strong> You are attempting to seize CCTV from a solicitor's office, a medical clinic, or another environment containing highly confidential files.</p>
-                <p><strong>Power: Section 19(6) PACE 1984 / Legal Professional Privilege (LPP)</strong></p>
-                <p><strong>Action:</strong> You cannot legally seize material that you have reasonable grounds to believe is subject to legal privilege, such as private medical or legal documentation.</p>
-            </div>
-        </div>
-        
-    </div>
-
-    <!-- TAB 5: DPA DISCLOSURE REQUEST -->
-    <div id="dpa-tab" class="tab-content no-print">
-        <h3 style="color: var(--primary-color); margin-top: 0; font-size: 1.4em;">Request for Disclosure of Personal Data</h3>
-        <p style="font-size: 1em; margin-bottom: 25px; color: var(--text-muted);">Under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d) & 9(2)(c). This statutory request provides legal reassurance to organisations disclosing CCTV data for law enforcement purposes.</p>
-        
-        <form id="dpaForm">
-            <fieldset>
-                <legend>Recipient Organisation</legend>
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="dpa_email">Recipient Email Address <span style="color:var(--danger)">*</span></label>
-                        <input type="email" id="dpa_email" name="Recipient Email" required placeholder="e.g., manager@premises.co.uk">
-                    </div>
-                    <div class="form-group">
-                        <label for="dpa_to">To (Name)</label>
-                        <input type="text" id="dpa_to" name="To Person">
-                    </div>
-                    <div class="form-group">
-                        <label for="dpa_position">Position</label>
-                        <input type="text" id="dpa_position" name="Position" placeholder="e.g., Store Manager, CCTV Operator">
-                    </div>
-                    <div class="form-group">
-                        <label for="dpa_organisation">Organisation / Business</label>
-                        <input type="text" id="dpa_organisation" name="Organisation">
-                    </div>
-                    <div class="form-group">
-                        <label for="dpa_address">Address & Postcode</label>
-                        <input type="text" id="dpa_address" name="Address">
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Statutory Grounds & Confirmations</legend>
-                <label style="font-size: 1.05em; margin-bottom: 12px; color: var(--primary-color);">I am making enquiries which are concerned with (select all that apply):</label>
-                <div class="radio-group" style="margin-bottom: 20px; background: var(--calc-bg); padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                    <label style="width: 100%; margin-bottom: 8px;"><input type="checkbox" id="dpa_purpose_crime" checked> The prevention or detection of crime</label>
-                    <label style="width: 100%; margin-bottom: 8px;"><input type="checkbox" id="dpa_purpose_offenders" checked> The prosecution or apprehension of offenders</label>
-                    <label style="width: 100%;"><input type="checkbox" id="dpa_purpose_vital"> Protecting the vital interests of a person</label>
-                </div>
-
-                <div style="font-size: 0.9em; color: var(--text-color); background: var(--primary-light); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--primary-color); margin-bottom: 20px;">
-                    <p style="margin: 0 0 10px 0; color: var(--primary-color); font-size: 1.1em;"><strong>Mandatory Officer Declarations:</strong></p>
-                    <p style="margin: 0 0 8px 0;">✓ I confirm that the personal data requested below is needed for the purposes indicated above and a failure to provide that information will be likely to prejudice those matters.</p>
-                    <p style="margin: 0;">✓ I confirm that the individual(s) whose personal data is sought should not be informed of this request as to do so would be likely to prejudice the matters described above.</p>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="dpa_info_required">Information Required</label>
-                        <textarea id="dpa_info_required" name="Information Required" rows="3"></textarea>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="dpa_why_necessary">Why the information is necessary for the purpose</label>
-                        <textarea id="dpa_why_necessary" name="Why Necessary" rows="3"></textarea>
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Police Details</legend>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="dpa_police_ref">Police Reference / Operation</label>
-                        <input type="text" id="dpa_police_ref" name="Police Reference">
-                    </div>
-                    <div class="form-group">
-                        <label for="dpa_officer">Rank / Collar / Name</label>
-                        <input type="text" id="dpa_officer" name="Officer">
-                    </div>
-                    <div class="form-group">
-                        <label for="dpa_station">Station / Base</label>
-                        <input type="text" id="dpa_station" name="Station" placeholder="e.g., Central Police Station">
-                    </div>
-                    <div class="form-group">
-                        <label for="dpa_tel">Contact Telephone</label>
-                        <input type="tel" id="dpa_tel" name="Telephone">
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="dpa_officer_email">Officer Email</label>
-                        <input type="email" id="dpa_officer_email" name="Officer Email" placeholder="e.g., officer@police.uk">
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="dpa_countersign">Supervisor Counter-Signature / Rank / Name (If required)</label>
-                        <input type="text" id="dpa_countersign" name="Counter Signature" placeholder="e.g., PS 1234 Smith">
-                    </div>
-                </div>
-            </fieldset>
-
-            <div class="button-group no-print" style="margin-top: 25px;">
-                <button type="button" class="submit-btn" id="dpaSubmitBtn" onclick="submitAndEmailDPA()" style="background-color: var(--action); width: 100%;">Generate Formal PDF & Send Email</button>
-            </div>
-        </form>
-    </div>
 </div>
 
 <!-- Modal for Viewing Record in Form Format -->
@@ -1033,7 +782,7 @@
 </div>
 
 <!-- ==============================================================
-     OVERHAULED MG11 MODAL (STRICT COURT LAYOUT - UNTOUCHED DOM)
+     OVERHAULED MG11 MODAL
      ============================================================== -->
 <div id="mg11Modal" class="modal no-print">
     <div class="modal-content" style="max-width: 950px; background: #f8f9fa;">
@@ -1051,7 +800,7 @@
                 </div>
                 <button onclick="toggleMg11Edit()" id="btnToggleMg11Edit" style="background-color: #334155; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: var(--shadow-sm);">🔓 Enable Direct Editing</button>
             </div>
-            <button onclick="downloadMg11Pdf()" id="btnCreateMg11Pdf" style="background-color: #16a34a; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: var(--shadow-md);">📄 Create MG11 PDF</button>
+            <button onclick="downloadMg11Pdf()" id="btnCreateMg11Pdf" style="background-color: #16a34a; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: var(--shadow-md);">📄 Download Clean PDF</button>
         </div>
 
         <!-- Signature Pad for MG11 -->
@@ -1062,86 +811,26 @@
             </div>
             <div class="mg11-canvas-wrapper" style="border: 2px dashed #94a3b8; height: 120px; position: relative; background: #f8fafc; touch-action: none; border-radius: 6px;">
                 <canvas id="mg11SigCanvas" style="width:100%; height:100%; cursor:crosshair;"></canvas>
-                <div id="mg11SigPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; pointer-events:none; color:#94a3b8; font-style:italic; font-size:1em;">Sign here. Mirrors to document below.</div>
+                <div id="mg11SigPlaceholder" style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; pointer-events:none; color:#94a3b8; font-style:italic; font-size:1em;">Sign here. Will auto-append to the bottom of EVERY page in the generated PDF.</div>
             </div>
         </div>
 
-        <!-- MG11 Document Container (A4 Proportions & Typography) -->
-        <div id="mg11DocumentContainer" class="mg11-container avoid-break" style="font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.4; color: #000; background: #fff; padding: 40px 50px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; box-sizing: border-box;">
-            <!-- Header -->
-            <div class="mg11-header-relative" style="position: relative; margin-bottom: 25px;">
-                <div class="mg11-badge" style="position: absolute; right: 0; top: 0; border: 1px solid #000; padding: 4px 12px; font-weight: bold; font-size: 11pt;">MG11</div>
-                <div class="mg11-official" style="text-align: center;"><span style="border: 1px solid #000; padding: 4px 30px; font-weight: bold; font-size: 11pt; display: inline-block;">OFFICIAL – (when complete)</span></div>
-            </div>
+        <!-- Document Preview Body -->
+        <div id="mg11DocumentContainer" class="mg11-container" style="font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.4; color: #000; background: #fff; padding: 40px 50px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; box-sizing: border-box;">
+            
+            <p style="font-style: italic; color: #888; text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">This is just a text preview. The downloaded PDF will automatically format into strict court layout with headers and footers.</p>
 
-            <div class="mg11-title" style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">WITNESS STATEMENT</div>
-            <div class="mg11-citation" style="text-align: center; font-size: 9.5pt; font-weight: bold; margin-bottom: 15px;">Criminal Procedure Rules, r 27.2; Criminal Justice Act 1967, s. 9; Magistrates’ Courts Act 1980, s.5B</div>
-
-            <!-- Refs Row -->
-            <div class="mg11-flex-end" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 5px;">
-                <span style="font-weight: bold;">Crime No.</span>
-                <div id="mg11DocCrime" class="mg11-box-input" style="border: 1px solid #000; width: 220px; height: 26px; margin-left: 10px; padding: 2px 6px; font-weight: normal; box-sizing: border-box;"></div>
-            </div>
-
-            <!-- Main Legal Box -->
-            <div class="mg11-main-box" style="border: 1px solid #000; padding: 12px; margin-bottom: 8px;">
-                <div class="mg11-flex-end" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold;">URN</span>
-                    <div id="mg11DocUrn" class="mg11-box-input" style="border: 1px solid #000; width: 220px; height: 26px; margin-left: 10px; padding: 2px 6px; font-weight: normal; box-sizing: border-box;"></div>
-                </div>
-
-                <div style="margin-bottom: 6px;">
-                    <span>Statement of</span>
-                    <span id="mg11DocDeclarant" style="font-weight: bold; margin-left: 8px;"></span>
-                </div>
-
-                <div class="mg11-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-                    <div>Age if under 18 <span style="font-weight:bold; margin: 0 4px;">Over 18</span> <span style="font-style:italic; font-size:10pt;">(if over 18 insert “over 18”)</span></div>
-                    <div>Occupation <span id="mg11DocOccupation" style="font-weight: bold; margin-left: 8px;"></span></div>
-                </div>
-
-                <div class="mg11-declaration" style="text-align: justify; font-size: 11pt; margin-top: 12px; margin-bottom: 12px;">
-                    This statement (consisting of <span style="font-weight:normal;">1</span> page(s) each signed by me) is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.
-                </div>
-
-                <div class="mg11-sig-row" style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dotted #888; padding-top: 8px;">
-                    <div>
-                        <span style="font-weight: bold;">Signature:</span>
-                        <div class="mg11-sig-line" style="border-bottom: 1px solid #000; width: 140px; display: inline-block; height: 35px; position: relative; margin: 0 5px;">
-                            <img id="mg11TopSigImg" class="mg11-sig-img" alt="Signature" style="max-height: 35px; max-width: 100%; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); display: none;">
-                        </div>
-                        <span>(witness)</span>
-                    </div>
-                    <div>
-                        <span style="font-weight: bold;">Date</span>
-                        <span id="mg11DocDateTop" style="font-weight: bold; margin-left:8px;"></span>
-                    </div>
-                </div>
-            </div>
-
-            <div style="font-size: 10pt; margin-bottom: 25px;">
-                <span>Tick if witness evidence is visually recorded</span>
-                <span style="border: 1px solid #000; width: 14px; height: 14px; display: inline-block; margin: 0 6px; vertical-align: middle;"></span>
-                <span style="font-style: italic; font-size: 9pt;">(supply witness details on rear)</span>
+            <div style="margin-bottom: 15px; margin-top: 15px;">
+                <strong>Crime No:</strong> <span id="mg11DocCrime" style="padding: 2px 6px; border: 1px solid #ccc; display: inline-block; min-width: 150px;"></span><br><br>
+                <strong>URN:</strong> <span id="mg11DocUrn" style="padding: 2px 6px; border: 1px solid #ccc; display: inline-block; min-width: 150px;"></span><br><br>
+                <strong>Statement of:</strong> <span id="mg11DocDeclarant" style="font-weight: bold; margin-right: 20px;"></span> 
+                <strong>Occupation:</strong> <span id="mg11DocOccupation" style="font-weight: bold;"></span><br><br>
+                <strong>Date:</strong> <span id="mg11DocDateBottom" style="font-weight: bold;"></span>
             </div>
 
             <!-- Editable Narrative Body -->
-            <div id="mg11DocNarrative" class="mg11-narrative avoid-break" contenteditable="false" style="text-align: justify; margin-top: 25px; min-height: 150px; outline: none; white-space: pre-wrap;">
+            <div id="mg11DocNarrative" class="mg11-narrative" contenteditable="false" style="text-align: justify; margin-top: 25px; min-height: 150px; outline: none; white-space: pre-wrap;">
                 <!-- Injected via JS -->
-            </div>
-
-            <!-- FSR & Footer -->
-            <div class="mg11-footer avoid-break" style="margin-top: 30px; border-top: 1px solid #000; padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end;">
-                <div class="mg11-footer-sig" style="width: 180px; text-align: left;">
-                    <div class="mg11-footer-line" style="border-bottom: 1px solid #000; height: 35px; margin-bottom: 5px; position: relative;">
-                        <img id="mg11BottomSigImg" class="mg11-sig-img" alt="Signature" style="max-height: 45px; max-width: 100%; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); display: none;">
-                    </div>
-                    <div style="font-size:10pt;">Signature of Witness</div>
-                </div>
-                <div class="mg11-footer-date" style="width: 180px; text-align: center;">
-                    <div id="mg11DocDateBottom" class="mg11-footer-line" style="font-weight:bold; font-size:10pt; display:flex; align-items:flex-end; justify-content:center; padding-bottom:3px; border-bottom: 1px solid #000; height: 35px; margin-bottom: 5px;"></div>
-                    <div style="font-size:10pt;">Date</div>
-                </div>
             </div>
         </div>
     </div>
@@ -1298,33 +987,15 @@
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
+        
+        const targetTab = document.getElementById(tabId);
+        if(targetTab) targetTab.classList.add('active');
         
         if (event && event.currentTarget && event.currentTarget.classList) {
             event.currentTarget.classList.add('active');
         } else {
             const matchedBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
             if (matchedBtn) matchedBtn.classList.add('active');
-        }
-        
-        if(tabId === 'dpa-tab') {
-            syncDPAForm();
-        }
-    }
-
-    function toggleTree(element) {
-        const item = element.parentElement;
-        const body = item.querySelector('.tree-body');
-        const isOpen = item.classList.contains('open');
-        
-        document.querySelectorAll('.tree-item').forEach(i => {
-            i.classList.remove('open');
-            i.querySelector('.tree-body').classList.remove('open');
-        });
-
-        if (!isOpen) {
-            item.classList.add('open');
-            body.classList.add('open');
         }
     }
 
@@ -1437,7 +1108,6 @@
         currentStep = 1;
         showStep(1);
         loadLogs();
-        renderGuides();
     }
 
     function clearForm() {
@@ -2123,274 +1793,6 @@
         }
     }
 
-    function syncDPAForm() {
-        document.getElementById('dpa_officer').value = document.getElementById('person_attending').value || '';
-        document.getElementById('dpa_police_ref').value = document.getElementById('operation').value || '';
-        document.getElementById('dpa_organisation').value = document.getElementById('venue_address').value ? document.getElementById('venue_address').value.split('\n')[0] : '';
-        document.getElementById('dpa_address').value = document.getElementById('venue_address').value || '';
-        document.getElementById('dpa_to').value = document.getElementById('venue_contact_name').value || '';
-        document.getElementById('dpa_tel').value = document.getElementById('contact_number').value || '';
-        
-        const cams = (document.getElementById('cameras_downloaded_1') ? document.getElementById('cameras_downloaded_1').value : '') || 'All relevant cameras covering scene';
-        const start = formatUKDateTime(document.getElementById('dl_footage_start_1') ? document.getElementById('dl_footage_start_1').value : '') || formatUKDateTime(document.getElementById('dl_start').value) || 'Relevant timeframe';
-        const end = formatUKDateTime(document.getElementById('dl_footage_end_1') ? document.getElementById('dl_footage_end_1').value : '') || formatUKDateTime(document.getElementById('dl_end').value) || 'Relevant timeframe';
-        const format = (document.getElementById('format_footage_1') ? document.getElementById('format_footage_1').value : '') || 'Native export';
-        
-        document.getElementById('dpa_info_required').value = `Closed Circuit Television (CCTV) recordings from ${start} to ${end}, covering: ${cams}. Format: ${format}.`;
-        
-        const opName = document.getElementById('operation').value ? `Operation ${document.getElementById('operation').value}` : 'a criminal investigation';
-        document.getElementById('dpa_why_necessary').value = `Personal data (CCTV footage) is necessary for evidential purposes in connection with ${opName}. Failure to provide this information would be likely to prejudice the investigation, detection, and prosecution of offenders.`;
-    }
-
-    function generateDPAPDF(data, safeRef) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        let y = 15;
-        const margin = 15;
-        const pageWidth = 210;
-        const usableW = pageWidth - (margin * 2);
-
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(120, 120, 120);
-        doc.text("OFFICIAL [when completed]", 105, y, { align: "center" });
-        doc.text("Page 1 of 2", pageWidth - margin, y, { align: "right" });
-        y += 10;
-
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(0, 0, 0);
-        doc.text("Request to external organisation for the disclosure of personal data to the police", margin, y);
-        y += 6;
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(11, 60, 104);
-        doc.text("Under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d) & 9(2)(c)", margin, y);
-        y += 10;
-
-        doc.setDrawColor(200, 210, 220);
-        doc.setFillColor(250, 252, 255);
-        doc.roundedRect(margin, y, usableW, 30, 2, 2, 'FD');
-        
-        doc.setFontSize(10);
-        doc.setTextColor(80, 80, 80);
-        doc.setFont("helvetica", "bold");
-        doc.text("To:", margin + 4, y + 6);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(data['To'] || 'The Data Controller / Manager', margin + 30, y + 6);
-
-        doc.setTextColor(80, 80, 80);
-        doc.setFont("helvetica", "bold");
-        doc.text("Position:", margin + 4, y + 13);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(data['Position'] || 'Manager / Data Controller', margin + 30, y + 13);
-
-        doc.setTextColor(80, 80, 80);
-        doc.setFont("helvetica", "bold");
-        doc.text("Organisation:", margin + 4, y + 20);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(data['Organisation'] || 'N/A', margin + 30, y + 20);
-
-        doc.setTextColor(80, 80, 80);
-        doc.setFont("helvetica", "bold");
-        doc.text("Address:", margin + 4, y + 27);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        let splitAddr = doc.splitTextToSize(data['Address'] || 'N/A', usableW - 35);
-        doc.text(splitAddr[0] || 'N/A', margin + 30, y + 27);
-        y += 36;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(0, 0, 0);
-        doc.text("I am making enquiries which are concerned with (mark as appropriate):", margin, y);
-        y += 6;
-
-        doc.setFont("helvetica", "normal");
-        doc.text(`[${data['Crime'] ? 'X' : ' '}]  The prevention or detection of crime`, margin + 5, y);
-        y += 6;
-        doc.text(`[${data['Offenders'] ? 'X' : ' '}]  The prosecution or apprehension of offenders`, margin + 5, y);
-        y += 6;
-        doc.text(`[${data['Vital'] ? 'X' : ' '}]  Protecting the vital interests of a person (UK GDPR Art 6(1)(d) & 9(2)(c))`, margin + 5, y);
-        y += 8;
-
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(9);
-        let dec1 = doc.splitTextToSize("• I confirm that the personal data requested below is needed for the purposes indicated above and a failure to provide that information will be likely to prejudice those matters.", usableW - 8);
-        let dec2 = doc.splitTextToSize("• I confirm that the individual(s) whose personal data is sought should not be informed of this request as to do so would be likely to prejudice the matters described above.", usableW - 8);
-        let decBoxH = (dec1.length * 4) + (dec2.length * 4) + 8;
-
-        doc.setFillColor(245, 248, 250);
-        doc.setDrawColor(200, 210, 220);
-        doc.roundedRect(margin, y, usableW, decBoxH, 2, 2, 'FD');
-        
-        doc.text(dec1, margin + 4, y + 6);
-        let yOffset2 = y + 6 + (dec1.length * 4) + 1;
-        doc.text(dec2, margin + 4, yOffset2);
-        
-        y += decBoxH + 6;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.text("Information required:", margin, y);
-        y += 2.5;
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        let splitReq = doc.splitTextToSize(data['Information Required'] || 'N/A', usableW - 8);
-        let reqH = (splitReq.length * 5) + 6;
-        doc.roundedRect(margin, y, usableW, Math.max(16, reqH), 2, 2, 'S');
-        doc.text(splitReq, margin + 4, y + 6);
-        y += Math.max(16, reqH) + 6;
-
-        doc.setFont("helvetica", "bold");
-        doc.text("Why the information is necessary for the purpose:", margin, y);
-        y += 2.5;
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        let splitWhy = doc.splitTextToSize(data['Why Necessary'] || 'N/A', usableW - 8);
-        let whyH = (splitWhy.length * 5) + 6;
-        doc.roundedRect(margin, y, usableW, Math.max(16, whyH), 2, 2, 'S');
-        doc.text(splitWhy, margin + 4, y + 6);
-        y += Math.max(16, whyH) + 8;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(11);
-        doc.text("Police Reference: " + (data['Police Reference'] || 'N/A'), margin, y);
-        y += 4;
-        
-        doc.setFillColor(250, 252, 255);
-        doc.roundedRect(margin, y, usableW, 35, 2, 2, 'FD');
-        
-        doc.setFontSize(10);
-        doc.setTextColor(80, 80, 80);
-        doc.text("From (Officer):", margin + 4, y + 6);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(data['Officer'] || 'N/A', margin + 40, y + 6);
-
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(80, 80, 80);
-        doc.text("Station / Base:", margin + 4, y + 13);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(data['Station'] || 'N/A', margin + 40, y + 13);
-
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(80, 80, 80);
-        doc.text("Date / Time:", margin + 4, y + 20);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(data['Date Time'] || 'N/A', margin + 40, y + 20);
-
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(80, 80, 80);
-        doc.text("Phone / Email:", margin + 4, y + 27);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(`${data['Telephone'] || ''}  |  ${data['Officer Email'] || ''}`, margin + 40, y + 27);
-
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(80, 80, 80);
-        doc.text("Counter-Signature:", margin + 110, y + 6);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        doc.text(data['Counter Signature'] || 'N/A', margin + 145, y + 6);
-
-        doc.addPage();
-        y = 15;
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(120, 120, 120);
-        doc.text("OFFICIAL [when completed]", 105, y, { align: "center" });
-        doc.text("Page 2 of 2", pageWidth - margin, y, { align: "right" });
-        y += 12;
-
-        doc.setFontSize(13);
-        doc.setTextColor(11, 60, 104);
-        doc.text("Undertaking of lawful use of data disclosed to the police service:", margin, y);
-        y += 8;
-
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        const undertakingText = "Information disclosed to the police service is protected against unlawful reuse by the second data protection principle, which prohibits data collected for one purpose being reused for another. If data disclosed to the police service is needed for another purpose, it will be reused only if the new purpose is lawful or a lawful exemption applies, and only data necessary and proportionate to that new purpose will be used.\n\nTherefore, the police service undertakes to ensure that any use or reuse of the data disclosed is lawful, compliant with data protection principles and processed using appropriate safeguards to the rights and freedoms of the data subject.\n\nPlease be aware that we cannot comply with a request to limit use of data which is overridden by a statutory or common law duty or obligation. However, the reuse will be subject to the safeguards described above. We respectfully request that equivalent measures are observed in your handling of this request.";
-        let splitUndertaking = doc.splitTextToSize(undertakingText, usableW);
-        doc.text(splitUndertaking, margin, y);
-        y += (splitUndertaking.length * 5) + 10;
-
-        doc.setFontSize(13);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(11, 60, 104);
-        doc.text("Explanatory Note for Recipient Organisations", margin, y);
-        y += 8;
-
-        doc.setFontSize(9.5);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(20, 20, 20);
-        const explText = "This form is used by the police service when making a formal request to other organisations for personal data where disclosure is necessary for the purposes of the prevention or detection of crime or the apprehension or prosecution of offenders. It places no compulsion on the recipient to disclose the information, but provides necessary legal reassurance that a disclosure for these purposes is appropriate and fully compliant with the Data Protection Act 2018 and the UK General Data Protection Regulation (UK GDPR).\n\n" +
-        "Crime and Taxation: The UK GDPR regulates the processing of personal data where it is done so for non-Law Enforcement purposes. Article 23 of the UK GDPR permits the UK Parliament to create exemptions from particular elements which would otherwise compromise the public interest. The Data Protection Act 2018 sets out exemptions that apply in specific circumstances.\n\n" +
-        "The most relevant exemption for Law Enforcement is that within the Data Protection Act 2018 at Schedule 2 Part 1 Paragraph 2 (Crime & taxation: general). This applies where personal data is disclosed by an organisation subject to the UK GDPR to the police for the purposes of the prevention or detection of crime or the apprehension or prosecution of offenders.\n\n" +
-        "It restricts the application of the UK GDPR data protection principles and subject rights to the extent that application of those provisions would be likely to prejudice the prevention or detection of crime or the apprehension or prosecution of offenders. In effect, the exemption means that an organisation can provide personal data (including CCTV recordings) to the police where necessary without fear of breaching the UK GDPR or Data Protection Act 2018.\n\n" +
-        "Vital Interests: To protect life or prevent an immediate and credible risk to life, UK GDPR Article 6(1)(d) provides a lawful basis for organisations to disclose personal data to the police where the disclosure is necessary to protect the vital interests of the data subject or of another natural person. Article 9(2)(c) provides for processing of special category data to the same ends where consent cannot be given.";
-
-        let splitExpl = doc.splitTextToSize(explText, usableW);
-        doc.text(splitExpl, margin, y);
-
-        doc.save(safeRef + '.pdf');
-    }
-
-    function submitAndEmailDPA() {
-        const form = document.getElementById('dpaForm');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-
-        const email = document.getElementById('dpa_email').value;
-        const btn = document.getElementById('dpaSubmitBtn');
-        const originalText = btn.innerText;
-        btn.innerText = "Generating Statutory PDF...";
-        btn.disabled = true;
-
-        const now = new Date();
-        const pad = n => n.toString().padStart(2, '0');
-        const exactDateTime = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
-        const data = {
-            'Date Time': exactDateTime,
-            'To': document.getElementById('dpa_to').value,
-            'Position': document.getElementById('dpa_position').value,
-            'Organisation': document.getElementById('dpa_organisation').value,
-            'Address': document.getElementById('dpa_address').value,
-            'Crime': document.getElementById('dpa_purpose_crime').checked,
-            'Offenders': document.getElementById('dpa_purpose_offenders').checked,
-            'Vital': document.getElementById('dpa_purpose_vital').checked,
-            'Information Required': document.getElementById('dpa_info_required').value,
-            'Why Necessary': document.getElementById('dpa_why_necessary').value,
-            'Police Reference': document.getElementById('dpa_police_ref').value,
-            'Officer': document.getElementById('dpa_officer').value,
-            'Station': document.getElementById('dpa_station').value,
-            'Telephone': document.getElementById('dpa_tel').value,
-            'Officer Email': document.getElementById('dpa_officer_email').value,
-            'Counter Signature': document.getElementById('dpa_countersign').value
-        };
-
-        const safeRef = `DPA_Schedule2_Request_${(data['Police Reference'] || 'Police').replace(/[\/\s:]/g, '-')}`;
-        
-        generateDPAPDF(data, safeRef);
-
-        setTimeout(() => {
-            const subject = encodeURIComponent(`Formal Police Request for CCTV Disclosure - Ref: ${data['Police Reference']}`);
-            const body = encodeURIComponent(`Dear ${data['To'] || 'Data Controller / Manager'},\n\nPlease find attached a formal Request for the Disclosure of Personal Data to the Police under Schedule 2 Part 1 Paragraph 2 of the Data Protection Act 2018 and UK GDPR Article 6(1)(d).\n\nThis statutory document confirms that the CCTV footage requested from ${data['Organisation'] || 'your premises'} is required for the prevention or detection of crime and the apprehension or prosecution of offenders, and provides the necessary legal reassurance for your organisation's data protection logs.\n\nKind regards,\n\n${data['Officer']}\nPolice Reference: ${data['Police Reference']}\nContact No: ${data['Telephone']}\n\n[OFFICER: PLEASE REMEMBER TO TAP 'ATTACH' AND SELECT THE DPA PDF THAT JUST DOWNLOADED BEFORE HITTING SEND]`);
-            
-            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-            
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }, 1000); 
-    }
-
     function submitAndDownloadPDF() {
         const form = document.getElementById('cctvForm');
         
@@ -2670,30 +2072,47 @@
         if (event.target == document.getElementById('mg11Modal')) closeModal('mg11Modal');
     }
 
+    // =========================================================
+    // NATIVE JSPDF MG11 GENERATOR
+    // =========================================================
     let currentMg11Index = null;
     let isMg11Editing = false;
     let mg11Canvas, mg11Ctx, mg11Drawing = false, mg11HasSig = false;
 
+    // Open from live form instead of log
+    function generateCurrentMG11() {
+        currentMg11Index = -1; 
+        document.getElementById('mg11ModeSelect').value = 'officer'; 
+        clearMg11Signature();
+        if(isMg11Editing) toggleMg11Edit(); 
+        refreshMg11Prose();
+        document.getElementById('mg11Modal').style.display = 'block';
+        setTimeout(() => { initMg11SignaturePad(); }, 100);
+    }
+
+    // Open from historical log
     function generateMG11(index) {
         currentMg11Index = index;
         document.getElementById('mg11ModeSelect').value = 'officer'; 
-        
         clearMg11Signature();
         if(isMg11Editing) toggleMg11Edit(); 
-        
         refreshMg11Prose();
         document.getElementById('mg11Modal').style.display = 'block';
-        
-        setTimeout(() => {
-            initMg11SignaturePad();
-        }, 100);
+        setTimeout(() => { initMg11SignaturePad(); }, 100);
     }
 
     function refreshMg11Prose() {
         if(currentMg11Index === null) return;
-        const logs = JSON.parse(localStorage.getItem('cctvFullLogs')) || [];
-        const log = logs[currentMg11Index];
-        if(!log) return;
+        
+        let log;
+        if (currentMg11Index === -1) {
+            const formData = new FormData(document.getElementById('cctvForm'));
+            log = Object.fromEntries(formData.entries());
+        } else {
+            const logs = JSON.parse(localStorage.getItem('cctvFullLogs')) || [];
+            log = logs[currentMg11Index];
+            if(!log) return;
+        }
 
         const mode = document.getElementById('mg11ModeSelect').value;
         const isOfficer = (mode === 'officer');
@@ -2713,7 +2132,6 @@
 
         document.getElementById('mg11DocCrime').innerText = crime;
         document.getElementById('mg11DocUrn').innerText = ''; 
-        document.getElementById('mg11DocDateTop').innerText = todayStr;
         document.getElementById('mg11DocDateBottom').innerText = todayStr;
 
         let declarantName = "";
@@ -2754,6 +2172,8 @@
             while(log[`Cameras Downloaded_${dlIndex}`] !== undefined || (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined)) {
                 let sfx = (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined && !log[`Cameras Downloaded_1`]) ? '' : `_${dlIndex}`;
                 
+                if (log[`Cameras Downloaded${sfx}`] === "" && dlIndex === 1 && !log[`Downloaded Footage Start${sfx}`]) break;
+
                 let dlStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]);
                 let dlEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]);
                 let camsDl = log[`Cameras Downloaded${sfx}`] || 'relevant cameras';
@@ -2845,7 +2265,7 @@
                 if(e.cancelable) e.preventDefault();
             });
 
-            const stopSign = function() { if(mg11Drawing) { mg11Drawing = false; mirrorMg11Signature(); } };
+            const stopSign = function() { if(mg11Drawing) { mg11Drawing = false; } };
             window.addEventListener('mouseup', stopSign);
             
             mg11Canvas.addEventListener('touchstart', function(e) {
@@ -2873,50 +2293,188 @@
         mg11Ctx.strokeStyle = "#000000";
     }
 
-    function mirrorMg11Signature() {
-        if(!mg11HasSig) return;
-        const dataUrl = mg11Canvas.toDataURL();
-        const topImg = document.getElementById('mg11TopSigImg');
-        const botImg = document.getElementById('mg11BottomSigImg');
-        topImg.src = dataUrl; topImg.style.display = 'block';
-        botImg.src = dataUrl; botImg.style.display = 'block';
-    }
-
     function clearMg11Signature() {
         if(!mg11Ctx) return;
         mg11Ctx.clearRect(0, 0, mg11Canvas.width, mg11Canvas.height);
         mg11HasSig = false;
         document.getElementById('mg11SigPlaceholder').style.display = 'flex';
-        document.getElementById('mg11TopSigImg').style.display = 'none';
-        document.getElementById('mg11BottomSigImg').style.display = 'none';
     }
 
     function downloadMg11Pdf() {
         const btn = document.getElementById('btnCreateMg11Pdf');
         const origText = btn.innerText;
-        btn.innerText = "Generating A4 PDF...";
+        btn.innerText = "Generating PDF...";
         btn.disabled = true;
 
         if(isMg11Editing) toggleMg11Edit(); 
 
-        const element = document.getElementById('mg11DocumentContainer');
-        const declarantName = document.getElementById('mg11DocDeclarant').innerText.replace(/\s+/g, '_') || 'Statement';
-        const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-        const filename = `MG11_${declarantName}_${dateStr}.pdf`;
-
-        const opt = {
-            margin:       [10, 10, 10, 10], 
-            filename:     filename,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['css', 'legacy'] }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            btn.innerText = origText;
-            btn.disabled = false;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        
+        const declarantName = document.getElementById('mg11DocDeclarant').innerText || 'Witness';
+        const occupation = document.getElementById('mg11DocOccupation').innerText || 'N/A';
+        const crimeNo = document.getElementById('mg11DocCrime').innerText || '';
+        const urn = document.getElementById('mg11DocUrn').innerText || '';
+        const dateStr = document.getElementById('mg11DocDateBottom').innerText || new Date().toLocaleDateString('en-GB');
+        
+        const narrativeDiv = document.getElementById('mg11DocNarrative');
+        let paragraphs = [];
+        
+        narrativeDiv.childNodes.forEach(node => {
+            if(node.nodeName === 'P' || node.nodeName === 'DIV') {
+                if(node.innerText.trim()) paragraphs.push(node.innerText.trim());
+            } else if (node.nodeType === 3 && node.textContent.trim()) {
+                paragraphs.push(node.textContent.trim());
+            }
         });
+        if (paragraphs.length === 0 && narrativeDiv.innerText.trim()) {
+            paragraphs = narrativeDiv.innerText.split('\n').filter(p => p.trim());
+        }
+
+        const margin = 15;
+        const pageWidth = 210;
+        const usableW = pageWidth - (margin * 2);
+        const maxPageY = 250; 
+        
+        let y = 0;
+        let pageNum = 1;
+        const sigDataUrl = mg11HasSig ? mg11Canvas.toDataURL('image/png') : null;
+
+        function drawFooter(pageNumber) {
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(0,0,0);
+            
+            doc.setDrawColor(0,0,0);
+            doc.setLineWidth(0.3);
+            doc.line(margin, 275, margin + 65, 275); 
+            doc.line(pageWidth - margin - 35, 275, pageWidth - margin, 275); 
+            
+            doc.text("Signature of witness", margin, 280);
+            doc.text("Date", pageWidth - margin - 35, 280);
+            doc.text(dateStr, pageWidth - margin - 17.5, 273, {align: "center"});
+            
+            if (sigDataUrl) {
+                doc.addImage(sigDataUrl, 'PNG', margin + 5, 255, 55, 19, '', 'FAST');
+            }
+        }
+
+        function drawPage1Header() {
+            y = 20;
+            
+            doc.setLineWidth(0.5);
+            doc.rect(pageWidth - margin - 20, y - 8, 20, 8);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.text("MG11", pageWidth - margin - 10, y - 2, {align: "center"});
+
+            doc.rect(85, y - 8, 40, 8);
+            doc.text("OFFICIAL", 105, y - 2, {align: "center"});
+
+            y += 15;
+            doc.setFontSize(14);
+            doc.text("WITNESS STATEMENT", 105, y, {align: "center"});
+            
+            y += 6;
+            doc.setFontSize(9);
+            doc.text("Criminal Procedure Rules, r 27.2; Criminal Justice Act 1967, s. 9; Magistrates' Courts Act 1980, s.5B", 105, y, {align: "center"});
+            
+            y += 12;
+            doc.setFontSize(10);
+            doc.text("Crime No.", pageWidth - margin - 75, y);
+            doc.rect(pageWidth - margin - 55, y - 4, 55, 6);
+            if(crimeNo) doc.text(crimeNo, pageWidth - margin - 53, y + 0.5);
+            
+            y += 8;
+            doc.setFontSize(11);
+            doc.setLineWidth(0.3);
+            doc.rect(margin, y - 5, usableW, 42); 
+            
+            let boxY = y;
+            doc.text("URN", pageWidth - margin - 65, boxY);
+            doc.rect(pageWidth - margin - 55, boxY - 4, 53, 6);
+            if(urn) doc.text(urn, pageWidth - margin - 53, boxY + 0.5);
+            
+            boxY += 10;
+            doc.setFont("helvetica", "normal");
+            doc.text("Statement of: ", margin + 5, boxY);
+            doc.setFont("helvetica", "bold");
+            doc.text(declarantName, margin + 30, boxY);
+            
+            boxY += 8;
+            doc.setFont("helvetica", "normal");
+            doc.text("Age if under 18: ", margin + 5, boxY);
+            doc.setFont("helvetica", "bold");
+            doc.text("Over 18", margin + 35, boxY);
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(9);
+            doc.text("(if over 18 insert 'over 18')", margin + 55, boxY);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+            doc.text("Occupation: ", margin + 105, boxY);
+            doc.setFont("helvetica", "bold");
+            doc.text(occupation, margin + 130, boxY);
+            
+            boxY += 10;
+            doc.setFont("helvetica", "normal");
+            const declaration = "This statement is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.";
+            const decLines = doc.splitTextToSize(declaration, usableW - 10);
+            doc.text(decLines, margin + 5, boxY);
+            
+            y += 50; 
+            
+            doc.setFontSize(10);
+            doc.text("Tick if witness evidence is visually recorded", margin, y);
+            doc.rect(margin + 75, y - 3, 4, 4);
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(9);
+            doc.text("(supply witness details on rear)", margin + 85, y);
+            
+            y += 12;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+        }
+
+        function drawSubsequentHeader() {
+            y = 20;
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Continuation of Statement of: ${declarantName}`, margin, y);
+            doc.text(`Page ${pageNum}`, pageWidth - margin, y, {align: "right"});
+            y += 15;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+        }
+
+        drawPage1Header();
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+
+        for (let i = 0; i < paragraphs.length; i++) {
+            const lines = doc.splitTextToSize(paragraphs[i], usableW);
+            
+            for (let j = 0; j < lines.length; j++) {
+                if (y > maxPageY) {
+                    drawFooter(pageNum);
+                    doc.addPage();
+                    pageNum++;
+                    drawSubsequentHeader();
+                }
+                doc.text(lines[j], margin, y);
+                y += 6; 
+            }
+            y += 4; 
+        }
+
+        drawFooter(pageNum);
+
+        const filename = `MG11_${declarantName.replace(/\s+/g, '_')}_${dateStr.replace(/\//g, '-')}.pdf`;
+        doc.save(filename);
+
+        btn.innerText = origText;
+        btn.disabled = false;
     }
 
     function exportLogToCSV() {
@@ -2952,146 +2510,13 @@
         document.body.removeChild(link);
     }
 
-    const cctvGuides = [
-        { brand: "Abus", user: "admin", pass: "12345", ip: "192.168.0.100", notes: "Default port often 8000.", url: "https://www.abus.com/uk/Service/Manuals" },
-        { brand: "ACTi", user: "Admin", pass: "123456", ip: "192.168.0.100", notes: "Note case sensitivity: 'Admin'.", url: "https://www.acti.com/support" },
-        { brand: "ADT", user: "admin", pass: "admin", ip: "DHCP", notes: "Often rebranded from Dahua or Hikvision.", url: "https://www.adt.com/help" },
-        { brand: "Aimetis / Senstar", user: "root", pass: "root", ip: "DHCP", notes: "Symphony VMS. Passwords often customized during deployment.", url: "https://senstar.com/support/" },
-        { brand: "Alibi", user: "admin", pass: "1111111", ip: "192.168.1.100", notes: "Often requires password change on first login.", url: "https://www.alibisecurity.com/support" },
-        { brand: "Altronix", user: "admin", pass: "admin", ip: "192.168.168.168", notes: "NetWay devices (network/power management).", url: "https://www.altronix.com/support" },
-        { brand: "Amcrest", user: "admin", pass: "admin", ip: "10.1.1.65 / DHCP", notes: "Prompts to change on first login. Heavily based on Dahua architecture.", url: "https://amcrest.com/support" },
-        { brand: "American Dynamics (Tyco)", user: "admin", pass: "admin", ip: "192.168.1.254", notes: "VideoEdge VMS or Intellex DVRs (Legacy).", url: "https://www.americandynamics.net/support/" },
-        { brand: "Annke", user: "admin", pass: "12345 / (blank)", ip: "192.168.1.100", notes: "Often uses the same underlying firmware/OS as Hikvision.", url: "https://help.annke.com/" },
-        { brand: "Arecont Vision", user: "admin", pass: "admin / (blank)", ip: "192.168.0.80", notes: "AV200 utility helps locate IP.", url: "https://arecontvision.com/" },
-        { brand: "Arlo (Cloud App)", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open Arlo Secure app > Library > Select video > Share > Save Video.", url: "https://kb.arlo.com/" },
-        { brand: "Aventura", user: "admin", pass: "12345", ip: "192.168.1.100", notes: "Legacy and enterprise.", url: "https://www.aventuracctv.com/support" },
-        { brand: "AvertX", user: "admin", pass: "1234", ip: "192.168.0.100", notes: "ProConnect NVRs.", url: "https://www.avertx.com/support/" },
-        { brand: "Avigilon", user: "administrator", pass: "(blank) / admin", ip: "169.254.1.2", notes: "ZeroConf IP used if no DHCP. Usually a blank password initially.", url: "https://www.avigilon.com/support" },
-        { brand: "Axis", user: "root", pass: "pass / root", ip: "192.168.0.90", notes: "Axis IP Utility can be used to find units on the network. Prompts to change password on first login.", url: "https://www.axis.com/support" },
-        { brand: "Baxall", user: "admin", pass: "admin", ip: "192.168.1.10", notes: "Older legacy units. Company defunct.", url: "https://www.google.com/search?q=Baxall+CCTV+manual" },
-        { brand: "Blink (Cloud App)", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open Blink app > Clips icon > Select clip > Share > Save Video.", url: "https://support.blinkforhome.com/" },
-        { brand: "Bolide", user: "admin", pass: "123456", ip: "192.168.1.100", notes: "Often uses port 8000.", url: "https://bolideco.com/support" },
-        { brand: "Bosch", user: "service", pass: "service", ip: "192.168.0.1", notes: "Older units might use 'admin'/'admin'. Bosch Configuration Manager is highly recommended.", url: "https://www.boschsecurity.com/xc/en/support/" },
-        { brand: "Brickcom", user: "admin", pass: "admin", ip: "192.168.1.1", notes: "Usually straightforward.", url: "https://www.brickcom.com/support/" },
-        { brand: "Cathexis", user: "Admin", pass: "Admin", ip: "DHCP", notes: "CathexisVision VMS.", url: "https://cathexisvideo.com/support/" },
-        { brand: "CCTV Security Pros", user: "admin", pass: "123456", ip: "192.168.1.108", notes: "Often Dahua or TVT OEM.", url: "https://www.cctvsecuritypros.com/support/" },
-        { brand: "Cisco", user: "root", pass: "system", ip: "DHCP", notes: "Enterprise class. May be locked down by IT.", url: "https://www.cisco.com/c/en/us/support/index.html" },
-        { brand: "Clinton Electronics", user: "admin", pass: "admin", ip: "192.168.1.200", notes: "Shadow/Flight series DVRs.", url: "https://clintonelectronics.com/support/" },
-        { brand: "Concept Pro", user: "admin", pass: "admin", ip: "192.168.1.100", notes: "VHD/VXH series usually standard admin/admin.", url: "https://www.google.com/search?q=Concept+Pro+CCTV+manual" },
-        { brand: "Costar", user: "admin", pass: "admin", ip: "192.168.122.200", notes: "Often uses port 80.", url: "https://costarvideo.com/support/" },
-        { brand: "Costco (various)", user: "admin", pass: "(blank) or 123456", ip: "DHCP", notes: "Swann, Lorex, Q-See, AvertX depending on era.", url: "https://www.google.com/search?q=Costco+CCTV+manual" },
-        { brand: "CP Plus", user: "admin", pass: "admin / 123456", ip: "192.168.1.108", notes: "Dahua OEM in many regions.", url: "https://www.cppluscorp.com/support" },
-        { brand: "Dahua", user: "admin", pass: "admin", ip: "192.168.1.108", notes: "Default is admin/admin. Account lockouts happen after 5 failed attempts.", url: "https://www.dahuasecurity.com/support/" },
-        { brand: "Dedicated Micros", user: "dm", pass: "web", ip: "192.168.0.250", notes: "Legacy brand. Very common in old UK retail.", url: "https://www.google.com/search?q=Dedicated+Micros+manual" },
-        { brand: "Defender", user: "admin", pass: "(blank)", ip: "DHCP", notes: "Consumer grade, usually leaves password blank by default.", url: "https://www.defendercameras.com/support" },
-        { brand: "Digital Watchdog", user: "admin", pass: "admin", ip: "192.168.1.100", notes: "DW Spectrum IPVMS.", url: "https://digital-watchdog.com/support/" },
-        { brand: "Eufy (Cloud App)", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open Eufy Security app > Events > Select video > Download icon.", url: "https://support.eufylife.com/" },
-        { brand: "Exacq / ExacqVision", user: "admin", pass: "admin256", ip: "DHCP", notes: "Enterprise grade, passwords usually complexed by installers.", url: "https://exacq.com/support/" },
-        { brand: "Exvision", user: "admin", pass: "123456", ip: "192.168.1.10", notes: "Legacy DVRs.", url: "https://www.google.com/search?q=Exvision+DVR+manual" },
-        { brand: "FLIR", user: "admin", pass: "fliradmin", ip: "192.168.0.250", notes: "Can also be admin/admin.", url: "https://www.flir.com/support/" },
-        { brand: "Foscam", user: "admin", pass: "(blank)", ip: "DHCP", notes: "Requires configuration via their app/web portal.", url: "https://foscam.com/downloads/index.html" },
-        { brand: "Genetec", user: "administrator", pass: "admin", ip: "DHCP", notes: "Omnicast systems.", url: "https://www.genetec.com/support" },
-        { brand: "GeoVision", user: "admin", pass: "admin", ip: "192.168.0.10", notes: "Can also be 12345 on some NVR variants.", url: "https://www.geovision.com.tw/support.php" },
-        { brand: "Geutebruck", user: "root", pass: "geutebrueck", ip: "192.168.0.100", notes: "High-end enterprise systems.", url: "https://www.geutebrueck.com/" },
-        { brand: "Google Nest (Cloud App)", user: "N/A (App Based)", pass: "N/A", ip: "Cloud App", notes: "Open Google Home app > Camera > History > Event Details > Download icon.", url: "https://support.google.com/googlenest/" },
-        { brand: "Grandstream", user: "admin", pass: "admin", ip: "192.168.1.168", notes: "Often port 80.", url: "https://www.grandstream.com/support" },
-        { brand: "GW Security", user: "admin", pass: "123456", ip: "192.168.1.100", notes: "Default passwords can also be blank.", url: "https://www.gwsecurityusa.com/support" },
-        { brand: "Hanwha Vision / Samsung", user: "admin", pass: "4321 / admin", ip: "192.168.1.200", notes: "Default is often 4321 on older units. Newer ones force complex password creation.", url: "https://hanwhavision.com/en/support/" },
-        { brand: "Hikvision", user: "admin", pass: "12345 / 123456789a", ip: "192.0.0.64", notes: "Newer models force password creation on first boot. SAPD tool used for network resets.", url: "https://www.hikvision.com/en/support/" },
-        { brand: "Honeywell", user: "admin", pass: "1234", ip: "192.168.1.108", notes: "Sometimes admin/admin or admin/123456.", url: "https://buildings.honeywell.com/us/en/support" },
-        { brand: "IC Realtime", user: "admin", pass: "admin", ip: "192.168.1.108", notes: "Heavily based on Dahua. Prompts for password change.", url: "https://icrealtime.com/support" },
-        { brand: "Ikegami", user: "admin", pass: "admin", ip: "192.168.0.10", notes: "High end systems.", url: "https://www.ikegami.com/support" },
-        { brand: "IndigoVision", user: "admin", pass: "(blank)", ip: "DHCP", notes: "Often controlled by Control Center software.", url: "https://www.indigovision.com/" },
-        { brand: "Infinova", user: "admin", pass: "123456", ip: "192.168.1.100", notes: "Used in critical infrastructure.", url: "https://www.infinova.com/" },
-        { brand: "InVid", user: "admin", pass: "123456", ip: "192.168.1.100", notes: "Often OEM.", url: "https://www.invidtech.com/support/" },
-        { brand: "Kasa (TP-Link)", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open Kasa app > Activity > Select clip > Download icon.", url: "https://www.tp-link.com/support/" },
-        { brand: "Lorex", user: "admin", pass: "000000 / admin", ip: "192.168.0.108", notes: "If 000000 fails, try leaving it blank.", url: "https://help.lorextechnology.com/" },
-        { brand: "LTS", user: "admin", pass: "12345", ip: "192.168.1.64", notes: "Hikvision OEM. Uses NVMS7000.", url: "https://ltsecurityinc.com/support" },
-        { brand: "Luma Surveillance", user: "admin", pass: "admin", ip: "DHCP", notes: "Often integrated with OvrC. Web interface port 80.", url: "https://www.snapav.com/" },
-        { brand: "Luxriot", user: "Admin", pass: "(blank)", ip: "DHCP", notes: "Evo VMS. Passwords usually set during install.", url: "https://www.luxriot.com/support/" },
-        { brand: "Mace", user: "admin", pass: "111111", ip: "192.168.1.10", notes: "Legacy analog and early IP.", url: "https://www.google.com/search?q=Mace+CCTV+manual" },
-        { brand: "March Networks", user: "admin", pass: "admin / (blank)", ip: "DHCP", notes: "Often used in retail/banking. IP admin tool needed to set static.", url: "https://www.marchnetworks.com/support/" },
-        { brand: "Merit Lilin", user: "admin", pass: "admin / 1111", ip: "192.168.0.200", notes: "Also try pass 'pass'.", url: "https://www.meritlilin.com/en/support" },
-        { brand: "Milestone Systems", user: "admin", pass: "admin", ip: "DHCP", notes: "XProtect software. Usually integrated with Windows AD.", url: "https://www.milestonesys.com/support/" },
-        { brand: "Mobotix", user: "admin", pass: "meinsm", ip: "10.x.x.x", notes: "Unique IP address scheme based on MAC address.", url: "https://www.mobotix.com/en/support" },
-        { brand: "Montavue", user: "admin", pass: "admin", ip: "192.168.1.108", notes: "Dahua OEM.", url: "https://montavue.com/support/" },
-        { brand: "Night Owl", user: "admin", pass: "(blank) / admin", ip: "DHCP", notes: "Consumer grade. Will lock you out if attempted multiple times.", url: "https://support.nightowlsp.com/" },
-        { brand: "Northern", user: "admin", pass: "123456", ip: "192.168.1.100", notes: "Often TVT OEM.", url: "https://northernvideo.com/support/" },
-        { brand: "OnSSI", user: "admin", pass: "admin", ip: "DHCP", notes: "Ocularis VMS (now Qognify).", url: "https://www.qognify.com/support/" },
-        { brand: "OpenEye", user: "admin", pass: "1234", ip: "192.168.51.2", notes: "Web Services VMS.", url: "https://www.openeye.net/support" },
-        { brand: "Optiview", user: "admin", pass: "admin", ip: "192.168.1.108", notes: "Dahua OEM.", url: "https://optiviewusa.com/support/" },
-        { brand: "Panasonic / i-PRO", user: "admin", pass: "12345", ip: "192.168.0.10", notes: "Can also be admin/admin.", url: "https://i-pro.com/global/en/surveillance/support" },
-        { brand: "Pelco", user: "admin", pass: "admin", ip: "192.168.0.20", notes: "Default web port is often 80.", url: "https://www.pelco.com/support/" },
-        { brand: "Q-See", user: "admin", pass: "123456 / admin", ip: "192.168.1.100", notes: "Company is defunct. Defaults are usually very basic.", url: "https://www.google.com/search?q=Q-See+DVR+manual" },
-        { brand: "QNAP", user: "admin", pass: "admin", ip: "DHCP", notes: "NAS based NVR.", url: "https://www.qnap.com/support" },
-        { brand: "Qognify / Ocularis", user: "admin", pass: "1234", ip: "DHCP", notes: "Enterprise VMS.", url: "https://www.qognify.com/support/" },
-        { brand: "Reolink", user: "admin", pass: "(blank)", ip: "DHCP", notes: "Default password is usually blank until set by the user.", url: "https://support.reolink.com/" },
-        { brand: "Ring (Cloud App)", user: "N/A (App Based)", pass: "N/A", ip: "Cloud App", notes: "Open Ring App > History > Event > Share > Download arrow.", url: "https://support.ring.com/" },
-        { brand: "Salient", user: "admin", pass: "admin", ip: "DHCP", notes: "CompleteView VMS.", url: "https://www.salientsys.com/support" },
-        { brand: "Sannce", user: "admin", pass: "(blank)", ip: "DHCP", notes: "Uses similar firmware to Annke/Hikvision. Often uses port 8000.", url: "https://support.sannce.com/" },
-        { brand: "SimpliSafe", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open SimpliSafe app > Cameras > Select Camera > Timeline > Download icon.", url: "https://support.simplisafe.com/" },
-        { brand: "Sony", user: "admin", pass: "admin", ip: "192.168.0.100", notes: "Port 80.", url: "https://pro.sony/en_GB/support-resources" },
-        { brand: "Speco Technologies", user: "admin", pass: "1234", ip: "192.168.1.100", notes: "Also try admin/admin.", url: "https://specotech.com/support/" },
-        { brand: "Swann", user: "admin", pass: "12345 / (blank)", ip: "DHCP", notes: "Often 12345 or leaving the password blank entirely.", url: "https://support.swann.com/" },
-        { brand: "Synology", user: "admin", pass: "(blank)", ip: "DHCP", notes: "Surveillance Station app on DSM.", url: "https://www.synology.com/support" },
-        { brand: "Tapo (TP-Link)", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open Tapo app > Playback & Memory > Select clip > Download to app memory > Export.", url: "https://www.tp-link.com/support/" },
-        { brand: "Tiandy", user: "Admin", pass: "1111", ip: "192.168.1.2", notes: "Note case sensitivity.", url: "https://en.tiandy.com/support/" },
-        { brand: "TP-Link / VIGI", user: "admin", pass: "admin", ip: "192.168.0.60", notes: "Often requires VIGI app.", url: "https://www.tp-link.com/support/" },
-        { brand: "TVT", user: "admin", pass: "123456", ip: "192.168.226.201", notes: "Common OEM for many budget brands.", url: "https://en.tvt.net.cn/support.html" },
-        { brand: "Ubiquiti / UniFi Protect", user: "ubnt", pass: "ubnt", ip: "DHCP", notes: "Managed via UniFi OS. Passwords are tied to SSO accounts.", url: "https://help.ui.com/" },
-        { brand: "Uniview (UNV)", user: "admin", pass: "123456", ip: "192.168.1.13", notes: "Default is 123456. EZTools is the IP search utility.", url: "https://global.uniview.com/Support/" },
-        { brand: "Verint", user: "admin", pass: "admin", ip: "192.168.1.2", notes: "Nextiva VMS.", url: "https://www.verint.com/support/" },
-        { brand: "Vicon", user: "admin", pass: "1234", ip: "10.x.x.x", notes: "ViconNet VMS.", url: "https://vicon-security.com/support/" },
-        { brand: "Vista", user: "Admin", pass: "1234", ip: "DHCP", notes: "Qulu VMS or Viper DVRs.", url: "https://vista-cctv.com/support/" },
-        { brand: "Vitek", user: "admin", pass: "1234", ip: "192.168.1.100", notes: "VT- series NVRs/DVRs.", url: "https://vitekcctv.com/support/" },
-        { brand: "Vivotek", user: "root", pass: "root", ip: "192.168.0.90 / DHCP", notes: "Default is root/root. Shepherd utility used for finding them.", url: "https://www.vivotek.com/support" },
-        { brand: "Wansview", user: "admin", pass: "123456", ip: "DHCP", notes: "Often controlled via Wansview Cloud app.", url: "https://wansview.com/support/" },
-        { brand: "Wavestore", user: "admin", pass: "admin", ip: "192.168.1.200", notes: "Enterprise VMS, heavily Linux based.", url: "https://www.wavestore.com/support" },
-        { brand: "W Box", user: "admin", pass: "wbox123", ip: "192.168.1.108", notes: "Often rebranded Dahua or Hikvision.", url: "https://www.wboxtech.com/" },
-        { brand: "Wyze (Cloud App)", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open Wyze app > Select Camera > View Playback/Events > Download/Save icon.", url: "https://support.wyze.com/" },
-        { brand: "Yi / Kami", user: "N/A", pass: "N/A", ip: "Cloud App", notes: "Open Yi Home app > SD Card/Cloud > Select clip > Record/Download icon.", url: "https://kamihome.com/support/" },
-        { brand: "Zmodo", user: "admin", pass: "111111 / (blank)", ip: "DHCP", notes: "111111 is very common for standard Zmodo NVRs.", url: "https://www.zmodo.com/support" },
-        { brand: "Zosi", user: "admin", pass: "(blank)", ip: "DHCP", notes: "Requires monitor/mouse directly attached to DVR for easy reset.", url: "https://www.zositech.com/support/" }
-    ];
-
-    function renderGuides(filterText = "") {
-        const container = document.getElementById('guidesContainer');
-        container.innerHTML = "";
-        const lowerFilter = filterText.toLowerCase();
-        
-        cctvGuides.forEach(guide => {
-            if (guide.brand.toLowerCase().includes(lowerFilter) || guide.notes.toLowerCase().includes(lowerFilter)) {
-                
-                const safeBrand = guide.brand.replace(" (Cloud App)", "").replace(" / ", " ");
-                const ytSearchUrl = 'https://www.youtube.com/results?search_query=how+to+export+footage+' + encodeURIComponent(safeBrand) + '+cctv';
-
-                const card = document.createElement('div');
-                card.className = 'guide-card';
-                card.innerHTML = `
-                    <div>
-                        <h4>${guide.brand}</h4>
-                        <p><strong>User:</strong> ${guide.user}</p>
-                        <p><strong>Pass:</strong> ${guide.pass}</p>
-                        <p><strong>IP:</strong> ${guide.ip}</p>
-                        <p style="margin-top: 15px; font-size: 0.9em; color: var(--text-muted); border-top: 1px dashed var(--border-color); padding-top: 10px;">${guide.notes}</p>
-                    </div>
-                    <div class="btn-group">
-                        <a href="${guide.url}" target="_blank" class="manual-btn">📖 Manual</a>
-                        <a href="${ytSearchUrl}" target="_blank" class="yt-btn">▶️ YouTube</a>
-                    </div>
-                `;
-                container.appendChild(card);
-            }
-        });
-
-        if(container.innerHTML === "") {
-            container.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: var(--text-muted); font-style: italic; padding: 20px;'>No matching systems found.</p>";
-        }
-    }
-
-    function filterGuides() { renderGuides(document.getElementById('guideSearch').value); }
     window.onload = initForm;
 </script>
 
 </body>
-</html>
+</html>"""
+
+with open("cctv_wizard_mg11_generator.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("File written successfully: cctv_wizard_mg11_generator.html")
