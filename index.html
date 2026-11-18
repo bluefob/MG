@@ -1,4 +1,4 @@
-html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
+<!-- Version 69.9 - MG11 Top Declaration Signature & Date -->
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
@@ -425,7 +425,7 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
 <div class="top-bar no-print">
     <div style="font-weight: 800; color: var(--primary-color); font-size: 1.2em;"></div>
     <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-weight: 700; color: var(--text-muted); font-size: 1em; letter-spacing: 0.5px; background: var(--input-bg); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color);">v69.5</span>
+        <span style="font-weight: 700; color: var(--text-muted); font-size: 1em; letter-spacing: 0.5px; background: var(--input-bg); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color);">v69.9</span>
         <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌓 Mode</button>
     </div>
 </div>
@@ -470,6 +470,10 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
                         <div class="form-group">
                             <label for="contact_number">Officer Contact Number</label>
                             <input type="tel" id="contact_number" name="Contact Number">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="axon_id">Axon ID</label>
+                            <input type="text" id="axon_id" name="Axon ID" placeholder="Enter Axon Digital Evidence ID">
                         </div>
                     </div>
                 </fieldset>
@@ -1638,7 +1642,8 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
         y = Math.max(y1, y2);
         y1 = drawField(margin, y, halfW, "Person Attending", data['Person Attending']);
         y2 = drawField(margin + halfW + 4, y, halfW, "Contact Number", data['Contact Number']);
-        y = Math.max(y1, y2) + 3;
+        y = Math.max(y1, y2);
+        y = drawField(margin, y, usableW, "Axon ID", data['Axon ID']) + 3;
 
         // Section: Venue & Contact Details
         checkPage(35);
@@ -2138,24 +2143,52 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
         let occupation = "";
         let paragraphs = [];
 
+        const venueTel = log['Venue Telephone'] || 'not provided';
+        const axonId = log['Axon ID'] || '[Axon ID]';
+        const incStartRaw = log['Incident Start (Real Time)'] || '';
+        const incEndRaw = log['Incident End (Real Time)'] || '';
+
+        function extractTimeHHMM(dtStr) {
+            if (!dtStr) return '';
+            const d = safeParseDate(dtStr);
+            if (!isNaN(d.getTime())) {
+                const pad = n => n.toString().padStart(2, '0');
+                return `${pad(d.getHours())}${pad(d.getMinutes())}`;
+            }
+            const m = dtStr.match(/(\d{2}):(\d{2})/);
+            return m ? `${m[1]}${m[2]}` : '';
+        }
+
+        function formatLongUKDate(dtStr) {
+            if (!dtStr) return 'this date';
+            const d = safeParseDate(dtStr);
+            if (isNaN(d.getTime())) return dtStr;
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        const longDate = formatLongUKDate(log['Date']);
+        const approxTime = extractTimeHHMM(incStartRaw) || extractTimeHHMM(log['Real Time Sync']) || 'xxxxx';
+
         if (log['CCTV Available'] === 'No') {
             declarantName = officerAttending;
-            occupation = "Police Officer";
-            paragraphs.push(`I am ${declarantName}, acting in my capacity as a Police Officer.`);
+            occupation = "Detective Constable";
+            paragraphs.push(`I am Detective Constable ${declarantName} of West Midlands Police currently attached to Operation ${op}. I confirm that, to the best of my knowledge and belief, I have complied with the NPCC Framework for Video Based Evidence as required by the statutory Forensic Science Regulator. I mitigated the risk highlighted by the Regulator by completing the College of Policing Closed Circuit Television (CCTV) initial training (Level one) course. I have also completed the College of Policing Level 2 CCTV course.`);
             const vNotes = log['Venue Notes'] ? ` Notes regarding venue: ${log['Venue Notes']}` : '';
-            paragraphs.push(`On ${date}, in connection with Operation ${op}, I attended ${venue}.`);
+            paragraphs.push(`At approximately ${approxTime} hours on ${longDate} I attended ${venue}, at the address I spoke with ${contactName} phone number ${venueTel}.`);
             paragraphs.push(`I conducted CCTV enquiries at this location. I can confirm that there is no CCTV available at this venue.${vNotes}`);
             paragraphs.push(`I make this statement to record a negative CCTV enquiry.`);
         } else {
             if (isOfficer) {
                 declarantName = officerAttending;
-                occupation = "Police Officer";
-                paragraphs.push(`I am ${declarantName}, acting in my capacity as a Police Officer.`);
-                paragraphs.push(`On ${date}, in connection with Operation ${op}, I attended ${venue}. At this location, I spoke with ${contactName}, who identified themselves as the person responsible for the operation of the closed-circuit television (CCTV) system.`);
-                let timeClause = (dvrTime && realTime) 
-                    ? `I conducted a time check comparing the system clock against real atomic time. When the real time was ${realTime}, the CCTV recorder displayed ${dvrTime}. The system was noted as being ${drift}.`
-                    : `No time discrepancy audit was recorded.`;
-                paragraphs.push(`The recording equipment was identified as a ${makeModel} system recording from ${totCams} cameras. ${timeClause}`);
+                occupation = "Detective Constable";
+                paragraphs.push(`I am Detective Constable ${declarantName} of West Midlands Police currently attached to Operation ${op}. I confirm that, to the best of my knowledge and belief, I have complied with the NPCC Framework for Video Based Evidence as required by the statutory Forensic Science Regulator. I mitigated the risk highlighted by the Regulator by completing the College of Policing Closed Circuit Television (CCTV) initial training (Level one) course. I have also completed the College of Policing Level 2 CCTV course.`);
+                paragraphs.push(`At approximately ${approxTime} hours on ${longDate} I attended ${venue}, at the address I spoke with ${contactName} phone number ${venueTel}.`);
+                
+                let timeCheckDetails = (dvrTime && realTime)
+                    ? `when the real time was ${realTime}, the CCTV system displayed ${dvrTime}`
+                    : `against real time`;
+                paragraphs.push(`Whist at the address I was allowed access to their CCTV system, I checked the time of the CCTV against real time ${timeCheckDetails} and it was ${drift}. The CCTV DVR was a ${makeModel} system which had ${totCams} cameras.`);
             } else {
                 declarantName = contactName !== 'the operator' ? contactName : "Witness";
                 occupation = "Manager / Staff Member";
@@ -2169,17 +2202,20 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
 
             let dlIndex = 1;
             let downloadCountLog = 0;
+            let exhibitLines = [];
+
             while(log[`Cameras Downloaded_${dlIndex}`] !== undefined || (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined)) {
                 let sfx = (dlIndex === 1 && log[`Cameras Downloaded`] !== undefined && !log[`Cameras Downloaded_1`]) ? '' : `_${dlIndex}`;
                 
                 if (log[`Cameras Downloaded${sfx}`] === "" && dlIndex === 1 && !log[`Downloaded Footage Start${sfx}`]) break;
 
-                let dlStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]);
-                let dlEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]);
-                let camsDl = log[`Cameras Downloaded${sfx}`] || 'relevant cameras';
+                let dlStart = formatUKDateTime(log[`Downloaded Footage Start${sfx}`]) || 'dd/mm/yyyy hh:mm:ss';
+                let dlEnd = formatUKDateTime(log[`Downloaded Footage End${sfx}`]) || 'dd/mm/yyyy hh:mm:ss';
+                let camsDl = log[`Cameras Downloaded${sfx}`] || 'relevant';
                 let fmt = log[`Footage Format${sfx}`] || 'native';
                 let method = log[`Download Method${sfx}`] || 'media';
-                let exh = log[`Exhibit Number${sfx}`] || log['Exhibit Number'] || 'the exhibit';
+                let usbRef = log[`Media Reference${sfx}`] || 'xxxx';
+                let exh = log[`Exhibit Number${sfx}`] || log['Exhibit Number'] || 'xxx';
                 
                 let extra = [];
                 if(log[`Player Downloaded${sfx}`] === 'Yes') extra.push("A proprietary viewing player was included.");
@@ -2191,11 +2227,14 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
                 downloadCountLog++;
 
                 if (isOfficer) {
-                    if (downloadCountLog === 1) {
-                        paragraphs.push(`I identified and extracted footage from ${camsDl} covering the period from ${dlStart} to ${dlEnd}. The footage was downloaded in ${fmt} format onto a ${method} and I produce this as master exhibit ${exh}.${extraStr}`);
-                    } else {
-                        paragraphs.push(`I additionally identified and extracted footage from ${camsDl} covering the period from ${dlStart} to ${dlEnd}. This footage was downloaded in ${fmt} format onto a ${method} and I produce this as master exhibit ${exh}.${extraStr}`);
-                    }
+                    paragraphs.push(`CCTV footage from the ${camsDl} camera was downloaded covering the time period ${dlStart} and ${dlEnd}. This was downloaded on the USB ref ${usbRef}.${extraStr}`);
+                    
+                    let exhDate = formatUKDateTime(log[`Downloaded Footage Start${sfx}`], true) || formatUKDateTime(log['Date'], true) || 'xx/xx/2026';
+                    if (exhDate.includes(' ')) exhDate = exhDate.split(' ')[0];
+                    let startHHMM = extractTimeHHMM(log[`Downloaded Footage Start${sfx}`]) || extractTimeHHMM(incStartRaw) || 'xxxx';
+                    let endHHMM = extractTimeHHMM(log[`Downloaded Footage End${sfx}`]) || extractTimeHHMM(incEndRaw) || 'xxxx';
+                    
+                    exhibitLines.push(`Exhibit ${exh}\nCCTV Footage from ${venue} for the ${exhDate} between ${startHHMM} hours and ${endHHMM} hours`);
                 } else {
                     if (downloadCountLog === 1) {
                         paragraphs.push(`I downloaded footage from ${camsDl} covering the period from ${dlStart} to ${dlEnd}. I exported this in ${fmt} format onto a ${method}. I handed this media directly to ${officerAttending} and I produce it as master exhibit ${exh}.${extraStr}`);
@@ -2207,9 +2246,12 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
                 if (dlIndex > 20) break;
             }
 
-            paragraphs.push(`To the best of my knowledge and belief, the system was operating properly and the evidential integrity of the data has been maintained without alteration.`);
             if (isOfficer) {
-                paragraphs.push(`Declaration of Compliance with the Forensic Science Regulator Code of Practice: I confirm that, to the best of my knowledge and belief, in carrying out this forensic science activity I have acted in accordance with the Forensic Science Regulator Code of Practice and local force procedures.`);
+                paragraphs.push(`The USB used was a clean formatted USB booked out on the commencement of this enquiry.`);
+                let exhBlock = exhibitLines.length > 0 ? exhibitLines.join('\n\n') : `Exhibit xxx\nCCTV Footage from ${venue} for the xx/xx/2026 between xxxx hours and xxxx hours`;
+                paragraphs.push(`I then returned the office and transferred the CCTV on to the Axon Digital Evidence management system under the ID ${axonId}. I produce the CCTV as my exhibit as follows:\n\n${exhBlock}`);
+            } else {
+                paragraphs.push(`To the best of my knowledge and belief, the system was operating properly and the evidential integrity of the data has been maintained without alteration.`);
             }
         }
 
@@ -2388,7 +2430,7 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
             y += 8;
             doc.setFontSize(11);
             doc.setLineWidth(0.3);
-            doc.rect(margin, y - 5, usableW, 42); 
+            doc.rect(margin, y - 5, usableW, 56); 
             
             let boxY = y;
             doc.text("URN", pageWidth - margin - 65, boxY);
@@ -2416,13 +2458,32 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
             doc.setFont("helvetica", "bold");
             doc.text(occupation, margin + 130, boxY);
             
-            boxY += 10;
+            boxY += 9;
             doc.setFont("helvetica", "normal");
             const declaration = "This statement is true to the best of my knowledge and belief and I make it knowing that, if it is tendered in evidence, I shall be liable to prosecution if I have wilfully stated in it anything which I know to be false, or do not believe to be true.";
             const decLines = doc.splitTextToSize(declaration, usableW - 10);
             doc.text(decLines, margin + 5, boxY);
             
-            y += 50; 
+            boxY += (decLines.length * 4.8) + 8;
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("Signature:", margin + 5, boxY);
+            doc.setLineWidth(0.3);
+            doc.line(margin + 25, boxY, margin + 80, boxY);
+            doc.setFont("helvetica", "normal");
+            doc.text("(witness)", margin + 82, boxY);
+            
+            if (sigDataUrl) {
+                doc.addImage(sigDataUrl, 'PNG', margin + 27, boxY - 11, 50, 10.5, '', 'FAST');
+            }
+            
+            doc.setFont("helvetica", "bold");
+            doc.text("Date:", pageWidth - margin - 48, boxY);
+            doc.line(pageWidth - margin - 37, boxY, pageWidth - margin - 5, boxY);
+            doc.setFont("helvetica", "normal");
+            doc.text(dateStr, pageWidth - margin - 21, boxY - 1, {align: "center"});
+            
+            y += 63; 
             
             doc.setFontSize(10);
             doc.text("Tick if witness evidence is visually recorded", margin, y);
@@ -2514,9 +2575,4 @@ html_content = """<!-- Version 69.5 - Streamlined & Mobile Compressed -->
 </script>
 
 </body>
-</html>"""
-
-with open("cctv_wizard_mg11_generator.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print("File written successfully: cctv_wizard_mg11_generator.html")
+</html>
